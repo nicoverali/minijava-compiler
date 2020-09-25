@@ -1,0 +1,9 @@
+# Intellij stuff
+.idea/
+
+# Gradle stuff
+.gradle/
+
+
+# Output stuff
+build/
