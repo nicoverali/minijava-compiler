@@ -11,8 +11,10 @@ public interface SourceCodeReader {
      * Returns the next character in the associated source code. This will return a <b>\n</b> character if the next character
      * is a new line.
      * If there's a blank line at the end of the file it will be omitted.
+     * <br><br>
+     * Once the end of the file is reached, this method will return a <code>null</code> value
      *
-     * @return the next character in the source code
+     * @return the next character in the source code or <code>null</code> if there are no more characters in the file
      * @throws IOException if an I/O error occur
      */
     CodeCharacter getNextCharacter() throws IOException;
