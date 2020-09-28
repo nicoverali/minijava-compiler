@@ -49,37 +49,37 @@ class DefaultSourceCodeReaderTest {
         CodeCharacter currentChar;
 
 
-        testCharacter(reader.getNextCharacter(), 'A', reader.getCurrentLine(), 1);
-        testCharacter(reader.getNextCharacter(), '.', reader.getCurrentLine(), 2);
-        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 3);
-        assertEquals("A.", reader.getCurrentLine().toString());
+        testCharacter(reader.getNextCharacter(), 'A', reader.getCurrentLine(), 0);
+        testCharacter(reader.getNextCharacter(), '.', reader.getCurrentLine(), 1);
+        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 2);
+        assertEquals("A.", reader.getCurrentLine().getLineAsStringWithoutSeparator());
+        assertEquals(3, reader.getCurrentLine().getSize());
+
+        testCharacter(reader.getNextCharacter(), 'b', reader.getCurrentLine(), 0);
+        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 1);
+        assertEquals("b", reader.getCurrentLine().getLineAsStringWithoutSeparator());
         assertEquals(2, reader.getCurrentLine().getSize());
 
-        testCharacter(reader.getNextCharacter(), 'b', reader.getCurrentLine(), 1);
-        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 2);
-        assertEquals("b", reader.getCurrentLine().toString());
+        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 0);
+        assertEquals("", reader.getCurrentLine().getLineAsStringWithoutSeparator());
         assertEquals(1, reader.getCurrentLine().getSize());
 
-        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 1);
-        assertEquals("", reader.getCurrentLine().toString());
-        assertEquals(0, reader.getCurrentLine().getSize());
-
-        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 1);
-        assertEquals("", reader.getCurrentLine().toString());
-        assertEquals(0, reader.getCurrentLine().getSize());
-
-        testCharacter(reader.getNextCharacter(), '@', reader.getCurrentLine(), 1);
-        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 2);
-        assertEquals("@", reader.getCurrentLine().toString());
+        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 0);
+        assertEquals("", reader.getCurrentLine().getLineAsStringWithoutSeparator());
         assertEquals(1, reader.getCurrentLine().getSize());
 
+        testCharacter(reader.getNextCharacter(), '@', reader.getCurrentLine(), 0);
         testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 1);
-        assertEquals("", reader.getCurrentLine().toString());
-        assertEquals(0, reader.getCurrentLine().getSize());
+        assertEquals("@", reader.getCurrentLine().getLineAsStringWithoutSeparator());
+        assertEquals(2, reader.getCurrentLine().getSize());
 
-        testCharacter(reader.getNextCharacter(), '\\', reader.getCurrentLine(), 1);
-        testCharacter(reader.getNextCharacter(), 'n', reader.getCurrentLine(), 2);
-        assertEquals("\\n", reader.getCurrentLine().toString());
+        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 0);
+        assertEquals("", reader.getCurrentLine().getLineAsStringWithoutSeparator());
+        assertEquals(1, reader.getCurrentLine().getSize());
+
+        testCharacter(reader.getNextCharacter(), '\\', reader.getCurrentLine(), 0);
+        testCharacter(reader.getNextCharacter(), 'n', reader.getCurrentLine(), 1);
+        assertEquals("\\n", reader.getCurrentLine().getLineAsStringWithoutSeparator());
         assertEquals(2, reader.getCurrentLine().getSize());
 
         assertNull(reader.getNextCharacter());
@@ -93,43 +93,43 @@ class DefaultSourceCodeReaderTest {
     public void io_test_02() throws IOException {
         SourceCodeReader reader = new DefaultSourceCodeReader(IO_TEST_02_PATH, lineFactory);
 
-        testCharacter(reader.getNextCharacter(), 'w', reader.getCurrentLine(), 1);
-        testCharacter(reader.getNextCharacter(), 'h', reader.getCurrentLine(), 2);
-        testCharacter(reader.getNextCharacter(), 'i', reader.getCurrentLine(), 3);
-        testCharacter(reader.getNextCharacter(), 'l', reader.getCurrentLine(), 4);
-        testCharacter(reader.getNextCharacter(), 'e', reader.getCurrentLine(), 5);
-        testCharacter(reader.getNextCharacter(), '(', reader.getCurrentLine(), 6);
-        testCharacter(reader.getNextCharacter(), 'T', reader.getCurrentLine(), 7);
-        testCharacter(reader.getNextCharacter(), 'r', reader.getCurrentLine(), 8);
-        testCharacter(reader.getNextCharacter(), 'u', reader.getCurrentLine(), 9);
-        testCharacter(reader.getNextCharacter(), 'e', reader.getCurrentLine(), 10);
-        testCharacter(reader.getNextCharacter(), ')', reader.getCurrentLine(), 11);
-        testCharacter(reader.getNextCharacter(), ' ', reader.getCurrentLine(), 12);
-        testCharacter(reader.getNextCharacter(), '{', reader.getCurrentLine(), 13);
-        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 14);
-        assertEquals("while(True) {", reader.getCurrentLine().toString());
-        assertEquals(13, reader.getCurrentLine().getSize());
-
-        testCharacter(reader.getNextCharacter(), '\t', reader.getCurrentLine(), 1);
-        testCharacter(reader.getNextCharacter(), 'p', reader.getCurrentLine(), 2);
-        testCharacter(reader.getNextCharacter(), 'r', reader.getCurrentLine(), 3);
-        testCharacter(reader.getNextCharacter(), 'i', reader.getCurrentLine(), 4);
-        testCharacter(reader.getNextCharacter(), 'n', reader.getCurrentLine(), 5);
-        testCharacter(reader.getNextCharacter(), 't', reader.getCurrentLine(), 6);
-        testCharacter(reader.getNextCharacter(), '(', reader.getCurrentLine(), 7);
-        testCharacter(reader.getNextCharacter(), '"', reader.getCurrentLine(), 8);
-        testCharacter(reader.getNextCharacter(), 'H', reader.getCurrentLine(), 9);
-        testCharacter(reader.getNextCharacter(), 'i', reader.getCurrentLine(), 10);
-        testCharacter(reader.getNextCharacter(), '"', reader.getCurrentLine(), 11);
-        testCharacter(reader.getNextCharacter(), ')', reader.getCurrentLine(), 12);
+        testCharacter(reader.getNextCharacter(), 'w', reader.getCurrentLine(), 0);
+        testCharacter(reader.getNextCharacter(), 'h', reader.getCurrentLine(), 1);
+        testCharacter(reader.getNextCharacter(), 'i', reader.getCurrentLine(), 2);
+        testCharacter(reader.getNextCharacter(), 'l', reader.getCurrentLine(), 3);
+        testCharacter(reader.getNextCharacter(), 'e', reader.getCurrentLine(), 4);
+        testCharacter(reader.getNextCharacter(), '(', reader.getCurrentLine(), 5);
+        testCharacter(reader.getNextCharacter(), 'T', reader.getCurrentLine(), 6);
+        testCharacter(reader.getNextCharacter(), 'r', reader.getCurrentLine(), 7);
+        testCharacter(reader.getNextCharacter(), 'u', reader.getCurrentLine(), 8);
+        testCharacter(reader.getNextCharacter(), 'e', reader.getCurrentLine(), 9);
+        testCharacter(reader.getNextCharacter(), ')', reader.getCurrentLine(), 10);
+        testCharacter(reader.getNextCharacter(), ' ', reader.getCurrentLine(), 11);
+        testCharacter(reader.getNextCharacter(), '{', reader.getCurrentLine(), 12);
         testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 13);
-        assertEquals("\tprint(\"Hi\")", reader.getCurrentLine().toString());
-        assertEquals(12, reader.getCurrentLine().getSize());
+        assertEquals("while(True) {", reader.getCurrentLine().getLineAsStringWithoutSeparator());
+        assertEquals(14, reader.getCurrentLine().getSize());
+
+        testCharacter(reader.getNextCharacter(), '\t', reader.getCurrentLine(), 0);
+        testCharacter(reader.getNextCharacter(), 'p', reader.getCurrentLine(), 1);
+        testCharacter(reader.getNextCharacter(), 'r', reader.getCurrentLine(), 2);
+        testCharacter(reader.getNextCharacter(), 'i', reader.getCurrentLine(), 3);
+        testCharacter(reader.getNextCharacter(), 'n', reader.getCurrentLine(), 4);
+        testCharacter(reader.getNextCharacter(), 't', reader.getCurrentLine(), 5);
+        testCharacter(reader.getNextCharacter(), '(', reader.getCurrentLine(), 6);
+        testCharacter(reader.getNextCharacter(), '"', reader.getCurrentLine(), 7);
+        testCharacter(reader.getNextCharacter(), 'H', reader.getCurrentLine(), 8);
+        testCharacter(reader.getNextCharacter(), 'i', reader.getCurrentLine(), 9);
+        testCharacter(reader.getNextCharacter(), '"', reader.getCurrentLine(), 10);
+        testCharacter(reader.getNextCharacter(), ')', reader.getCurrentLine(), 11);
+        testCharacter(reader.getNextCharacter(), '\n', reader.getCurrentLine(), 12);
+        assertEquals("\tprint(\"Hi\")", reader.getCurrentLine().getLineAsStringWithoutSeparator());
+        assertEquals(13, reader.getCurrentLine().getSize());
 
         // This should be the last character in the file, since the next line
         // is a blank line and should be omitted
-        testCharacter(reader.getNextCharacter(), '}', reader.getCurrentLine(), 1);
-        assertEquals("}", reader.getCurrentLine().toString());
+        testCharacter(reader.getNextCharacter(), '}', reader.getCurrentLine(), 0);
+        assertEquals("}", reader.getCurrentLine().getLineAsStringWithoutSeparator());
         assertEquals(1, reader.getCurrentLine().getSize());
 
         assertNull(reader.getNextCharacter());

@@ -3,36 +3,37 @@ package io.code;
 public interface CodeCharacter {
 
     /**
-     * @return this character as a <i>char</i>
+     * @return this character as a <code>char</code>
      */
     char getValue();
 
     /**
-     * @return the line were this <i>CodeCharacter</i> belongs
+     * @return the line were this <code>CodeCharacter</code> belongs
      */
     CodeLine getCodeLine();
 
     /**
-     * Return the number of line where this <i>CodeCharacter</i> belongs. Line numbers
-     * start from row 1
+     * Return the line number of this <code>CodeCharacter</code>. Line numbers
+     * are zero-based indexed.
      *
-     * @return the number of line were this <i>CodeCharacter</i> belongs
+     * @return the number of line were this <code>CodeCharacter</code> belongs
      */
     int getLineNumber();
 
     /**
-     * Returns the position (column) of this <i>CodeCharacter</i>. The position of
-     * a character starts from column 1
+     * Returns the position (column) of this <code>CodeCharacter</code> within a line. The position of
+     * a character are zero-based indexed.
      *
-     * @return the position of this <i>CodeCharacter</i> inside the line were it belongs
+     * @see #getCodeLine()
+     * @return the position of this <code>CodeCharacter</code> inside the line were it belongs
      */
     int getColumnNumber();
 
     /**
-     * Checks if the value of this <i>CodeCharacter</i> equals the character given as argument.
+     * Checks if the value of this <code>CodeCharacter</code> equals the character given as argument.
      *
-     * @param character a <i>char</i> value to compare with
-     * @return true if this <i>CodeCharacter</i> value equals the one given as argument
+     * @param character a <code>char</code> value to compare with
+     * @return true if this <code>CodeCharacter</code> value equals the one given as argument
      */
     boolean equals(char character);
 

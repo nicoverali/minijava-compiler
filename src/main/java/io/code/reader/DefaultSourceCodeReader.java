@@ -14,6 +14,7 @@ public class DefaultSourceCodeReader implements SourceCodeReader {
 
     private BufferedReader bufferedReader;
 
+    private int currentLineNumber;
     private CodeLineFactory lineFactory;
     private Iterator<CodeCharacter> currentCodeLineIterator;
     private CodeLine currentCodeLine;
@@ -29,16 +30,17 @@ public class DefaultSourceCodeReader implements SourceCodeReader {
         lineFactory = factory;
         bufferedReader = new BufferedReader(new FileReader(path));
         nextLine = bufferedReader.readLine();
+        currentLineNumber = -1;
         readNextLine();
     }
 
     private void readNextLine() throws IOException {
         String currentLine = nextLine;
+        currentCodeLine = lineFactory.create(currentLine,++currentLineNumber);
         nextLine = bufferedReader.readLine();
         if (nextLine != null){
-            currentLine += '\n';
+            currentCodeLine.addLineSeparator();
         }
-        currentCodeLine = lineFactory.create(currentLine);
         currentCodeLineIterator = currentCodeLine.iterator();
     }
 
