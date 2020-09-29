@@ -1,10 +1,10 @@
 package io.code;
 
-public class DefaultCodeLineTest implements CodeLineTest{
+public class DefaultCodeLineTest implements CodeLineTest<DefaultCodeLine> {
 
     @Override
-    public CodeLine createCodeLine(String line, int lineNumber) {
-        return new DefaultCodeLineFactory().create(line, lineNumber);
+    public DefaultCodeLine createCodeLine(String line, int lineNumber) {
+        return new DefaultCodeLine(lineNumber, line);
     }
 
 }
