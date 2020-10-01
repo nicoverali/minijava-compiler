@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 
 import static org.mockito.Mockito.when;
@@ -30,20 +31,25 @@ class BufferedSourceCodeReaderTest implements SourceCodeReaderTest<BufferedSourc
      * @see io.code.DefaultCodeLineTest
      */
     @Override
-    public BufferedSourceCodeReader createSourceCodeReader(String... lines) throws IOException {
+    public BufferedSourceCodeReader createSourceCodeReader(String... lines) {
         // BufferedReader does not emit line separators and thus ignores any last blank line
         String[] formattedLines = addNullAtTheEnd(removeLastBlankLine(removeLineSeparator(lines)));
 
-        if (formattedLines.length == 0){
-            when(buffReaderMock.readLine()).thenReturn(null);
-        } else if (formattedLines.length == 1){
-            when(buffReaderMock.readLine()).thenReturn(formattedLines[0], (String) null);
-        } else {
-            String[] linesWithoutFirst = Arrays.copyOfRange(formattedLines, 1, formattedLines.length);
-            when(buffReaderMock.readLine()).thenReturn(formattedLines[0], linesWithoutFirst);
+        try {
+            if (formattedLines.length == 0){
+                when(buffReaderMock.readLine()).thenReturn(null);
+            } else if (formattedLines.length == 1){
+                when(buffReaderMock.readLine()).thenReturn(formattedLines[0], (String) null);
+            } else {
+                String[] linesWithoutFirst = Arrays.copyOfRange(formattedLines, 1, formattedLines.length);
+                when(buffReaderMock.readLine()).thenReturn(formattedLines[0], linesWithoutFirst);
+            }
+            return new BufferedSourceCodeReader(buffReaderMock, new DefaultCodeLineFactory());
+        } catch (IOException e){
+            System.out.println("An unexpected IOException occur while create a BufferedSourceCodeReader");
+            throw new UncheckedIOException(e);
         }
 
-        return new BufferedSourceCodeReader(buffReaderMock, new DefaultCodeLineFactory());
     }
 
     private String[] addNullAtTheEnd(String... lines){

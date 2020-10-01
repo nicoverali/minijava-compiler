@@ -4,6 +4,7 @@ import io.code.CodeCharacter;
 import io.code.CodeLine;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Optional;
 
 /**
@@ -22,17 +23,17 @@ public interface SourceCodeReader {
      * Once the end of the file is reached, this method will return empty {@link Optional}s
      *
      * @return an {@link Optional} wrapping the next character in the source code
-     * @throws IOException if an I/O error occur
+     * @throws UncheckedIOException if an I/O error occur
      */
-    Optional<CodeCharacter> getNext() throws IOException;
+    Optional<CodeCharacter> getNext() throws UncheckedIOException;
 
     /**
      * Checks whether there is at least on unread character in the source code, or it has reached the end of the file
      *
      * @return true if there is at least one unread character, false otherwise
-     * @throws IOException if an I/O error occurs
+     * @throws UncheckedIOException if an I/O error occurs
      */
-    boolean hasNext() throws IOException;
+    boolean hasNext() throws UncheckedIOException;
 
     /**
      * Returns the next character of the source code, as {@link #getNext()}, but it does not consume
@@ -43,9 +44,9 @@ public interface SourceCodeReader {
      * @see #getNext()
      *
      * @return an {@link Optional} wrapping the next character in the source code
-     * @throws IOException if an I/O error occur
+     * @throws UncheckedIOException if an I/O error occur
      */
-    Optional<CodeCharacter> peekNext() throws IOException;
+    Optional<CodeCharacter> peekNext() throws UncheckedIOException;
 
     /**
      * Returns the line of the last character returned by {@link #getNext()}.

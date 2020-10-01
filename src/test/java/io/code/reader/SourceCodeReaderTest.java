@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -16,18 +15,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public interface SourceCodeReaderTest<T extends SourceCodeReader> {
 
-    T createSourceCodeReader(String... lines) throws IOException;
+    T createSourceCodeReader(String... lines);
 
     @DisplayName("With empty file, should return empty optional.")
     @Test
-    default void onEmptyFile_shouldReturnEmptyCharacter() throws IOException {
+    default void onEmptyFile_shouldReturnEmptyCharacter()  {
         SourceCodeReader testSubject = createSourceCodeReader();
         assertFalse(testSubject.getNext().isPresent());
     }
 
     @DisplayName("With empty file, repeat request, should always return empty optional.")
     @Test
-    default void onEmptyFile_repeatRequest_shouldReturnEmptyCharacter() throws IOException {
+    default void onEmptyFile_repeatRequest_shouldReturnEmptyCharacter()  {
         SourceCodeReader testSubject = createSourceCodeReader();
         assertFalse(testSubject.getNext().isPresent());
         assertFalse(testSubject.getNext().isPresent());
@@ -37,21 +36,21 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
 
     @DisplayName("With empty file, peeking should return empty optional.")
     @Test
-    default void onEmptyFile_peekShouldReturnEmptyCharacter() throws IOException {
+    default void onEmptyFile_peekShouldReturnEmptyCharacter()  {
         SourceCodeReader testSubject = createSourceCodeReader();
         assertFalse(testSubject.peekNext().isPresent());
     }
 
     @DisplayName("With empty file, should not have current line.")
     @Test
-    default void onEmptyFile_shouldNotHaveCurrentLine() throws IOException {
+    default void onEmptyFile_shouldNotHaveCurrentLine()  {
         SourceCodeReader testSubject = createSourceCodeReader();
         assertFalse(testSubject.getCurrentLine().isPresent());
     }
 
     @DisplayName("With empty file, should not have a next character.")
     @Test
-    default void onEmptyFile_shouldNotHaveNext() throws IOException {
+    default void onEmptyFile_shouldNotHaveNext()  {
         SourceCodeReader testSubject = createSourceCodeReader();
         assertFalse(testSubject.hasNext());
     }
@@ -59,7 +58,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With single character, should return character and then empty.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" character")
     @ValueSource(chars = {'a', '@', '$', '"', '\t'})
-    default void singleCharacter_shouldReturnEmptyCharacter(char testCharacter) throws IOException {
+    default void singleCharacter_shouldReturnEmptyCharacter(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
         // Verify first character
@@ -75,7 +74,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With single character, should peek first character.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" character")
     @ValueSource(chars = {'a', '@', '$', '"', '\t'})
-    default void singleCharacter_shouldPeekFirstCharacter(char testCharacter) throws IOException {
+    default void singleCharacter_shouldPeekFirstCharacter(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
         Optional<CodeCharacter> character = testSubject.peekNext();
@@ -87,7 +86,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With single character, peeking character should not affect consuming character.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" character")
     @ValueSource(chars = {'a', '@', '$', '"', '\t'})
-    default void singleCharacter_peekShouldNotAffectGet(char testCharacter) throws IOException {
+    default void singleCharacter_peekShouldNotAffectGet(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
         testSubject.peekNext();
@@ -100,7 +99,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With single character, peeking should be idempotent.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" character")
     @ValueSource(chars = {'a', '@', '$', '"', '\t'})
-    default void singleCharacter_peekShouldBeIdempotent(char testCharacter) throws IOException {
+    default void singleCharacter_peekShouldBeIdempotent(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
         assertTrue(testSubject.peekNext().isPresent());
@@ -114,7 +113,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With single character, after reaching EOF, current line should be first line.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" character")
     @ValueSource(chars = {'a', '@', '$', '"', '\t'})
-    default void singleCharacter_currentLineShouldBeFirstLineAfterEOF(char testCharacter) throws IOException {
+    default void singleCharacter_currentLineShouldBeFirstLineAfterEOF(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
         assertEquals(testCharacter, testSubject.getNext().get().getValue());
@@ -128,7 +127,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With single character, peeking should return empty optional after getting first character.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" character")
     @ValueSource(chars = {'a', '@', '$', '"', '\t'})
-    default void singleCharacter_shouldPeekEmptyAfterGetting(char testCharacter) throws IOException {
+    default void singleCharacter_shouldPeekEmptyAfterGetting(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
         assertEquals(testCharacter, testSubject.getNext().get().getValue());
@@ -138,7 +137,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two characters, get them and return empty.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" string")
     @ValueSource(strings = {"a$", "@b", "\t\t", "  "})
-    default void twoCharacters_shouldPeekEmptyAfterGetting(String testString) throws IOException {
+    default void twoCharacters_shouldPeekEmptyAfterGetting(String testString)  {
         SourceCodeReader testSubject = createSourceCodeReader(testString);
 
         assertEquals(testString.charAt(0), testSubject.getNext().get().getValue());
@@ -149,7 +148,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two characters, peeking characters before consuming should not be a problem.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" string")
     @ValueSource(strings = {"a$", "@b", "\t\t", "  "})
-    default void twoCharacters_peekingBeforeGetting(String testString) throws IOException {
+    default void twoCharacters_peekingBeforeGetting(String testString)  {
         SourceCodeReader testSubject = createSourceCodeReader(testString);
 
         assertEquals(testString.charAt(0), testSubject.peekNext().get().getValue());
@@ -163,7 +162,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two lines, should return '\\n' at the end of first one.")
     @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
     @MethodSource("twoLinesTestCases")
-    default void twoLines_shouldReturnNewLineCharacter(String firstLine, String secondLine) throws IOException {
+    default void twoLines_shouldReturnNewLineCharacter(String firstLine, String secondLine)  {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
@@ -176,7 +175,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two lines, peeking '\\n' should not affect consuming '\\n'.")
     @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
     @MethodSource("twoLinesTestCases")
-    default void twoLines_peekNewLineThenConsumeNewLine(String firstLine, String secondLine) throws IOException {
+    default void twoLines_peekNewLineThenConsumeNewLine(String firstLine, String secondLine)  {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
@@ -190,7 +189,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two lines, after consuming new line, should peek first of second line.")
     @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
     @MethodSource("twoLinesTestCases")
-    default void twoLines_afterNewLine_shouldPeekFirstFromSecondLine(String firstLine, String secondLine) throws IOException {
+    default void twoLines_afterNewLine_shouldPeekFirstFromSecondLine(String firstLine, String secondLine)  {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
@@ -204,7 +203,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two lines, after consuming new line, peeking should not affect consuming first character of second line.")
     @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
     @MethodSource("twoLinesTestCases")
-    default void twoLines_afterNewLine_peekShouldNotAffectGettingFirstFromSecondLine(String firstLine, String secondLine) throws IOException {
+    default void twoLines_afterNewLine_peekShouldNotAffectGettingFirstFromSecondLine(String firstLine, String secondLine)  {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
@@ -219,7 +218,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two lines, after consuming new line and peeking, current line should still be first.")
     @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
     @MethodSource("twoLinesTestCases")
-    default void twoLines_afterNewLineAndPeek_currentLineShouldBeFirst(String firstLine, String secondLine) throws IOException {
+    default void twoLines_afterNewLineAndPeek_currentLineShouldBeFirst(String firstLine, String secondLine)  {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
@@ -234,7 +233,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two lines, after consuming new line, should have next character.")
     @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
     @MethodSource("twoLinesTestCases")
-    default void twoLines_afterNewLine_shouldHaveNextCharacter(String firstLine, String secondLine) throws IOException {
+    default void twoLines_afterNewLine_shouldHaveNextCharacter(String firstLine, String secondLine)  {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
@@ -248,7 +247,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @DisplayName("With two lines, after consuming first of second line, current line should be second.")
     @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
     @MethodSource("twoLinesTestCases")
-    default void twoLines_afterFirstFromSecond_currentLineShouldBeSecond(String firstLine, String secondLine) throws IOException {
+    default void twoLines_afterFirstFromSecond_currentLineShouldBeSecond(String firstLine, String secondLine)  {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){

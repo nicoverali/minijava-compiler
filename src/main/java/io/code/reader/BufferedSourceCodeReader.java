@@ -6,6 +6,7 @@ import io.code.CodeLineFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -30,13 +31,17 @@ public class BufferedSourceCodeReader implements SourceCodeReader {
      *
      * @param reader a {@link BufferedReader} to read characters from
      * @param factory a {@link CodeLineFactory} to generate the source code lines
-     * @throws IOException if an I/O error occur
+     * @throws UncheckedIOException if an I/O error occur
      */
-    public BufferedSourceCodeReader(BufferedReader reader, CodeLineFactory factory) throws IOException {
+    public BufferedSourceCodeReader(BufferedReader reader, CodeLineFactory factory) throws UncheckedIOException {
         buffReader = reader;
         lineFactory = factory;
 
-        initFirstLines();
+        try{
+            initFirstLines();
+        } catch (IOException e){
+            throw new UncheckedIOException(e);
+        }
     }
 
     private void initFirstLines() throws IOException{
@@ -50,14 +55,18 @@ public class BufferedSourceCodeReader implements SourceCodeReader {
     }
 
     @Override
-    public Optional<CodeCharacter> getNext() throws IOException {
+    public Optional<CodeCharacter> getNext() throws UncheckedIOException {
         if (currentLineIterator.hasNext()){
             return Optional.of(currentLineIterator.next());
         } else if (hasReachEndOfFile()){
             return Optional.empty();
         } else {
-            moveToNextLine();
-            return getNext();
+            try{
+                moveToNextLine();
+                return getNext();
+            } catch (IOException e){
+                throw new UncheckedIOException(e);
+            }
         }
     }
 
