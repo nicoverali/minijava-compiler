@@ -141,19 +141,8 @@ interface CodeLineTest<T extends CodeLine> {
         CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
         testSubject.addLineSeparator();
 
-        String lineAsString = testSubject.getLineAsString();
+        String lineAsString = testSubject.toString();
         assertTrue(lineAsString.equals(lineTestCase + '\n') || lineAsString.equals(lineTestCase + '\r'));
-    }
-
-    @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")
-    @MethodSource("lineTestCases")
-    default void shouldGiveLineAsStringWithoutSeparator(String lineTestCase, int lineNumber) {
-        CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
-
-        assertEquals(lineTestCase, testSubject.getLineAsString());
-        testSubject.addLineSeparator();
-        assertNotEquals(lineTestCase, testSubject.getLineAsString());
-        assertEquals(lineTestCase, testSubject.getLineAsStringWithoutSeparator());
     }
 
     @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")

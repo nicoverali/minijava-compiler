@@ -33,7 +33,8 @@ public enum TokenType {
     ASSIGN_MINUS("assign_minus"),
     ASSIGN_MULT("assign_multiplication"),
     ASSIGN_DIV("assign_division"),
-    ASSIGN_MOD("assign_module");
+    ASSIGN_MOD("assign_module"),
+    EOF("end_of_file");
 
     private final String tokenName;
 

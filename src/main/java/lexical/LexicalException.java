@@ -1,31 +1,48 @@
 package lexical;
 
-import io.code.CodeLine;
-
 public class LexicalException extends RuntimeException{
 
-    private final CodeLine exceptionLine;
-    private final int columnNumber;
+    String lexeme;
+    String line;
+    int lineNumber;
+    int columnNumber;
 
-    public LexicalException(String msg, int columnNumber, CodeLine exceptionLine){
-        super(msg);
+    public LexicalException(String message, String lexeme, String line, int lineNumber, int columnNumber) {
+        super(message);
+        this.lexeme = lexeme;
+        this.line = line;
+        this.lineNumber = lineNumber;
         this.columnNumber = columnNumber;
-        this.exceptionLine = exceptionLine;
+    }
+
+    /**
+     * @return the current Lexeme at the moment this {@link LexicalException} occur
+     */
+    public String getLexeme(){
+        return lexeme;
+    }
+
+    /**
+     * @return the line at which the lexical error occur
+     */
+    public String getLine() {
+        return line;
+    }
+
+    /**
+     * @return the number of line where this exception occur
+     */
+    public int getLineNumber(){
+        return lineNumber;
     }
 
     /**
      * @return the column number at which the lexical error occur
-     * @see #getExceptionLine()
+     * @see #getLine()
      */
     public int getColumnNumber() {
         return columnNumber;
     }
 
-    /**
-     * @return the {@link CodeLine} at which the lexical error occur
-     */
-    public CodeLine getExceptionLine() {
-        return exceptionLine;
-    }
 
 }

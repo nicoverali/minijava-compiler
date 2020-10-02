@@ -117,15 +117,10 @@ class DefaultCodeLine implements CodeLine {
     }
 
     @Override
-    public String getLineAsString() {
+    public String toString() {
         if (hasLineSeparator){
             return lineWithoutSeparators+LINE_SEPARATOR;
         }
-        return lineWithoutSeparators;
-    }
-
-    @Override
-    public String getLineAsStringWithoutSeparator() {
         return lineWithoutSeparators;
     }
 }

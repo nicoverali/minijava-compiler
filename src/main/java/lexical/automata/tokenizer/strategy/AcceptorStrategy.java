@@ -30,14 +30,8 @@ public class AcceptorStrategy implements TokenizerNodeStrategy{
     }
 
     @Override
-    public Optional<Token> onEndOfFile(@Nullable Lexeme lexeme, @Nullable CodeLine currentLine) throws LexicalException {
-        if (lexeme != null){
-            return Optional.of(new Token(type, lexeme.getLexeme(), lexeme.getLineNumber()));
-        } else if (currentLine != null){
-            return Optional.of(new Token(type, "", currentLine.getLineNumber()));
-        } else {
-            return Optional.of(new Token(type, "", 0));
-        }
+    public Optional<Token> onEndOfFile(@NotNull Lexeme lexeme, @Nullable CodeLine currentLine) throws LexicalException {
+        return Optional.of(new Token(type, lexeme.getLexeme(), lexeme.getLineNumber()));
     }
 
 }

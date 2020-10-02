@@ -78,11 +78,7 @@ public interface CodeLine extends Iterable<CodeCharacter> {
     /**
      * @return this entire line as a single String, including line separators
      */
-    String getLineAsString();
-
-    /**
-     * @return this entire line as a single String, excluding any line separator at the end
-     */
-    String getLineAsStringWithoutSeparator();
+    @Override
+    String toString();
 
 }

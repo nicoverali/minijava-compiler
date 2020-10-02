@@ -22,14 +22,14 @@ public class OmitterMiddleStrategy implements OmitterNodeStrategy {
 
     @Override
     public void onNoBranchSelected(@NotNull CodeCharacter currentCharacter) throws LexicalException {
-        throw new LexicalException(errorMsg, currentCharacter.getColumnNumber(), currentCharacter.getCodeLine());
+        throw new LexicalException(errorMsg, "", currentCharacter.getCodeLine().toString(), currentCharacter.getLineNumber(), currentCharacter.getColumnNumber());
     }
 
     @Override
     public void onEndOfFile(@Nullable CodeLine currentLine) throws LexicalException {
         // Only if file is not empty we detect a lexical error
         if (currentLine != null){
-            throw new LexicalException(errorMsg, currentLine.getSize(), currentLine);
+            throw new LexicalException(errorMsg, "", currentLine.toString(), currentLine.getLineNumber(), currentLine.getSize());
         }
     }
 

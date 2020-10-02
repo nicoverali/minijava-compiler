@@ -104,4 +104,13 @@ public class BufferedSourceCodeReader implements SourceCodeReader {
     public Optional<CodeLine> getCurrentLine() {
         return Optional.ofNullable(currentLine);
     }
+
+    @Override
+    public int getCurrentLineNumber() {
+        if (currentLine != null){
+            return currentLine.getLineNumber();
+        }
+        return 0;
+    }
+
 }

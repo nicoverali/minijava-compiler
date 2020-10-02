@@ -55,6 +55,13 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         assertFalse(testSubject.hasNext());
     }
 
+    @DisplayName("With empty file, line number should be 0.")
+    @Test
+    default void onEmptyFile_lineNumberShouldBe0()  {
+        SourceCodeReader testSubject = createSourceCodeReader();
+        assertEquals(0, testSubject.getCurrentLineNumber());
+    }
+
     @DisplayName("With single character, should return character and then empty.")
     @ParameterizedTest(name = "[{index}] With \"{0}\" character")
     @ValueSource(chars = {'a', '@', '$', '"', '\t'})
@@ -121,7 +128,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
 
         assertEquals(0, testSubject.getCurrentLine().get().getLineNumber());
         assertEquals(1, testSubject.getCurrentLine().get().getSize());
-        assertEquals(String.valueOf(testCharacter), testSubject.getCurrentLine().get().getLineAsString());
+        assertEquals(String.valueOf(testCharacter), testSubject.getCurrentLine().get().toString());
     }
 
     @DisplayName("With single character, peeking should return empty optional after getting first character.")
@@ -132,6 +139,14 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
 
         assertEquals(testCharacter, testSubject.getNext().get().getValue());
         assertFalse(testSubject.peekNext().isPresent());
+    }
+
+    @DisplayName("With single character, line number should be 0.")
+    @ParameterizedTest(name = "[{index}] With \"{0}\" character")
+    @ValueSource(chars = {'a', '@', '$', '"', '\t'})
+    default void singleCharacter_lineNumberShouldBe0(char testCharacter)  {
+        SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
+        assertEquals(0, testSubject.getCurrentLineNumber());
     }
 
     @DisplayName("With two characters, get them and return empty.")
@@ -227,7 +242,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         assertEquals('\n', testSubject.getNext().get().getValue());
         assertEquals(secondLine.charAt(0), testSubject.peekNext().get().getValue()); // Here we peek first from second line
 
-        assertEquals(firstLine, testSubject.getCurrentLine().get().getLineAsStringWithoutSeparator());
+        assertEquals(firstLine+'\n', testSubject.getCurrentLine().get().toString());
     }
 
     @DisplayName("With two lines, after consuming new line, should have next character.")
@@ -256,7 +271,30 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         assertEquals('\n', testSubject.getNext().get().getValue());
         assertEquals(secondLine.charAt(0), testSubject.getNext().get().getValue());
 
-        assertEquals(secondLine, testSubject.getCurrentLine().get().getLineAsString());
+        assertEquals(secondLine, testSubject.getCurrentLine().get().toString());
+    }
+
+    @DisplayName("With two lines, without consuming, current line number should be 0.")
+    @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
+    @MethodSource("twoLinesTestCases")
+    default void twoLines_withoutConsuming_lineNumberShouldBeZero(String firstLine, String secondLine)  {
+        SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
+        assertEquals(0, testSubject.getCurrentLineNumber());
+    }
+
+    @DisplayName("With two lines, after consuming first, current line number should be 1.")
+    @ParameterizedTest(name = "[{index}] With lines \"{0}\" and \"{1}\"")
+    @MethodSource("twoLinesTestCases")
+    default void twoLines_afterConsumingFirst_lineNumberShouldBeOne(String firstLine, String secondLine)  {
+        SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
+        // Read only characters
+        for (char ch : firstLine.toCharArray()){
+            assertEquals(ch, testSubject.getNext().get().getValue());
+        }
+        assertEquals('\n', testSubject.getNext().get().getValue());
+        assertEquals(secondLine.charAt(0), testSubject.getNext().get().getValue());
+
+        assertEquals(1, testSubject.getCurrentLineNumber());
     }
 
     static Stream<Arguments> twoLinesTestCases(){

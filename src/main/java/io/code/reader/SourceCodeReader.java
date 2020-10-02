@@ -56,4 +56,12 @@ public interface SourceCodeReader {
      */
     Optional<CodeLine> getCurrentLine();
 
+    /**
+     * Returns the line number of the last character returned by {@link #getNext()}, or line 0 if the either the
+     * file is empty or no character have been requested yet
+     *
+     * @return current line number
+     */
+    int getCurrentLineNumber();
+
 }

@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AcceptorStrategyTest {
@@ -38,27 +37,6 @@ class AcceptorStrategyTest {
         assertEquals(TYPE, returnedToken.get().getType());
         assertEquals(LEXEME, returnedToken.get().getLexeme());
         assertEquals(LINE_NUMBER, returnedToken.get().getLineNumber());
-    }
-
-    @Test
-    void onEndOfFile_nullLexeme_butCodeLine_shouldReturnTokenWithEmptyLexeme() {
-        when(lineMock.getLineNumber()).thenReturn(LINE_NUMBER);
-        Optional<Token> returnedToken = testSubject.onEndOfFile(null, lineMock);
-
-        assertTrue(returnedToken.isPresent());
-        assertEquals(TYPE, returnedToken.get().getType());
-        assertEquals("", returnedToken.get().getLexeme());
-        assertEquals(LINE_NUMBER, returnedToken.get().getLineNumber());
-    }
-
-    @Test
-    void onEndOfFile_nullLexeme_nullCodeLine_shouldReturnTokenWithEmptyLexemeAtLine0() {
-        Optional<Token> returnedToken = testSubject.onEndOfFile(null, null);
-
-        assertTrue(returnedToken.isPresent());
-        assertEquals(TYPE, returnedToken.get().getType());
-        assertEquals("", returnedToken.get().getLexeme());
-        assertEquals(0, returnedToken.get().getLineNumber());
     }
 
     @Test

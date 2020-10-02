@@ -6,6 +6,7 @@ import lexical.Lexeme;
 import lexical.LexicalException;
 import lexical.Token;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -25,11 +26,16 @@ public class NonAcceptorStrategy implements TokenizerNodeStrategy{
 
     @Override
     public Optional<Token> onNoBranchSelected(@NotNull Lexeme lexeme, @NotNull CodeCharacter currentCharacter) throws LexicalException {
-        throw new LexicalException(errorMsg, currentCharacter.getColumnNumber(), currentCharacter.getCodeLine());
+        String finalLexeme = lexeme.getLexeme()+currentCharacter.getValue();
+        throw new LexicalException(errorMsg, finalLexeme, currentCharacter.getCodeLine().toString(), currentCharacter.getLineNumber(), currentCharacter.getColumnNumber());
     }
 
     @Override
-    public Optional<Token> onEndOfFile(Lexeme lexeme, CodeLine currentLine) throws LexicalException {
-        throw new LexicalException(errorMsg, currentLine.getSize(), currentLine);
+    public Optional<Token> onEndOfFile(@NotNull Lexeme lexeme, @Nullable CodeLine currentLine) throws LexicalException {
+        if (currentLine != null){
+            throw new LexicalException(errorMsg, lexeme.getLexeme(), currentLine.toString(), currentLine.getLineNumber(), currentLine.getSize());
+        } else {
+            throw new LexicalException(errorMsg, lexeme.getLexeme(), "", 0, 0);
+        }
     }
 }

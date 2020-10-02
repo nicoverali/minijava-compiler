@@ -13,11 +13,12 @@ import java.util.Optional;
 public class InitialNodeStrategy implements TokenizerNodeStrategy {
     @Override
     public Optional<Token> onNoBranchSelected(@NotNull Lexeme lexeme, @NotNull CodeCharacter currentCharacter) throws LexicalException {
-        throw new LexicalException("Illegal character", currentCharacter.getColumnNumber(), currentCharacter.getCodeLine());
+        String finalLexeme = lexeme.getLexeme()+currentCharacter.getValue();
+        throw new LexicalException("Illegal character", finalLexeme, currentCharacter.getCodeLine().toString(), currentCharacter.getLineNumber(), currentCharacter.getColumnNumber());
     }
 
     @Override
-    public Optional<Token> onEndOfFile(@Nullable Lexeme lexeme, @Nullable CodeLine currentLine) throws LexicalException {
+    public Optional<Token> onEndOfFile(@NotNull Lexeme lexeme, @Nullable CodeLine currentLine) throws LexicalException {
         return Optional.empty();
     }
 }

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class InitialNodeStrategyTest {
 
+    private static final String LINE = "This is a line";
     private static final int LINE_NUMBER = 1;
     private static final int COLUMN_NUMBER = 1;
     private static final String LEXEME = "ThisIsALexeme";
@@ -32,11 +33,12 @@ class InitialNodeStrategyTest {
     void onNoBranchMatch_shouldThrowException() {
         when(charMock.getCodeLine()).thenReturn(lineMock);
         when(charMock.getColumnNumber()).thenReturn(COLUMN_NUMBER);
+        when(lineMock.toString()).thenReturn(LINE);
         LexicalException exception = assertThrows(LexicalException.class,
                                                 () -> testSubject.onNoBranchSelected(TEST_LEXEME, charMock));
 
         assertEquals(COLUMN_NUMBER, exception.getColumnNumber());
-        assertEquals(lineMock, exception.getExceptionLine());
+        assertEquals(LINE, exception.getLine());
     }
 
     @Test
