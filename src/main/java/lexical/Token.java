@@ -2,9 +2,9 @@ package lexical;
 
 public class Token {
 
-    final TokenType type;
-    final String lexeme;
-    final int lineNumber;
+    private TokenType type;
+    private String lexeme;
+    private int lineNumber;
 
     public Token(TokenType type, String lexeme, int lineNumber) {
         this.type = type;
@@ -22,5 +22,17 @@ public class Token {
 
     public int getLineNumber() {
         return lineNumber;
+    }
+
+    public void setType(TokenType type) {
+        this.type = type;
+    }
+
+    public void setLexeme(String lexeme) {
+        this.lexeme = lexeme;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
     }
 }
