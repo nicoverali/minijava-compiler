@@ -23,11 +23,14 @@ public class ListMarkableSequence<T> implements MarkableSequence<T>, AppendableS
     }
 
     public void flushMarkers(){
-        markers.removeIf(marker -> marker.position + marker.readAheadLimit <= cursor);
+        markers.removeIf(marker -> marker.position + marker.readAheadLimit < cursor);
         int flushTo = markers.isEmpty() ? cursor : markers.peek().position;
         for (int i=0; i < flushTo; i++){
             elements.remove();
         }
+        // Update indexes because removing elements alter positions
+        markers.forEach(marker -> marker.position-=flushTo);
+        cursor -= flushTo;
     }
 
     @Override
@@ -78,6 +81,14 @@ public class ListMarkableSequence<T> implements MarkableSequence<T>, AppendableS
         public Marker(int position, int readAheadLimit) {
             this.position = position;
             this.readAheadLimit = readAheadLimit;
+        }
+
+        @Override
+        public String toString() {
+            return "Marker{" +
+                    "position=" + position +
+                    ", readAheadLimit=" + readAheadLimit +
+                    '}';
         }
     }
 }

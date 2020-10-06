@@ -142,6 +142,17 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     }
 
     @Override
+    @Test
+    public void markWithLimitFour_getSixElements_flushMarker_thenShouldGetTheSeventhElement() {
+        IntStream.range(0,10).forEach(v -> testSubject.append(v));
+
+        testSubject.mark(4);
+        IntStream.range(0,7).forEach(v -> testSubject.next());
+        testSubject.flushMarkers();
+        assertEquals(7, testSubject.next().get());
+    }
+
+    @Override
 	@Test
     public void markWithLimitFive_getSixElements_flushMarkers_thenResetShouldThrowException() {
         IntStream.range(0,6).forEach(v -> testSubject.append(v));
@@ -157,13 +168,13 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     public void markWithLimitFive_getTwo_markWithLimitFour_getThree_flushMarkers_shouldResetToSecondMark_thenThrowException() {
         IntStream.range(0,10).forEach(v -> testSubject.append(v));
         testSubject.mark(5);
-        IntStream.range(0,2).forEach(v -> testSubject.next());
-        testSubject.mark(4);
         IntStream.range(0,3).forEach(v -> testSubject.next());
+        testSubject.mark(4);
+        IntStream.range(0,4).forEach(v -> testSubject.next());
 
         testSubject.flushMarkers();
         assertDoesNotThrow(() -> testSubject.reset());
-        assertEquals(4, testSubject.peek().get());
+        assertEquals(3, testSubject.peek().get());
         assertThrows(IllegalStateException.class, () -> testSubject.reset());
 
     }

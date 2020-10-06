@@ -29,6 +29,10 @@ public interface MarkableSequenceTest extends SequenceTest {
     @Test
     void twoElements_interlaceMarkWithGet_shouldResetThreeTimes_thenThrowException();
 
+    @DisplayName("Mark with read ahead limit 4, get 6 elements, flush marker, then should read seventh element")
+    @Test
+    void markWithLimitFour_getSixElements_flushMarker_thenShouldGetTheSeventhElement();
+
     @DisplayName("Mark with read ahead limit 5, get 6 elements, flush markers, then reset should throw exception")
     @Test
     void markWithLimitFive_getSixElements_flushMarkers_thenResetShouldThrowException();
