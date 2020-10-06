@@ -2,8 +2,8 @@ package io.code.reader;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
+import sequence.MarkableSequence;
 
-import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Optional;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
  * <br><br>
  * Since the source code is probably an actual file, this class relies heavily on I/O operations.
  */
-public interface SourceCodeReader {
+public interface SourceCodeReader extends MarkableSequence<CodeCharacter> {
 
     /**
      * Returns the next character in the associated source code. This will also return line separator characters (e.g. '\n').
@@ -25,7 +25,8 @@ public interface SourceCodeReader {
      * @return an {@link Optional} wrapping the next character in the source code
      * @throws UncheckedIOException if an I/O error occur
      */
-    Optional<CodeCharacter> getNext() throws UncheckedIOException;
+    @Override
+    Optional<CodeCharacter> next() throws UncheckedIOException;
 
     /**
      * Checks whether there is at least on unread character in the source code, or it has reached the end of the file
@@ -33,31 +34,33 @@ public interface SourceCodeReader {
      * @return true if there is at least one unread character, false otherwise
      * @throws UncheckedIOException if an I/O error occurs
      */
+    @Override
     boolean hasNext() throws UncheckedIOException;
 
     /**
-     * Returns the next character of the source code, as {@link #getNext()}, but it does not consume
+     * Returns the next character of the source code, as {@link #next()}, but it does not consume
      * the character.
      * <br>
      * Multiple calls in a row will return the same character.
      *
-     * @see #getNext()
+     * @see #next()
      *
      * @return an {@link Optional} wrapping the next character in the source code
      * @throws UncheckedIOException if an I/O error occur
      */
-    Optional<CodeCharacter> peekNext() throws UncheckedIOException;
+    @Override
+    Optional<CodeCharacter> peek() throws UncheckedIOException;
 
     /**
-     * Returns the line of the last character returned by {@link #getNext()}.
-     * If {@link #getNext()} has never been called, then it will return the first line of the source code (if present).
+     * Returns the line of the last character returned by {@link #next()}.
+     * If {@link #next()} has never been called, then it will return the first line of the source code (if present).
      *
      * @return an {@link Optional} wrapping the line of the last character returned by this reader
      */
     Optional<CodeLine> getCurrentLine();
 
     /**
-     * Returns the line number of the last character returned by {@link #getNext()}, or line 0 if the either the
+     * Returns the line number of the last character returned by {@link #next()}, or line 0 if the either the
      * file is empty or no character have been requested yet
      *
      * @return current line number

@@ -21,24 +21,24 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @Test
     default void onEmptyFile_shouldReturnEmptyCharacter()  {
         SourceCodeReader testSubject = createSourceCodeReader();
-        assertFalse(testSubject.getNext().isPresent());
+        assertFalse(testSubject.next().isPresent());
     }
 
     @DisplayName("With empty file, repeat request, should always return empty optional.")
     @Test
     default void onEmptyFile_repeatRequest_shouldReturnEmptyCharacter()  {
         SourceCodeReader testSubject = createSourceCodeReader();
-        assertFalse(testSubject.getNext().isPresent());
-        assertFalse(testSubject.getNext().isPresent());
-        assertFalse(testSubject.getNext().isPresent());
-        assertFalse(testSubject.getNext().isPresent());
+        assertFalse(testSubject.next().isPresent());
+        assertFalse(testSubject.next().isPresent());
+        assertFalse(testSubject.next().isPresent());
+        assertFalse(testSubject.next().isPresent());
     }
 
     @DisplayName("With empty file, peeking should return empty optional.")
     @Test
     default void onEmptyFile_peekShouldReturnEmptyCharacter()  {
         SourceCodeReader testSubject = createSourceCodeReader();
-        assertFalse(testSubject.peekNext().isPresent());
+        assertFalse(testSubject.peek().isPresent());
     }
 
     @DisplayName("With empty file, should not have current line.")
@@ -69,12 +69,12 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
         // Verify first character
-        Optional<CodeCharacter> character = testSubject.getNext();
+        Optional<CodeCharacter> character = testSubject.next();
         assertTrue(character.isPresent());
         assertEquals(testCharacter, character.get().getValue());
 
         // Verify end of file
-        assertFalse(testSubject.getNext().isPresent());
+        assertFalse(testSubject.next().isPresent());
 
     }
 
@@ -84,7 +84,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     default void singleCharacter_shouldPeekFirstCharacter(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
-        Optional<CodeCharacter> character = testSubject.peekNext();
+        Optional<CodeCharacter> character = testSubject.peek();
         assertTrue(character.isPresent());
         assertEquals(testCharacter, character.get().getValue());
 
@@ -96,9 +96,9 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     default void singleCharacter_peekShouldNotAffectGet(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
-        testSubject.peekNext();
-        testSubject.peekNext();
-        Optional<CodeCharacter> character = testSubject.getNext();
+        testSubject.peek();
+        testSubject.peek();
+        Optional<CodeCharacter> character = testSubject.next();
         assertTrue(character.isPresent());
         assertEquals(testCharacter, character.get().getValue());
     }
@@ -109,12 +109,12 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     default void singleCharacter_peekShouldBeIdempotent(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
-        assertTrue(testSubject.peekNext().isPresent());
-        assertEquals(testCharacter, testSubject.peekNext().get().getValue());
-        assertEquals(testCharacter, testSubject.peekNext().get().getValue());
-        assertEquals(testCharacter, testSubject.peekNext().get().getValue());
-        assertEquals(testCharacter, testSubject.peekNext().get().getValue());
-        assertEquals(testCharacter, testSubject.peekNext().get().getValue());
+        assertTrue(testSubject.peek().isPresent());
+        assertEquals(testCharacter, testSubject.peek().get().getValue());
+        assertEquals(testCharacter, testSubject.peek().get().getValue());
+        assertEquals(testCharacter, testSubject.peek().get().getValue());
+        assertEquals(testCharacter, testSubject.peek().get().getValue());
+        assertEquals(testCharacter, testSubject.peek().get().getValue());
     }
 
     @DisplayName("With single character, after reaching EOF, current line should be first line.")
@@ -123,8 +123,8 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     default void singleCharacter_currentLineShouldBeFirstLineAfterEOF(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
-        assertEquals(testCharacter, testSubject.getNext().get().getValue());
-        assertFalse(testSubject.getNext().isPresent());
+        assertEquals(testCharacter, testSubject.next().get().getValue());
+        assertFalse(testSubject.next().isPresent());
 
         assertEquals(0, testSubject.getCurrentLine().get().getLineNumber());
         assertEquals(1, testSubject.getCurrentLine().get().getSize());
@@ -137,8 +137,8 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     default void singleCharacter_shouldPeekEmptyAfterGetting(char testCharacter)  {
         SourceCodeReader testSubject = createSourceCodeReader(String.valueOf(testCharacter));
 
-        assertEquals(testCharacter, testSubject.getNext().get().getValue());
-        assertFalse(testSubject.peekNext().isPresent());
+        assertEquals(testCharacter, testSubject.next().get().getValue());
+        assertFalse(testSubject.peek().isPresent());
     }
 
     @DisplayName("With single character, line number should be 0.")
@@ -155,9 +155,9 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     default void twoCharacters_shouldPeekEmptyAfterGetting(String testString)  {
         SourceCodeReader testSubject = createSourceCodeReader(testString);
 
-        assertEquals(testString.charAt(0), testSubject.getNext().get().getValue());
-        assertEquals(testString.charAt(1), testSubject.getNext().get().getValue());
-        assertFalse(testSubject.getNext().isPresent());
+        assertEquals(testString.charAt(0), testSubject.next().get().getValue());
+        assertEquals(testString.charAt(1), testSubject.next().get().getValue());
+        assertFalse(testSubject.next().isPresent());
     }
 
     @DisplayName("With two characters, peeking characters before consuming should not be a problem.")
@@ -166,12 +166,12 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     default void twoCharacters_peekingBeforeGetting(String testString)  {
         SourceCodeReader testSubject = createSourceCodeReader(testString);
 
-        assertEquals(testString.charAt(0), testSubject.peekNext().get().getValue());
-        assertEquals(testString.charAt(0), testSubject.getNext().get().getValue());
-        assertEquals(testString.charAt(1), testSubject.peekNext().get().getValue());
-        assertEquals(testString.charAt(1), testSubject.getNext().get().getValue());
-        assertFalse(testSubject.peekNext().isPresent());
-        assertFalse(testSubject.getNext().isPresent());
+        assertEquals(testString.charAt(0), testSubject.peek().get().getValue());
+        assertEquals(testString.charAt(0), testSubject.next().get().getValue());
+        assertEquals(testString.charAt(1), testSubject.peek().get().getValue());
+        assertEquals(testString.charAt(1), testSubject.next().get().getValue());
+        assertFalse(testSubject.peek().isPresent());
+        assertFalse(testSubject.next().isPresent());
     }
 
     @DisplayName("With two lines, should return '\\n' at the end of first one.")
@@ -181,10 +181,10 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
         // Read new line
-        assertEquals('\n', testSubject.getNext().get().getValue());
+        assertEquals('\n', testSubject.next().get().getValue());
     }
 
     @DisplayName("With two lines, peeking '\\n' should not affect consuming '\\n'.")
@@ -194,11 +194,11 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
 
-        assertEquals('\n', testSubject.peekNext().get().getValue());
-        assertEquals('\n', testSubject.getNext().get().getValue());
+        assertEquals('\n', testSubject.peek().get().getValue());
+        assertEquals('\n', testSubject.next().get().getValue());
     }
 
     @DisplayName("With two lines, after consuming new line, should peek first of second line.")
@@ -208,11 +208,11 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
-        assertEquals('\n', testSubject.getNext().get().getValue());
+        assertEquals('\n', testSubject.next().get().getValue());
 
-        assertEquals(secondLine.charAt(0), testSubject.peekNext().get().getValue());
+        assertEquals(secondLine.charAt(0), testSubject.peek().get().getValue());
     }
 
     @DisplayName("With two lines, after consuming new line, peeking should not affect consuming first character of second line.")
@@ -222,12 +222,12 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
-        assertEquals('\n', testSubject.getNext().get().getValue());
+        assertEquals('\n', testSubject.next().get().getValue());
 
-        assertEquals(secondLine.charAt(0), testSubject.peekNext().get().getValue()); // Here we peek first from second line
-        assertEquals(secondLine.charAt(0), testSubject.getNext().get().getValue());
+        assertEquals(secondLine.charAt(0), testSubject.peek().get().getValue()); // Here we peek first from second line
+        assertEquals(secondLine.charAt(0), testSubject.next().get().getValue());
     }
 
     @DisplayName("With two lines, after consuming new line and peeking, current line should still be first.")
@@ -237,10 +237,10 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
-        assertEquals('\n', testSubject.getNext().get().getValue());
-        assertEquals(secondLine.charAt(0), testSubject.peekNext().get().getValue()); // Here we peek first from second line
+        assertEquals('\n', testSubject.next().get().getValue());
+        assertEquals(secondLine.charAt(0), testSubject.peek().get().getValue()); // Here we peek first from second line
 
         assertEquals(firstLine+'\n', testSubject.getCurrentLine().get().toString());
     }
@@ -252,9 +252,9 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
-        assertEquals('\n', testSubject.getNext().get().getValue());
+        assertEquals('\n', testSubject.next().get().getValue());
 
         assertTrue(testSubject.hasNext());
     }
@@ -266,10 +266,10 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
-        assertEquals('\n', testSubject.getNext().get().getValue());
-        assertEquals(secondLine.charAt(0), testSubject.getNext().get().getValue());
+        assertEquals('\n', testSubject.next().get().getValue());
+        assertEquals(secondLine.charAt(0), testSubject.next().get().getValue());
 
         assertEquals(secondLine, testSubject.getCurrentLine().get().toString());
     }
@@ -289,12 +289,116 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         SourceCodeReader testSubject = createSourceCodeReader(firstLine, secondLine);
         // Read only characters
         for (char ch : firstLine.toCharArray()){
-            assertEquals(ch, testSubject.getNext().get().getValue());
+            assertEquals(ch, testSubject.next().get().getValue());
         }
-        assertEquals('\n', testSubject.getNext().get().getValue());
-        assertEquals(secondLine.charAt(0), testSubject.getNext().get().getValue());
+        assertEquals('\n', testSubject.next().get().getValue());
+        assertEquals(secondLine.charAt(0), testSubject.next().get().getValue());
 
         assertEquals(1, testSubject.getCurrentLineNumber());
+    }
+
+
+    @DisplayName("With three lines, second line is blank, get next at the end of first should return new line of second line.")
+    @Test
+    default void threeLines_secondIsBlank_getNextAtEndOfFirst_shouldReturnNewLineOfSecond()  {
+        SourceCodeReader testSubject = createSourceCodeReader("First", "", "Third");
+        // Read only characters
+        for (char ch : "First".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        assertEquals('\n', testSubject.next().get().getValue());
+
+        assertEquals('\n', testSubject.next().get().getValue());
+    }
+
+    @DisplayName("With three lines, second line is blank, peek next at the end of first should return new line of second line.")
+    @Test
+    default void threeLines_secondIsBlank_peekNextAtEndOfFirst_shouldReturnNewLineOfSecond()  {
+        SourceCodeReader testSubject = createSourceCodeReader("First", "", "Third");
+        // Read only characters
+        for (char ch : "First".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        assertEquals('\n', testSubject.next().get().getValue());
+
+        assertEquals('\n', testSubject.peek().get().getValue());
+    }
+
+    @DisplayName("With three lines, mark at the beginning, get all characters, reset, should get all twice.")
+    @Test
+    default void threeLines_markAtBeginning_resetAtEnd_shouldReadTwice()  {
+        SourceCodeReader testSubject = createSourceCodeReader("First", "", "Third");
+        testSubject.mark(100);
+
+        for (char ch : "First\n\nThird".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        assertDoesNotThrow(testSubject::reset);
+        for (char ch : "First\n\nThird".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+    }
+
+    @DisplayName("With three lines, first two blanks, mark at the beginning, reset, should get all again.")
+    @Test
+    default void threeLines_firstTwoBlank_markAtTheBeginning_reset_shouldGetAllAgain()  {
+        SourceCodeReader testSubject = createSourceCodeReader("", "", "T");
+
+        testSubject.mark(10);
+        assertEquals('\n', testSubject.next().get().getValue());
+        testSubject.mark(10);
+        assertEquals('\n', testSubject.next().get().getValue());
+        testSubject.mark(10);
+        assertEquals('T', testSubject.next().get().getValue());
+
+        testSubject.reset();
+        assertEquals('T', testSubject.next().get().getValue());
+        testSubject.reset();
+        assertEquals('\n', testSubject.next().get().getValue());
+        testSubject.reset();
+        assertEquals('\n', testSubject.next().get().getValue());
+
+    }
+
+    @DisplayName("With three lines, mark middle every line, reset and test for every mark")
+    @Test
+    default void threeLines_markMiddleOfEveryLine_resetAndTestEveryLine()  {
+        SourceCodeReader testSubject = createSourceCodeReader("First", "Second", "Third");
+        testSubject.mark(100);
+
+        for (char ch : "Fir".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        testSubject.mark(50);
+        for (char ch: "st\n".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        for (char ch : "Sec".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        testSubject.mark(50);
+        for (char ch: "ond\n".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        for (char ch : "Thi".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        testSubject.mark(50);
+        for (char ch: "rd".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        assertDoesNotThrow(testSubject::reset);
+        for (char ch : "rd".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        assertDoesNotThrow(testSubject::reset);
+        for (char ch : "ond\nThird".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
+        assertDoesNotThrow(testSubject::reset);
+        for (char ch : "st\nSecond\nThird".toCharArray()){
+            assertEquals(ch, testSubject.next().get().getValue());
+        }
     }
 
     static Stream<Arguments> twoLinesTestCases(){
