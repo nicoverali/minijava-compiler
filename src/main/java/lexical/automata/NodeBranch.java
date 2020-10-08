@@ -1,8 +1,9 @@
 package lexical.automata;
 
 import lexical.automata.filter.LexicalFilter;
+import org.jetbrains.annotations.NotNull;
 
-public interface NodeBranch<T extends LexicalNode<?>> {
+public interface NodeBranch<T extends LexicalNode<?,?>> {
 
     /**
      * Returns the {@link LexicalFilter} of this branch. A branch should be selected only if its associated filter
@@ -10,13 +11,7 @@ public interface NodeBranch<T extends LexicalNode<?>> {
      *
      * @return the {@link LexicalFilter} associated with this branch
      */
+    @NotNull
     LexicalFilter getFilter();
-
-    /**
-     * A branch at its end has another {@link LexicalNode} to which work should be delegated if the branch is selected.
-     *
-     * @return the {@link LexicalNode} at the end of this branch
-     */
-    T getNextNode();
 
 }

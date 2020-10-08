@@ -1,9 +1,12 @@
 package lexical.automata.omitter;
 
-import lexical.automata.NodeBranch;
+import io.code.reader.SourceCodeReader;
+import lexical.LexicalException;
+import lexical.automata.DelegateNodeBranch;
 import lexical.automata.filter.LexicalFilter;
+import org.jetbrains.annotations.NotNull;
 
-public class OmitterBranch implements NodeBranch<OmitterNode> {
+public class OmitterBranch implements DelegateNodeBranch<OmitterNode, Void> {
 
     private final LexicalFilter filter;
     private final OmitterNode nextNode;
@@ -14,12 +17,18 @@ public class OmitterBranch implements NodeBranch<OmitterNode> {
     }
 
     @Override
-    public LexicalFilter getFilter() {
+    public @NotNull LexicalFilter getFilter() {
         return filter;
     }
 
-    @Override
-    public OmitterNode getNextNode() {
+    public @NotNull OmitterNode getNextNode() {
         return nextNode;
+    }
+
+    @Override
+    public @NotNull Void delegate(SourceCodeReader reader) throws LexicalException {
+        reader.next(); // Consume character
+        nextNode.omit(reader);
+        return null;
     }
 }

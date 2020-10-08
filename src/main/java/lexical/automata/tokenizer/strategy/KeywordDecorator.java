@@ -2,7 +2,6 @@ package lexical.automata.tokenizer.strategy;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
-import lexical.Lexeme;
 import lexical.LexicalException;
 import lexical.Token;
 import lexical.TokenType;
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static lexical.TokenType.*;
 
@@ -41,29 +39,33 @@ public class KeywordDecorator implements TokenizerNodeStrategy{
         keywordMap.put("false", K_FALSE);
     }
 
-    private TokenizerNodeStrategy source;
+    private final TokenizerNodeStrategy source;
 
     public KeywordDecorator(TokenizerNodeStrategy source){
         this.source = source;
     }
 
-    @Override
-    public Optional<Token> onNoBranchSelected(@NotNull Lexeme lexeme, @NotNull CodeCharacter currentCharacter) throws LexicalException {
-        return source.onNoBranchSelected(lexeme, currentCharacter)
-                .map(this::applyMap);
-    }
 
-    @Override
-    public Optional<Token> onEndOfFile(@NotNull Lexeme lexeme, @Nullable CodeLine currentLine) throws LexicalException {
-        return source.onEndOfFile(lexeme, currentLine)
-                .map(this::applyMap);
-    }
 
-    private Token applyMap(Token sourceToken){
-        TokenType keywordType = keywordMap.get(sourceToken.getLexeme());
-        if (keywordType != null){
-            sourceToken.setType(keywordType);
+    private Token applyMap(@Nullable Token sourceToken){
+        if (sourceToken != null){
+            TokenType keywordType = keywordMap.get(sourceToken.getLexeme().toString());
+            if (keywordType != null){
+                sourceToken.setType(keywordType);
+            }
         }
         return sourceToken;
+    }
+
+    @Override
+    public @NotNull Token onNoBranchSelected(@NotNull CodeCharacter currentCharacter) throws LexicalException {
+        Token sourceToken = source.onNoBranchSelected(currentCharacter);
+        return applyMap(sourceToken);
+    }
+
+    @Override
+    public @NotNull Token onEndOfFile(@Nullable CodeLine currentLine) throws LexicalException {
+        Token sourceToken = source.onEndOfFile(currentLine);
+        return applyMap(sourceToken);
     }
 }

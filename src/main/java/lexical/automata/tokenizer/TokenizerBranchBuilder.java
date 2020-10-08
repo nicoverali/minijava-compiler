@@ -2,13 +2,11 @@ package lexical.automata.tokenizer;
 
 import lexical.automata.NodeBranchBuilder;
 import lexical.automata.filter.LexicalFilter;
-import lexical.automata.omitter.OmitterBranch;
-import lexical.automata.omitter.OmitterNode;
 
 public class TokenizerBranchBuilder implements NodeBranchBuilder<TokenizerNode, TokenizerNodeBuilder> {
 
-    private TokenizerNodeBuilder builder;
-    private LexicalFilter filter;
+    private final TokenizerNodeBuilder builder;
+    private final LexicalFilter filter;
 
     private boolean shouldStoreCharacter;
 
@@ -29,15 +27,9 @@ public class TokenizerBranchBuilder implements NodeBranchBuilder<TokenizerNode, 
         return builder;
     }
 
-    /**
-     * Adds an {@link OmitterBranch} to the {@link TokenizerNode}. If this branch is selected, then the node
-     * will delegate the next characters to it, and then will try to generate a {@link lexical.Token}.
-     *
-     * @param nextNode next {@link OmitterNode} of the branch
-     * @return this {@link TokenizerBranchBuilder} to keep building the branch
-     */
-    public TokenizerNodeBuilder thenMoveTo(OmitterNode nextNode){
-        builder.buildingNode.addBranch(new OmitterBranch(filter, nextNode));
+    @Override
+    public TokenizerNodeBuilder thenTry(TokenizerNode nextNode) {
+        builder.buildingNode.addTryBranch(new TryTokenizerBranch(filter, nextNode, shouldStoreCharacter));
         return builder;
     }
 

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class NodeBranchContainerTest {
 
-    private NodeBranchContainer<NodeBranch<?>> testSubject = new NodeBranchContainer<>();
+    private final NodeBranchContainer<NodeBranch<?>> testSubject = new NodeBranchContainer<>();
 
     @Mock CodeCharacter charMock;
     @Mock NodeBranch<?> firstBranchMock;
@@ -31,7 +31,7 @@ class NodeBranchContainerTest {
     @DisplayName("If container is empty, should return an empty optional")
     @Test
     void containerEmpty_shouldReturnEmptyOptional() {
-        assertFalse(testSubject.selectBranch(charMock).isPresent());
+        assertFalse(testSubject.getMatchingBranch(charMock).isPresent());
     }
 
     @DisplayName("With a single branch and matching character, should return the branch")
@@ -43,8 +43,8 @@ class NodeBranchContainerTest {
         when(firstFilterMock.test(testCharacter)).thenReturn(true);
         testSubject.addBranch(firstBranchMock);
 
-        assertTrue(testSubject.selectBranch(charMock).isPresent());
-        assertEquals(firstBranchMock, testSubject.selectBranch(charMock).get());
+        assertTrue(testSubject.getMatchingBranch(charMock).isPresent());
+        assertEquals(firstBranchMock, testSubject.getMatchingBranch(charMock).get());
         verify(firstFilterMock, atLeastOnce()).test(testCharacter);
     }
 
@@ -57,7 +57,7 @@ class NodeBranchContainerTest {
         when(firstFilterMock.test(testCharacter)).thenReturn(false);
         testSubject.addBranch(firstBranchMock);
 
-        assertFalse(testSubject.selectBranch(charMock).isPresent());
+        assertFalse(testSubject.getMatchingBranch(charMock).isPresent());
         verify(firstFilterMock, atLeastOnce()).test(testCharacter);
     }
 
@@ -73,7 +73,7 @@ class NodeBranchContainerTest {
         testSubject.addBranch(firstBranchMock);
         testSubject.addBranch(secondBranchMock);
 
-        Optional<NodeBranch<?>> selectedBranch = testSubject.selectBranch(charMock);
+        Optional<NodeBranch<?>> selectedBranch = testSubject.getMatchingBranch(charMock);
         assertTrue(selectedBranch.isPresent());
         assertTrue(selectedBranch.get() == firstBranchMock || selectedBranch.get() == secondBranchMock);
     }
@@ -90,7 +90,7 @@ class NodeBranchContainerTest {
         testSubject.addBranch(firstBranchMock);
         testSubject.addBranch(secondBranchMock);
 
-        Optional<NodeBranch<?>> selectedBranch = testSubject.selectBranch(charMock);
+        Optional<NodeBranch<?>> selectedBranch = testSubject.getMatchingBranch(charMock);
         assertFalse(selectedBranch.isPresent());
     }
 
@@ -106,7 +106,7 @@ class NodeBranchContainerTest {
         testSubject.addBranch(firstBranchMock);
         testSubject.addBranch(secondBranchMock);
 
-        Optional<NodeBranch<?>> selectedBranch = testSubject.selectBranch(charMock);
+        Optional<NodeBranch<?>> selectedBranch = testSubject.getMatchingBranch(charMock);
         assertTrue(selectedBranch.isPresent());
         assertEquals(secondBranchMock, selectedBranch.get());
 

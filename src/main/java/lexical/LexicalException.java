@@ -2,12 +2,12 @@ package lexical;
 
 public class LexicalException extends RuntimeException{
 
-    String lexeme;
-    String line;
-    int lineNumber;
-    int columnNumber;
+    private final Lexeme lexeme;
+    private final String line;
+    private final int lineNumber;
+    private final int columnNumber;
 
-    public LexicalException(String message, String lexeme, String line, int lineNumber, int columnNumber) {
+    public LexicalException(String message, Lexeme lexeme, String line, int lineNumber, int columnNumber) {
         super(message);
         this.lexeme = lexeme;
         this.line = line;
@@ -18,7 +18,7 @@ public class LexicalException extends RuntimeException{
     /**
      * @return the current Lexeme at the moment this {@link LexicalException} occur
      */
-    public String getLexeme(){
+    public Lexeme getLexeme(){
         return lexeme;
     }
 

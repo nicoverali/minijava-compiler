@@ -1,9 +1,16 @@
 package lexical.automata.tokenizer;
 
-import lexical.automata.NodeBranch;
+import io.code.CodeCharacter;
+import io.code.reader.SourceCodeReader;
+import lexical.LexicalException;
+import lexical.Token;
+import lexical.automata.DelegateNodeBranch;
 import lexical.automata.filter.LexicalFilter;
+import org.jetbrains.annotations.NotNull;
 
-public class TokenizerBranch implements NodeBranch<TokenizerNode> {
+import java.util.Optional;
+
+public class TokenizerBranch implements DelegateNodeBranch<TokenizerNode, Token> {
 
     private final LexicalFilter filter;
     private final TokenizerNode nextNode;
@@ -16,16 +23,24 @@ public class TokenizerBranch implements NodeBranch<TokenizerNode> {
     }
 
     @Override
-    public LexicalFilter getFilter() {
-        return filter;
+    public @NotNull Token delegate(SourceCodeReader reader) throws LexicalException {
+        Optional<CodeCharacter> nextChar = reader.next(); // Consume character
+        if (!shouldStoreCharacter) {
+            return nextNode.tokenize(reader);
+        }
+        try{
+            Token token = nextNode.tokenize(reader);
+            nextChar.ifPresent(character -> token.getLexeme().prepend(character.getValue()));
+            return token;
+        } catch (LexicalException e){
+            nextChar.ifPresent(character -> e.getLexeme().prepend(character.getValue()));
+            throw e;
+        }
     }
 
     @Override
-    public TokenizerNode getNextNode() {
-        return nextNode;
+    public @NotNull LexicalFilter getFilter() {
+        return filter;
     }
 
-    public boolean shouldStoreCharacter() {
-        return shouldStoreCharacter;
-    }
 }

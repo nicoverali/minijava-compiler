@@ -2,13 +2,14 @@ package lexical.automata.omitter.strategy;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
+import lexical.Lexeme;
 import lexical.LexicalException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class OmitterMiddleStrategy implements OmitterNodeStrategy {
 
-    private String errorMsg;
+    private final String errorMsg;
 
     /**
      * Creates a new {@link OmitterMiddleStrategy} that generates {@link LexicalException} with the <code>errorMsg</code>
@@ -22,14 +23,17 @@ public class OmitterMiddleStrategy implements OmitterNodeStrategy {
 
     @Override
     public void onNoBranchSelected(@NotNull CodeCharacter currentCharacter) throws LexicalException {
-        throw new LexicalException(errorMsg, "", currentCharacter.getCodeLine().toString(), currentCharacter.getLineNumber(), currentCharacter.getColumnNumber());
+        CodeLine line = currentCharacter.getCodeLine();
+        Lexeme lexeme = Lexeme.empty(line.getLineNumber());
+        throw new LexicalException(errorMsg, lexeme, line.toString(), line.getLineNumber(), currentCharacter.getColumnNumber());
     }
 
     @Override
     public void onEndOfFile(@Nullable CodeLine currentLine) throws LexicalException {
         // Only if file is not empty we detect a lexical error
         if (currentLine != null){
-            throw new LexicalException(errorMsg, "", currentLine.toString(), currentLine.getLineNumber(), currentLine.getSize());
+            int lineNumber = currentLine.getLineNumber();
+            throw new LexicalException(errorMsg, Lexeme.empty(lineNumber), currentLine.toString(), lineNumber, currentLine.getSize());
         }
     }
 

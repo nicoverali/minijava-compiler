@@ -9,11 +9,9 @@ import lexical.TokenType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public class AcceptorStrategy implements TokenizerNodeStrategy{
 
-    private TokenType type;
+    private final TokenType type;
 
     /**
      * Creates a new acceptor strategy that will generate tokens with the given {@link TokenType}
@@ -25,13 +23,15 @@ public class AcceptorStrategy implements TokenizerNodeStrategy{
     }
 
     @Override
-    public Optional<Token> onNoBranchSelected(@NotNull Lexeme lexeme, @NotNull CodeCharacter currentCharacter) throws LexicalException {
-        return Optional.of(new Token(type, lexeme.getLexeme(), lexeme.getLineNumber()));
+    public @NotNull Token onNoBranchSelected(@NotNull CodeCharacter currentCharacter) throws LexicalException {
+        return new Token(type, Lexeme.empty(currentCharacter.getLineNumber()));
     }
 
     @Override
-    public Optional<Token> onEndOfFile(@NotNull Lexeme lexeme, @Nullable CodeLine currentLine) throws LexicalException {
-        return Optional.of(new Token(type, lexeme.getLexeme(), lexeme.getLineNumber()));
+    public @NotNull Token onEndOfFile(@Nullable CodeLine currentLine) throws LexicalException {
+        if (currentLine != null){
+            return new Token(type, Lexeme.empty(currentLine.getLineNumber()));
+        }
+        return new Token(type, Lexeme.empty(0));
     }
-
 }

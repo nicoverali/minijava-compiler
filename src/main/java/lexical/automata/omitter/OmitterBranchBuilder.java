@@ -6,7 +6,7 @@ import lexical.automata.filter.LexicalFilter;
 public class OmitterBranchBuilder implements NodeBranchBuilder<OmitterNode, OmitterNodeBuilder> {
 
     private final OmitterNodeBuilder omitterNodeBuilder;
-    private LexicalFilter filter;
+    private final LexicalFilter filter;
 
 
     OmitterBranchBuilder(OmitterNodeBuilder omitterNodeBuilder, LexicalFilter filter) {
@@ -23,6 +23,12 @@ public class OmitterBranchBuilder implements NodeBranchBuilder<OmitterNode, Omit
     @Override
     public OmitterNodeBuilder thenMoveTo(OmitterNode nextNode) {
         omitterNodeBuilder.buildingNode.addBranch(new OmitterBranch(filter, nextNode));
+        return omitterNodeBuilder;
+    }
+
+    @Override
+    public OmitterNodeBuilder thenTry(OmitterNode nextNode) {
+        omitterNodeBuilder.buildingNode.addTryBranch(new TryOmitterBranch(filter, nextNode));
         return omitterNodeBuilder;
     }
 }
