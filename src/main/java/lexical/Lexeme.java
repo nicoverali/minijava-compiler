@@ -1,80 +1,56 @@
 package lexical;
 
-public class Lexeme {
+import io.code.CodeCharacter;
+import io.code.CodeLine;
 
-    private final StringBuilder lexemeBuilder;
-    private final int lineNumber;
+import java.util.Optional;
 
-    /**
-     * Creates a new empty lexeme that starts at the given line number.
-     *
-     * @param lineNumber line number at which the new lexeme starts
-     * @return new empty lexeme
-     */
-    public static Lexeme empty(int lineNumber){
-        return new Lexeme(lineNumber);
-    }
+public interface Lexeme {
 
-    /**
-     * @param lexeme a {@link Lexeme} which state will be copied
-     * @return a new lexeme with the same state as the one given
-     */
-    public static Lexeme from(Lexeme lexeme){
-        return new Lexeme(lexeme.toString(), lexeme.getLineNumber());
-    }
-
-    /**
-     * Creates a new lexeme that starts at the given line number.
-     *
-     * @param lexeme the new lexeme as a String
-     * @param lineNumber line number at which the new lexeme starts
-     */
-    public static Lexeme create(String lexeme, int lineNumber){
-        return new Lexeme(lexeme, lineNumber);
-    }
-
-
-    private Lexeme(int lineNumber) {
-        this.lineNumber = lineNumber;
-        lexemeBuilder = new StringBuilder();
-    }
-
-
-    private Lexeme(String startingLexeme, int lineNumber){
-        this.lineNumber = lineNumber;
-        lexemeBuilder = new StringBuilder(startingLexeme);
-    }
-
-    /**
-     * Appends a new character to the current lexeme
-     * @param character character to append
-     */
-    public void append(char character){
-        lexemeBuilder.append(character);
-    }
-
-    /**
-     * Prepends a new character to the current lexeme
-     *
-     * @param character character to prepend
-     */
-    public void prepend(char character) {
-        lexemeBuilder.insert(0, character);
-    }
-
-
-    /**
-     * @return the line number where this lexeme starts
-     */
-    public int getLineNumber(){
-        return lineNumber;
-    }
 
     /**
      * @return this lexeme as a String
      */
     @Override
-    public String toString(){
-        return lexemeBuilder.toString();
-    }
+    String toString();
+
+    /**
+     * @return true if this Lexeme has not characters, false otherwise
+     */
+    boolean isEmpty();
+
+    /**
+     * Returns the {@link CodeLine} where this Lexeme begins, or an empty {@link Optional} if the Lexeme is empty
+     *
+     * @return an {@link Optional} wrapping the {@link CodeLine} where this Lexeme begins
+     */
+    Optional<CodeLine> getFirstLine();
+
+    /**
+     * Returns the first {@link CodeCharacter} of this Lexeme, or an empty {@link Optional} if the Lexeme is empty
+     *
+     * @return an {@link Optional} wrapping the first {@link CodeCharacter} of this Lexeme
+     */
+    Optional<CodeCharacter> getFirstCharacter();
+
+    /**
+     * Returns the source code line number where this Lexeme begins. If the source code is empty, then this
+     * method will return 0.
+     *
+     * @return the source code line number where this Lexeme begins,  or 0 if the source code is empty
+     */
+    int getLineNumber();
+
+    /**
+     * Returns the column number of the {@link #getFirstCharacter()} of this Lexeme.
+     * <br>
+     * If the Lexeme does not have a first character because {@link #isEmpty()}, then this method
+     * will return as column number the size of the first line, that is, the first position outside the line end bound.
+     * This implies that if the source code is empty, then the method returns 0.
+     *
+     * @see #getFirstLine()
+     * @return the column number where this Lexeme begins at its starting line
+     */
+    int getColumnNumber();
+
 }

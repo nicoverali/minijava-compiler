@@ -1,18 +1,21 @@
 package lexical;
 
-public class LexicalException extends RuntimeException{
+import io.code.CodeCharacter;
+import io.code.CodeLine;
 
-    private final Lexeme lexeme;
+public class LexicalException extends RuntimeException {
+
+    private final PrependableLexeme lexeme;
     private final String line;
     private final int lineNumber;
     private final int columnNumber;
 
-    public LexicalException(String message, Lexeme lexeme, String line, int lineNumber, int columnNumber) {
+    public LexicalException(String message, PrependableLexeme lexeme) {
         super(message);
         this.lexeme = lexeme;
-        this.line = line;
-        this.lineNumber = lineNumber;
-        this.columnNumber = columnNumber;
+        this.line = lexeme.getFirstLine().map(CodeLine::toString).orElse("");
+        this.lineNumber = lexeme.getLineNumber();
+        this.columnNumber = lexeme.getColumnNumber();
     }
 
     /**
@@ -20,6 +23,16 @@ public class LexicalException extends RuntimeException{
      */
     public Lexeme getLexeme(){
         return lexeme;
+    }
+
+    /**
+     * Prepends the Lexeme of this exception with the given {@link CodeCharacter}.
+     *
+     * @see PrependableLexeme#prepend(CodeCharacter)
+     * @param character a {@link CodeCharacter} which will be prepend to this exception lexeme
+     */
+    public void prependLexeme(CodeCharacter character){
+        lexeme.prepend(character);
     }
 
     /**
