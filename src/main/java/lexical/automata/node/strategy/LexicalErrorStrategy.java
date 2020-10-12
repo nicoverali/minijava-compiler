@@ -1,0 +1,34 @@
+package lexical.automata.node.strategy;
+
+import io.code.CodeCharacter;
+import io.code.CodeLine;
+import lexical.LexicalException;
+import lexical.automata.AutomataLexeme;
+import lexical.automata.node.LexicalNodeStrategy;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * With this {@link LexicalNodeStrategy}, if the node cannot delegate processing of characters, it detects
+ * a lexical error and throws a {@link LexicalException}
+ *
+ * @param <T> type of element returned by the {@link lexical.automata.LexicalNode}
+ */
+public class LexicalErrorStrategy<T> implements LexicalNodeStrategy<T> {
+
+    private final String errorMsg;
+
+    public LexicalErrorStrategy(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    @Override
+    public T onNoBranchSelected(@NotNull CodeCharacter currentCharacter) throws LexicalException {
+        throw new LexicalException(errorMsg, AutomataLexeme.create(currentCharacter));
+    }
+
+    @Override
+    public T onEndOfFile(@Nullable CodeLine currentLine) throws LexicalException {
+        throw new LexicalException(errorMsg, AutomataLexeme.empty(currentLine));
+    }
+}
