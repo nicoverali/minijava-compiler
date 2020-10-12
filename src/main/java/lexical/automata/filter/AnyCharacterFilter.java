@@ -5,4 +5,9 @@ public class AnyCharacterFilter implements LexicalFilter{
     public boolean test(char value) {
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "true";
+    }
 }

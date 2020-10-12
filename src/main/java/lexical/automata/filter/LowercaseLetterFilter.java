@@ -5,4 +5,9 @@ public class LowercaseLetterFilter implements LexicalFilter{
     public boolean test(char value) {
         return Character.isLowerCase(value);
     }
+
+    @Override
+    public String toString() {
+        return "is a lowercase letter";
+    }
 }

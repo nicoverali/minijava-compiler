@@ -80,4 +80,9 @@ public class KeywordLexicalNode implements LexicalNode<AutomataToken> {
     public String getName() {
         return decorated.getName();
     }
+
+    public String toString(){
+        return decorated.getName() + " (Keyword)";
+    }
+
 }

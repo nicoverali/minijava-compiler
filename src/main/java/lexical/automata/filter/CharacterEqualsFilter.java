@@ -1,5 +1,7 @@
 package lexical.automata.filter;
 
+import util.Characters;
+
 public class CharacterEqualsFilter implements LexicalFilter{
 
     private final char testCharacter;
@@ -13,4 +15,8 @@ public class CharacterEqualsFilter implements LexicalFilter{
         return testCharacter == value;
     }
 
+    @Override
+    public String toString() {
+        return "equals " + Characters.formatSpecialCharacters(testCharacter);
+    }
 }

@@ -98,4 +98,9 @@ public class AutomataLexeme implements PrependableLexeme {
             return 0;
         }
     }
+
+    @Override
+    public String toString() {
+        return lexemeBuilder.toString();
+    }
 }

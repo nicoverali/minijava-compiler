@@ -44,4 +44,9 @@ public class CharacterTokenPrependBranch implements NodeBranch<AutomataToken> {
         if (token != null) token.prepend(character);
         return token;
     }
+
+    @Override
+    public String toString() {
+        return decorated.toString();
+    }
 }

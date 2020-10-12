@@ -56,4 +56,9 @@ public class TryNodeBranch<T> implements NodeBranch<T> {
             return null;
         }
     }
+
+    @Override
+    public String toString(){
+        return "Try: " + decorated;
+    }
 }

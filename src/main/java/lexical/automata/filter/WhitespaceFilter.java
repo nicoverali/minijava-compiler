@@ -5,4 +5,9 @@ public class WhitespaceFilter implements LexicalFilter{
     public boolean test(char value) {
         return Character.isWhitespace(value);
     }
+
+    @Override
+    public String toString() {
+        return "is whitespace";
+    }
 }

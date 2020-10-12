@@ -58,4 +58,9 @@ public class CharacterLexemePrependBranch implements NodeBranch<AutomataToken> {
         exception.prependLexeme(character);
         return exception;
     }
+
+    @Override
+    public String toString() {
+        return decorated + " (Store in Lexeme)";
+    }
 }

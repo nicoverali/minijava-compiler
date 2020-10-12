@@ -41,4 +41,9 @@ public class DefaultNodeBranch<T> implements NodeBranch<T> {
                 .map(character -> filter.test(character.getValue()))
                 .orElse(false);
     }
+
+    @Override
+    public String toString(){
+        return "if( "+ filter +" ) -> "+ nextNode;
+    }
 }

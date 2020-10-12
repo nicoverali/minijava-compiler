@@ -28,10 +28,6 @@ public class DefaultLexicalNode<T> implements LexicalNode<T> {
     private LexicalNodeStrategy<T> strategy = new NullStrategy<>();
     private String name;
 
-    public DefaultLexicalNode() {
-        this.name = "";
-    }
-
     public DefaultLexicalNode(String name) {
         this.name = name;
     }
@@ -75,6 +71,6 @@ public class DefaultLexicalNode<T> implements LexicalNode<T> {
 
     @Override
     public String toString() {
-        return "LexicalNode: " + name;
+        return name;
     }
 }
