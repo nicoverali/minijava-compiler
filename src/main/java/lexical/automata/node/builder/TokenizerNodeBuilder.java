@@ -9,6 +9,7 @@ import lexical.automata.LexicalNode;
 import lexical.automata.branch.CharacterLexemePrependBranch;
 import lexical.automata.filter.LexicalFilter;
 import lexical.automata.node.DefaultLexicalNode;
+import lexical.automata.node.LexicalNodeStrategy;
 import lexical.automata.node.strategy.LexicalErrorStrategy;
 import lexical.automata.node.strategy.TokenizeStrategy;
 
@@ -26,11 +27,23 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
     }
 
     /**
+     * Provides the {@link LexicalNode} with a {@link LexicalNodeStrategy} to know what to do whenever it
+     * cannot delegate the processing of characters
+     *
+     * @param strategy a {@link LexicalNodeStrategy} which will be assign to the node
+     * @return the final built {@link LexicalNode}
+     */
+    public LexicalNode<AutomataToken> orElse(LexicalNodeStrategy<AutomataToken> strategy){
+        buildingNode.setStrategy(strategy);
+        return buildingNode;
+    }
+
+    /**
      * Makes the {@link LexicalNode} being built return a {@link Token} of the specified type whenever it cannot
      * delegate the processing of characters.
      *
      * @param type {@link TokenType} of tokens returned by the {@link LexicalNode} being built
-     * @return a node builder to keep building the node
+     * @return the final built {@link LexicalNode}
      */
     public LexicalNode<AutomataToken> orElseReturnToken(TokenType type){
         buildingNode.setStrategy(new TokenizeStrategy(type));
@@ -42,18 +55,28 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
      * delegate the processing of characters
      *
      * @param msg the message of all {@link lexical.LexicalException} thrown by the {@link LexicalNode} being built
-     * @return a node builder to keep building the node
+     * @return the final built {@link LexicalNode}
      */
     public LexicalNode<AutomataToken> orElseThrow(String msg){
         buildingNode.setStrategy(new LexicalErrorStrategy<>(msg));
         return buildingNode;
     }
 
-    public class TokenizerBranchBuilder extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<TokenizerNodeBuilder, AutomataToken> {
+    public class TokenizerBranchBuilder extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<AutomataToken, TokenizerNodeBuilder, TokenizerBranchBuilder> {
 
 
         public TokenizerBranchBuilder(LexicalFilter filter, TokenizerNodeBuilder nodeBuilder) {
             super(filter, nodeBuilder);
+        }
+
+        @Override
+        protected TokenizerBranchBuilder getThis() {
+            return this;
+        }
+
+        @Override
+        protected LexicalNode<AutomataToken> getBuildingNode() {
+            return buildingNode;
         }
 
         /**
@@ -62,15 +85,11 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
          *
          * @return this branch builder to end the branch creation
          */
-        public BaseNodeBranchBuilder<TokenizerNodeBuilder, AutomataToken> storeInLexeme(){
+        public BaseNodeBranchBuilder<AutomataToken, TokenizerNodeBuilder, ?> storeInLexeme(){
             buildingBranch = new CharacterLexemePrependBranch(buildingBranch);
             return this;
         }
 
-        @Override
-        protected LexicalNode<AutomataToken> getBuildingNode() {
-            return buildingNode;
-        }
 
     }
 
