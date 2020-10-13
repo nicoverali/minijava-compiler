@@ -1,12 +1,10 @@
-package lexical.automata.node;
+package lexical.automata.branch;
 
 import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.TokenType;
 import lexical.automata.AutomataToken;
-import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -15,11 +13,11 @@ import java.util.Map;
 import static lexical.TokenType.*;
 
 /**
- * This is a {@link LexicalNode} decorator, that in case the decorated node
- * returns a {@link AutomataToken} on processing, it tries to map the token to a keyword token.
+ * This is a {@link NodeBranch} decorator, that in case the decorated branch
+ * returns an {@link AutomataToken} os a result of delegation, it tries to map the token to a keyword token.
  * If the token cannot be mapped, then it simply returns the original token
  */
-public class KeywordLexicalNode implements LexicalNode<AutomataToken> {
+public class KeywordBranch extends NodeBranchDecorator<AutomataToken> {
 
     private static final Map<String, TokenType> keywordMap = new HashMap<>();
     static {
@@ -45,10 +43,9 @@ public class KeywordLexicalNode implements LexicalNode<AutomataToken> {
         keywordMap.put("false", K_FALSE);
     }
 
-    private final LexicalNode<AutomataToken> decorated;
-
-    public KeywordLexicalNode(LexicalNode<AutomataToken> source){
-        decorated = source;
+    @Override
+    public @Nullable AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
+        return applyMap(decorated.delegate(reader));
     }
 
     private AutomataToken applyMap(@Nullable AutomataToken sourceToken){
@@ -61,28 +58,9 @@ public class KeywordLexicalNode implements LexicalNode<AutomataToken> {
         return sourceToken;
     }
 
-    @Override
-    public @Nullable AutomataToken process(@NotNull SourceCodeReader reader) throws LexicalException {
-        return applyMap(decorated.process(reader));
-    }
-
-    @Override
-    public void addBranch(@NotNull NodeBranch<AutomataToken> branch) {
-        decorated.addBranch(branch);
-    }
-
-    @Override
-    public void setName(String nodeName) {
-        decorated.setName(nodeName);
-    }
-
-    @Override
-    public String getName() {
-        return decorated.getName();
-    }
 
     public String toString(){
-        return decorated.getName() + " (Keyword)";
+        return "KeywordMap: " + decorated;
     }
 
 }
