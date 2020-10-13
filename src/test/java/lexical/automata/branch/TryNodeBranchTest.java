@@ -3,6 +3,7 @@ package lexical.automata.branch;
 import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.automata.NodeBranch;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,12 +22,18 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class TryNodeBranchTest {
 
+    private static final int READ_AHEAD_LIMIT = 10;
     private static final Integer RESULT = 4;
 
     @Mock SourceCodeReader readerMock;
 
     @Mock NodeBranch<Integer> decoratedMock;
-    @InjectMocks TryNodeBranch<Integer> testSubject;
+    TryNodeBranch<Integer> testSubject;
+
+    @BeforeEach
+    void createTestSubject(){
+        testSubject = new TryNodeBranch<>(decoratedMock, READ_AHEAD_LIMIT);
+    }
 
     @Test
     void delegate_decoratedReturnsValue_returnsDecoratedResult(){

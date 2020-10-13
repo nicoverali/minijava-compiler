@@ -15,24 +15,11 @@ import java.util.Optional;
  * This type of {@link NodeBranch} delegates processing of characters as usual, but when the node returns
  * a Token it prepends the {@link SourceCodeReader} current character to it.
  */
-public class CharacterTokenPrependBranch implements NodeBranch<AutomataToken> {
-
-    private final NodeBranch<AutomataToken> decorated;
+public class CharacterTokenPrependBranch extends NodeBranchDecorator<AutomataToken> {
 
     public CharacterTokenPrependBranch(NodeBranch<AutomataToken> decorated) {
-        this.decorated = decorated;
+        super(decorated);
     }
-
-    @Override
-    public void setFilter(LexicalFilter filter) {
-        decorated.setFilter(filter);
-    }
-
-    @Override
-    public void setNextNode(LexicalNode<AutomataToken> nextNode) {
-        decorated.setNextNode(nextNode);
-    }
-
     @Override
     public @Nullable AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
         Optional<CodeCharacter> currentCharacter = reader.peek();

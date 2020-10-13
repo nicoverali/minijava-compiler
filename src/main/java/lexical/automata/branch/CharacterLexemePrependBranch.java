@@ -16,22 +16,10 @@ import java.util.Optional;
  * This type of {@link NodeBranch} delegates processing of characters as usual, but when the node returns
  * a Token or throws a LexicalException, it prepends the {@link SourceCodeReader} current character to their {@link Lexeme}.
  */
-public class CharacterLexemePrependBranch implements NodeBranch<AutomataToken> {
-
-    private final NodeBranch<AutomataToken> decorated;
+public class CharacterLexemePrependBranch extends NodeBranchDecorator<AutomataToken> {
 
     public CharacterLexemePrependBranch(NodeBranch<AutomataToken> decorated) {
-        this.decorated = decorated;
-    }
-
-    @Override
-    public void setFilter(LexicalFilter filter) {
-        decorated.setFilter(filter);
-    }
-
-    @Override
-    public void setNextNode(LexicalNode<AutomataToken> nextNode) {
-        decorated.setNextNode(nextNode);
+        super(decorated);
     }
 
     @Override
