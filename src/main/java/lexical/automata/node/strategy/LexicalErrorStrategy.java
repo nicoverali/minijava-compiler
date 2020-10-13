@@ -2,6 +2,7 @@ package lexical.automata.node.strategy;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
+import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.automata.AutomataLexeme;
 import lexical.automata.node.LexicalNodeStrategy;
@@ -23,12 +24,12 @@ public class LexicalErrorStrategy<T> implements LexicalNodeStrategy<T> {
     }
 
     @Override
-    public T onNoBranchSelected(@NotNull CodeCharacter currentCharacter) throws LexicalException {
+    public T onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
         throw new LexicalException(errorMsg, AutomataLexeme.create(currentCharacter));
     }
 
     @Override
-    public T onEndOfFile(@Nullable CodeLine currentLine) throws LexicalException {
+    public T onEndOfFile(SourceCodeReader reader, @Nullable CodeLine currentLine) throws LexicalException {
         throw new LexicalException(errorMsg, AutomataLexeme.empty(currentLine));
     }
 }

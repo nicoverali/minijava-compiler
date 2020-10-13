@@ -9,21 +9,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This {@link LexicalNodeStrategy} does not do anything if the node cannot delegate, and simply returns a
- * <code>null</code> value.
+ * This strategy will always return a certain value if the node cannot delegate or the end of file has been reached.
  *
- * @param <T> type of element returned by the {@link lexical.automata.LexicalNode}
+ * @param <T> type of value returned by this strategy
  */
-public class NullStrategy<T> implements LexicalNodeStrategy<T> {
+public class ValueReturnStrategy<T> implements LexicalNodeStrategy<T> {
+
+    private final T value;
+
+    public ValueReturnStrategy(T value){
+        this.value = value;
+    }
 
     @Override
     public @Nullable T onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
-        return null;
+        return value;
     }
 
     @Override
     public @Nullable T onEndOfFile(SourceCodeReader reader, @Nullable CodeLine currentLine) throws LexicalException {
-        return null;
+        return value;
     }
 
 }

@@ -2,6 +2,7 @@ package lexical.automata.node.strategy;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
+import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
 import lexical.TokenType;
@@ -23,12 +24,12 @@ public class TokenizeStrategy implements LexicalNodeStrategy<AutomataToken> {
     }
 
     @Override
-    public @NotNull AutomataToken onNoBranchSelected(@NotNull CodeCharacter currentCharacter) throws LexicalException {
+    public @NotNull AutomataToken onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
         return new AutomataToken(type, AutomataLexeme.empty(currentCharacter.getCodeLine()));
     }
 
     @Override
-    public @NotNull AutomataToken onEndOfFile(@Nullable CodeLine currentLine) throws LexicalException {
+    public @NotNull AutomataToken onEndOfFile(SourceCodeReader reader, @Nullable CodeLine currentLine) throws LexicalException {
         return new AutomataToken(type, AutomataLexeme.empty(currentLine));
     }
 }

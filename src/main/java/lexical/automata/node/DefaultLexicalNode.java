@@ -46,7 +46,7 @@ public class DefaultLexicalNode<T> implements LexicalNode<T> {
     public @Nullable T process(@NotNull SourceCodeReader reader) throws LexicalException {
         Optional<CodeCharacter> nextChar = reader.peek();
         if (!nextChar.isPresent()){
-            return strategy.onEndOfFile(reader.getCurrentLine().orElse(null));
+            return strategy.onEndOfFile(reader, reader.getCurrentLine().orElse(null));
         }
 
         for (NodeBranch<T> branch : branches){
@@ -56,7 +56,7 @@ public class DefaultLexicalNode<T> implements LexicalNode<T> {
             }
         }
 
-        return strategy.onNoBranchSelected(nextChar.get());
+        return strategy.onNoBranchSelected(reader, nextChar.get());
     }
 
     @Override

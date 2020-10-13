@@ -48,12 +48,12 @@ class DefaultLexicalNodeTest {
     @Test
     void process_emptyFile_callOnEndOfFileWithoutLine(){
         testSubject.process(readerMock);
-        verify(strategyMock).onEndOfFile(isNull());
+        verify(strategyMock).onEndOfFile(eq(readerMock), isNull());
     }
 
     @Test
     void process_emptyFile_returnStrategyResult(){
-        when(strategyMock.onEndOfFile(null)).thenReturn(RESULT);
+        when(strategyMock.onEndOfFile(readerMock, null)).thenReturn(RESULT);
 
         Integer result = testSubject.process(readerMock);
         assertEquals(RESULT, result);
@@ -61,7 +61,7 @@ class DefaultLexicalNodeTest {
 
     @Test
     void process_emptyFile_propagateStrategyResult(){
-        when(strategyMock.onEndOfFile(null)).thenThrow(exceptionMock);
+        when(strategyMock.onEndOfFile(readerMock, null)).thenThrow(exceptionMock);
 
         LexicalException e = assertThrows(LexicalException.class, () -> testSubject.process(readerMock));
         assertEquals(exceptionMock, e);
@@ -115,10 +115,10 @@ class DefaultLexicalNodeTest {
         when(readerMock.peek()).thenReturn(Optional.of(charMock));
         when(readerMock.hasNext()).thenReturn(true);
         when(branchMock.delegate(readerMock)).thenReturn(null);
-        when(strategyMock.onNoBranchSelected(charMock)).thenReturn(RESULT);
+        when(strategyMock.onNoBranchSelected(readerMock, charMock)).thenReturn(RESULT);
 
         Integer result = testSubject.process(readerMock);
-        verify(strategyMock).onNoBranchSelected(charMock);
+        verify(strategyMock).onNoBranchSelected(readerMock, charMock);
         assertEquals(RESULT, result);
     }
 
@@ -127,7 +127,7 @@ class DefaultLexicalNodeTest {
         when(readerMock.peek()).thenReturn(Optional.of(charMock));
         when(readerMock.hasNext()).thenReturn(true);
         when(branchMock.delegate(readerMock)).thenReturn(null);
-        when(strategyMock.onNoBranchSelected(charMock)).thenThrow(exceptionMock);
+        when(strategyMock.onNoBranchSelected(readerMock, charMock)).thenThrow(exceptionMock);
 
         LexicalException e = assertThrows(LexicalException.class, () -> testSubject.process(readerMock));
         assertEquals(exceptionMock, e);
@@ -138,13 +138,13 @@ class DefaultLexicalNodeTest {
         when(readerMock.getCurrentLine()).thenReturn(Optional.of(lineMock));
 
         testSubject.process(readerMock);
-        verify(strategyMock).onEndOfFile(lineMock);
+        verify(strategyMock).onEndOfFile(readerMock, lineMock);
     }
 
     @Test
     void process_endOfFile_returnStrategyResult(){
         when(readerMock.getCurrentLine()).thenReturn(Optional.of(lineMock));
-        when(strategyMock.onEndOfFile(any())).thenReturn(RESULT);
+        when(strategyMock.onEndOfFile(eq(readerMock), any())).thenReturn(RESULT);
 
         Integer result = testSubject.process(readerMock);
         assertEquals(RESULT, result);
@@ -153,7 +153,7 @@ class DefaultLexicalNodeTest {
     @Test
     void process_endOfFile_propagateStrategyResult(){
         when(readerMock.getCurrentLine()).thenReturn(Optional.of(lineMock));
-        when(strategyMock.onEndOfFile(any())).thenThrow(exceptionMock);
+        when(strategyMock.onEndOfFile(eq(readerMock), any())).thenThrow(exceptionMock);
 
         LexicalException e = assertThrows(LexicalException.class, () -> testSubject.process(readerMock));
         assertEquals(exceptionMock, e);

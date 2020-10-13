@@ -3,6 +3,7 @@ package lexical.automata.node.strategy;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
+import io.code.reader.SourceCodeReader;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,17 +24,17 @@ class NullStrategyTest {
 
     @Test
     void onNoBranchSelected_always_returnsNull(){
-        assertNull(testSubject.onNoBranchSelected(mock(CodeCharacter.class)));
+        assertNull(testSubject.onNoBranchSelected(mock(SourceCodeReader.class), mock(CodeCharacter.class)));
     }
 
     @Test
     void onEndOfFile_lineIsNull_returnsNull(){
-        assertNull(testSubject.onEndOfFile(null));
+        assertNull(testSubject.onEndOfFile(mock(SourceCodeReader.class), null));
     }
 
     @Test
     void onEndOfFile_lineIsNotNull_returnsNull(){
-        assertNull(testSubject.onEndOfFile(mock(CodeLine.class)));
+        assertNull(testSubject.onEndOfFile(mock(SourceCodeReader.class), mock(CodeLine.class)));
     }
 
 }
