@@ -1,0 +1,17 @@
+// Caracteres de prueba
+''
+'	'
+'
+// Sigo con caracteres
+' '
+'k
+id_metodo
+'k'
+'\n'
+'\t'
+'\'
+'\''
+'\\'
+'\
+// El salto de linea no lo permito como caracter válido
+'

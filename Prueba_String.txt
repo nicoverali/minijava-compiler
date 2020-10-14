@@ -1,0 +1,15 @@
+/*
+String válidos
+*/
+""
+" CASO VALIDO ---------    "
+" \n caso valido         "
+
+// Invalido
+" SALTO DE LINEA INVALIDO
+
+
+" 84842134 54123 4814 8s dad d as "
+
+// Finaliza el archivo sin cerrarlo
+" EOF inválido

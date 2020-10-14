@@ -1,0 +1,12 @@
+//Identificadores de Clase y metodo/variable
+
+id_X
+id2_
+Id1_
+id555
+Id555
+ID_2
+Triangulo
+metodo1
+FileManager
+metodo2

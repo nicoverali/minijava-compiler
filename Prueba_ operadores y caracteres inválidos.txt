@@ -1,0 +1,9 @@
+// Caracteres invalidos
+
+#$?¿-[]~`^
+
+// Operadores mal formados
+& |
+
+// Operadores correctos
+< > <= >= == ! &&!= +-*/%

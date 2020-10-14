@@ -1,0 +1,4 @@
+
+// Caracter invalido entre identificadores
+
+id_metX$id_metY
