@@ -1,0 +1,52 @@
+// Comentarios Válidos
+
+
+/* Comentario
+ multilinea  */
+/*
+ Comentario
+
+
+
+ multilinea 
+
+*/
+
+	// Comentario LINEA
+
+	/* Comentario multilinea 
+
+
+
+
+
+
+
+*/
+
+
+
+
+// Comentario 
+/* Comentario
+ multilinea  */
+/*
+ Comentario
+ multilinea 
+*/
+
+	// Comentario
+
+
+
+// Comentario Multilinea Inválido (Sin cerrar correctamente)
+
+	/* Comentario multilinea 
+
+
+
+
+
+
+
+/

@@ -1,0 +1,19 @@
+// Palabras reservadas, Operadores , Literares
+
+class extends static dynamic
+void boolean char int String
+
+// Comentario
+
+public protected private final // Comentario
+if else while return
+this new null true false
+
+/*
+
+Comentario multilinea
+
+*/
+
+><!>=<=!=+-*/&&||===
+"pepito"'p''\n''\M' 555 '\t'xy12 Abc 
