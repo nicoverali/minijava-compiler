@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class GrammarReader {
@@ -35,17 +36,17 @@ public class GrammarReader {
         Grammar grammar = new Grammar(lambda);
         for (String line : lines){
             String[] lineArray = line.split("\\s+");
-            String head = lineArray[0];
+            GrammarTerm head = new GrammarTerm(lineArray[0]);
             String[] linesBodies = Arrays.copyOfRange(lineArray, 2, lineArray.length);
 
-            List<List<String>> allBodies = new ArrayList<>();
-            List<String> currentBody = new ArrayList<>();
+            Collection<GrammarBody> allBodies = new ArrayList<>();
+            GrammarBody currentBody = new GrammarBody();
             for (String term : linesBodies){
                 if (!term.equals("|")){
-                    currentBody.add(term);
+                    currentBody.add(new GrammarTerm(term));
                 }else {
                     allBodies.add(currentBody);
-                    currentBody = new ArrayList<>();
+                    currentBody = new GrammarBody();
                 }
             }
             allBodies.add(currentBody);

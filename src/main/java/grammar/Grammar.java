@@ -7,14 +7,13 @@ import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Grammar {
 
     private final String lambda;
 
-    Multimap<String, List<String>> grammar = HashMultimap.create();
+    Multimap<GrammarTerm, GrammarBody> grammar = HashMultimap.create();
 
     public Grammar(String lambda) {
         this.lambda = lambda;
@@ -24,45 +23,49 @@ public class Grammar {
         return grammar.isEmpty();
     }
 
-    public void add(String head, List<String> body){
+    public void add(GrammarTerm head, GrammarBody body){
         grammar.put(head, body);
     }
 
-    public void addAll(String head, Collection<List<String>> bodies){
+    public void addAll(GrammarTerm head, Collection<GrammarBody> bodies){
         grammar.putAll(head, bodies);
     }
 
-    public Collection<List<String>> get(String head){
+    public Collection<GrammarBody> get(String head){
+        return grammar.get(new GrammarTerm(head));
+    }
+
+    public Collection<GrammarBody> get(GrammarTerm head){
         return grammar.get(head);
     }
 
-    public Collection<String> heads(){
+    public Collection<GrammarTerm> heads(){
         return grammar.asMap().keySet();
     }
 
-    public boolean isNonTerminal(String term){
-        return term.charAt(0) == '<' && term.charAt(term.length()-1) == '>';
-    }
-
     public boolean isGrammarLeaf(String term){
-        return grammar.get(term).stream()
-                .flatMap(Collection::stream)
-                .noneMatch(this::isNonTerminal);
+        return isGrammarLeaf(new GrammarTerm(term));
     }
 
-    public Map<String, List<String>> getFirsts(){
-        Map<String, List<String>> firsts = new HashMap<>();
-        for (String head : heads()){
+    public boolean isGrammarLeaf(GrammarTerm term){
+        return grammar.get(term).stream()
+                .flatMap(GrammarBody::stream)
+                .noneMatch(GrammarTerm::isNonTerminal);
+    }
+
+    public Map<GrammarTerm, List<GrammarTerm>> getFirsts(){
+        Map<GrammarTerm, List<GrammarTerm>> firsts = new HashMap<>();
+        for (GrammarTerm head : heads()){
             firsts.put(head, firstOf(head));
         }
         return firsts;
     }
 
     @NotNull
-    public List<String> firstOf(String term){
-        if (isNonTerminal(term)){
+    public List<GrammarTerm> firstOf(GrammarTerm term){
+        if (term.isNonTerminal()){
             return grammar.get(term).stream()
-                    .filter(body -> !body.get(0).equals(term))
+                    .filter(body -> !body.first().equals(term))
                     .flatMap(body -> firstOf(body).stream())
                     .collect(Collectors.toList());
 
@@ -72,30 +75,35 @@ public class Grammar {
     }
 
     @NotNull
-    private List<String> firstOf(List<String> body){
-        if (body.size() == 1) return firstOf(body.get(0));
+    private List<GrammarTerm> firstOf(GrammarBody body){
+        if (body.size() == 1) return firstOf(body.first());
 
-        List<String> firsts = new ArrayList<>(firstOf(body.get(0)));
+        List<GrammarTerm> firsts = new ArrayList<>(firstOf(body.first()));
+        //noinspection SuspiciousMethodCalls
         if (firsts.remove(lambda)){
-            firsts.addAll(firstOf(body.subList(1, body.size())));
+            firsts.addAll(firstOf(body.subrange(1, body.size())));
         }
         return firsts;
     }
 
     public int getHeadDepth(String head) {
+        return getHeadDepth(new GrammarTerm(head));
+    }
+
+    public int getHeadDepth(GrammarTerm head){
         if (isGrammarLeaf(head)){
             return 0;
         }
         return headDepth(head, Lists.newArrayList(head));
     }
 
-    private int headDepth(String head, List<String> visited){
+    private int headDepth(GrammarTerm head, List<GrammarTerm> visited){
         return get(head).stream()
-                .flatMap(Collection::stream)
-                .filter(this::isNonTerminal)
-                .filter(bodyTerm -> !head.equals(bodyTerm))
+                .flatMap(GrammarBody::stream)
+                .filter(GrammarTerm::isNonTerminal)
+                .filter(bodyTerm -> !bodyTerm.equals(head))
                 .filter(nt -> !visited.contains(nt))
-                .map(nt -> {List<String> currentVisited = new ArrayList<>(visited); currentVisited.add(nt); return currentVisited;})
+                .map(nt -> {List<GrammarTerm> currentVisited = new ArrayList<>(visited); currentVisited.add(nt); return currentVisited;})
                 .map(currentVisited -> headDepth(Iterables.getLast(currentVisited), currentVisited)+1)
                 .max(Integer::compareTo)
                 .orElse(0);
