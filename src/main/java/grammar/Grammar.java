@@ -11,57 +11,107 @@ import java.util.stream.Collectors;
 
 public class Grammar {
 
-    private final String lambda;
+    public static final String LAMBDA = "EOF";
 
     Multimap<GrammarTerm, GrammarBody> grammar = HashMultimap.create();
 
-    public Grammar(String lambda) {
-        this.lambda = lambda;
-    }
-
+    /**
+     * Checks whether this Grammar has at leas one production rule or not.
+     *
+     * @return true if there is at least one production rule present in this Grammar, false otherwise
+     */
     public boolean isEmpty(){
         return grammar.isEmpty();
     }
 
+    /**
+     * Adds a new production rule where <code>head</code> is the non-terminal term which
+     * can be replaced by <code>body</code>.
+     *
+     * @param head the head of the production rule
+     * @param body the body of the production rule
+     */
     public void add(GrammarTerm head, GrammarBody body){
         grammar.put(head, body);
     }
 
+    /**
+     * For every {@link GrammarBody} given, adds a new production rule where <code>head</code> is the
+     * non-terminal term that can be replaced by the {@link GrammarBody}.
+     *
+     * @param head the head of all the new production rules
+     * @param bodies a {@link Collection} of bodies of production rules
+     */
     public void addAll(GrammarTerm head, Collection<GrammarBody> bodies){
         grammar.putAll(head, bodies);
     }
 
-    public Collection<GrammarBody> get(String head){
-        return grammar.get(new GrammarTerm(head));
+    /**
+     * Returns a collection of all the production rule bodies which are associated to head {@link GrammarTerm}
+     * which name is equal to the given String.
+     * If no head have the same name as the String given, then an exception will be thrown.
+     *
+     * @param head the {@link GrammarTerm} head of all the {@link GrammarBody} returned
+     * @return a {@link Collection} of {@link GrammarBody} associated with the given <code>head</code>
+     * @throws IllegalArgumentException if the given <code>head</code> does not exist in this Grammar
+     */
+    public Collection<GrammarBody> get(String head) throws IllegalArgumentException{
+        GrammarTerm headTerm = grammar.keySet().stream()
+                .filter(term -> term.getName().equals(head)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("The given head ("+head+") does not exist in this Grammar"));
+        return grammar.get(headTerm);
     }
 
-    public Collection<GrammarBody> get(GrammarTerm head){
-        return grammar.get(head);
+    /**
+     * Returns a collection of all the production rule bodies associated with the given {@link GrammarTerm}.
+     * If the given head does not exist in this Grammar then an exception will be thrown.
+     *
+     * @param head the {@link GrammarTerm} head of all the {@link GrammarBody} returned
+     * @return a {@link Collection} of {@link GrammarBody} associated with the given <code>head</code>
+     * @throws IllegalArgumentException if the given <code>head</code> does not exist in this Grammar
+     */
+    public Collection<GrammarBody> get(GrammarTerm head) throws IllegalArgumentException{
+        Collection<GrammarBody> bodies = grammar.get(head);
+        if (bodies.isEmpty()) throw new IllegalArgumentException("The requested head ("+head.getName()+") does not exist in this Grammar");
+        return bodies;
     }
 
+    /**
+     * @return a {@link Collection} of all the {@link GrammarTerm} heads in this Grammar.
+     */
     public Collection<GrammarTerm> heads(){
         return grammar.asMap().keySet();
     }
 
-    public boolean isGrammarLeaf(String term){
-        return isGrammarLeaf(new GrammarTerm(term));
-    }
-
+    /**
+     * Checks whether the given {@link GrammarTerm} is a leaf of this Grammar.
+     * A term is considered a leaf if none of its production rules contain a non-terminal term.
+     *
+     * @param term the {@link GrammarTerm} of which it will be verified if it is leaf or not
+     * @return true if the given {@link GrammarTerm} is a leaf of this Grammar, false otherwise
+     */
     public boolean isGrammarLeaf(GrammarTerm term){
         return grammar.get(term).stream()
                 .flatMap(GrammarBody::stream)
                 .noneMatch(GrammarTerm::isNonTerminal);
     }
 
-    public Map<GrammarTerm, List<GrammarTerm>> getFirsts(){
-        Map<GrammarTerm, List<GrammarTerm>> firsts = new HashMap<>();
-        for (GrammarTerm head : heads()){
-            firsts.put(head, firstOf(head));
-        }
-        return firsts;
-    }
+//    public Map<GrammarTerm, List<GrammarTerm>> getFirsts(){
+//        Map<GrammarTerm, List<GrammarTerm>> firsts = new HashMap<>();
+//        for (GrammarTerm head : heads()){
+//            firsts.put(head, firstOf(head));
+//        }
+//        return firsts;
+//    }
 
-    @NotNull
+    /**
+     * Returns a {@link List} of all the <b>firsts</b> of the given {@link GrammarTerm}.
+     * The definition of <b>firsts</b> can be found here:
+     * <a href="https://en.wikipedia.org/wiki/LL_parser#Terminology">Wikipedia: Firsts</a>
+     *
+     * @param term the {@link GrammarTerm} of which will be computed the firsts
+     * @return a {@link List} of <b>firsts</b> of the given {@link GrammarTerm}
+     */
     public List<GrammarTerm> firstOf(GrammarTerm term){
         if (term.isNonTerminal()){
             return grammar.get(term).stream()
@@ -74,20 +124,24 @@ public class Grammar {
         }
     }
 
+    /**
+     * Returns a {@link List} of all the <b>firsts</b> of the given {@link GrammarBody}.
+     * The definition of <b>firsts</b> can be found here:
+     * <a href="https://en.wikipedia.org/wiki/LL_parser#Terminology">Wikipedia: Firsts</a>
+     *
+     * @param body the {@link GrammarBody} of which will be computed the firsts
+     * @return a {@link List} of <b>firsts</b> of the given {@link GrammarBody}
+     */
     @NotNull
-    private List<GrammarTerm> firstOf(GrammarBody body){
+    public List<GrammarTerm> firstOf(GrammarBody body){
         if (body.size() == 1) return firstOf(body.first());
 
         List<GrammarTerm> firsts = new ArrayList<>(firstOf(body.first()));
         //noinspection SuspiciousMethodCalls
-        if (firsts.remove(lambda)){
+        if (firsts.remove(LAMBDA)){
             firsts.addAll(firstOf(body.subrange(1, body.size())));
         }
         return firsts;
-    }
-
-    public int getHeadDepth(String head) {
-        return getHeadDepth(new GrammarTerm(head));
     }
 
     public int getHeadDepth(GrammarTerm head){
