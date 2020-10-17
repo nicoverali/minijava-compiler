@@ -6,6 +6,7 @@ import io.code.reader.BufferedCodeLinesReader;
 import io.code.reader.CodeLinesReader;
 import io.code.reader.DefaultSourceCodeReader;
 import io.code.reader.SourceCodeReader;
+import lexical.Token;
 import lexical.analyzer.LexicalSequence;
 import lexical.analyzer.MiniJavaLexicalAnalyzer;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MiniJavaSyntacticAnalyzerTest {
 
-    private static final int TEST_COUNT = 32;
+    private static final String PATH = "syntactic_tests/implicit_attributes";
+    private static final int TEST_COUNT = 3;
 
     CodeLineFactory lineFactory = new DefaultCodeLineFactory();
 
@@ -29,7 +31,7 @@ class MiniJavaSyntacticAnalyzerTest {
         ClassLoader loader = MiniJavaSyntacticAnalyzer.class.getClassLoader();
         Arguments[] arguments = new Arguments[TEST_COUNT];
         for (int i = 1; i <= TEST_COUNT; i++) {
-            arguments[i-1] = Arguments.of(loader.getResource("syntactic_tests/test_"+i+".java").getPath());
+            arguments[i-1] = Arguments.of(loader.getResource(PATH+"/test_"+i+".java").getPath());
         }
 
         return Stream.of(arguments);
@@ -46,6 +48,8 @@ class MiniJavaSyntacticAnalyzerTest {
             testSubject.analyze();
             assertEquals("", errorToken); // If does not throw exception then we should expect an exception
         } catch (SyntacticException e){
+            Token eToken = e.getExceptionToken();
+            System.out.println("Exception at ["+eToken.getLineNumber()+", "+eToken.getColumnNumber()+"] token"+e.getExceptionToken().getType());
             assertEquals(errorToken, e.getExceptionToken().getType().name());
         }
     }

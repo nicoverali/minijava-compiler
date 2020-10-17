@@ -67,7 +67,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void listaMiembros() {
-        if (equalsAny(K_PRIVATE, K_PUBLIC, ID_CLS, K_STATIC, K_DYNAMIC)) {
+        if (equalsAny(K_PUBLIC, K_PRIVATE, K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS, K_DYNAMIC, K_STATIC)) {
             miembro();
             listaMiembros();
         } else {
@@ -76,11 +76,12 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void miembro() {
-        if  (equalsAny(K_PRIVATE, K_PUBLIC)) {
+        if  (equalsAny(K_PUBLIC, K_PRIVATE, K_STRING, K_INT, K_BOOLEAN, K_CHAR)) {
             atributo();
         } else if  (equalsAny(ID_CLS)) {
-            constructor();
-        } else if  (equalsAny(K_STATIC, K_DYNAMIC)) {
+            match(ID_CLS);
+            listaAtrsOConstructor();
+        } else if  (equalsAny(K_DYNAMIC, K_STATIC)) {
             metodo();
         } else {
             Token next = sequence.next().orElse(null);
@@ -99,7 +100,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     private void tipoMetodo() {
         if  (equalsAny(K_VOID)) {
             match(K_VOID);
-        } else if  (equalsAny(ID_CLS, K_CHAR, K_INT, K_BOOLEAN, K_STRING)) {
+        } else if  (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS)) {
             tipo();
         } else {
             Token next = sequence.next().orElse(null);
@@ -108,18 +109,29 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void formaMetodo() {
-        if  (equalsAny(K_STATIC)) {
-            match(K_STATIC);
-        } else if  (equalsAny(K_DYNAMIC)) {
+        if  (equalsAny(K_DYNAMIC)) {
             match(K_DYNAMIC);
+        } else if  (equalsAny(K_STATIC)) {
+            match(K_STATIC);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (formaMetodo) pero se encontro"+next.getType(), next);
         }
     }
 
+    private void listaAtrsOConstructor() {
+        if  (equalsAny(P_PAREN_OPEN)) {
+            constructor();
+        } else if  (equalsAny(ID_MV)) {
+            listaDecAtrs();
+            match(P_SEMICOLON);
+        } else {
+            Token next = sequence.next().orElse(null);
+            throw new SyntacticException("Se esperaba (listaAtrsOConstructor) pero se encontro"+next.getType(), next);
+        }
+    }
+
     private void constructor() {
-        match(ID_CLS);
         argsFormales();
         bloque();
     }
@@ -131,7 +143,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void listaSentencias() {
-        if (equalsAny(K_IF, K_RETURN, ID_CLS, K_CHAR, K_INT, K_BOOLEAN, K_STRING, K_WHILE, P_SEMICOLON, P_BRCKT_OPEN, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
+        if (equalsAny(K_IF, K_STATIC, K_THIS, P_PAREN_OPEN, ID_MV, K_NEW, P_SEMICOLON, K_WHILE, K_RETURN, K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS, P_BRCKT_OPEN)) {
             sentencia();
             listaSentencias();
         } else {
@@ -147,13 +159,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(P_PAREN_CLOSE);
             sentencia();
             elseOVacio();
-        } else if  (equalsAny(K_RETURN)) {
-            match(K_RETURN);
-            expresionOVacio();
+        } else if  (equalsAny(K_STATIC, K_THIS, P_PAREN_OPEN, ID_MV, K_NEW)) {
+            acceso();
+            asignacionOVacio();
             match(P_SEMICOLON);
-        } else if  (equalsAny(ID_CLS, K_CHAR, K_INT, K_BOOLEAN, K_STRING)) {
-            tipo();
-            listaDecVars();
+        } else if  (equalsAny(P_SEMICOLON)) {
             match(P_SEMICOLON);
         } else if  (equalsAny(K_WHILE)) {
             match(K_WHILE);
@@ -161,39 +171,19 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             expresion();
             match(P_PAREN_CLOSE);
             sentencia();
-        } else if  (equalsAny(P_SEMICOLON)) {
+        } else if  (equalsAny(K_RETURN)) {
+            match(K_RETURN);
+            expresionOVacio();
+            match(P_SEMICOLON);
+        } else if  (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS)) {
+            tipo();
+            listaDecVars();
             match(P_SEMICOLON);
         } else if  (equalsAny(P_BRCKT_OPEN)) {
             bloque();
-        } else if  (equalsAny(ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
-            acceso();
-            asignacionOVacio();
-            match(P_SEMICOLON);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (sentencia) pero se encontro"+next.getType(), next);
-        }
-    }
-
-    private void asignacionOVacio() {
-        if (equalsAny(ASSIGN_PLUS, ASSIGN, ASSIGN_MINUS)) {
-            tipoDeAsignacion();
-            expresion();
-        } else {
-            // Nothing
-        }
-    }
-
-    private void tipoDeAsignacion() {
-        if  (equalsAny(ASSIGN_PLUS)) {
-            match(ASSIGN_PLUS);
-        } else if  (equalsAny(ASSIGN)) {
-            match(ASSIGN);
-        } else if  (equalsAny(ASSIGN_MINUS)) {
-            match(ASSIGN_MINUS);
-        } else {
-            Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro"+next.getType(), next);
         }
     }
 
@@ -212,10 +202,32 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void expresionOVacio() {
-        if (equalsAny(OP_MINUS, OP_PLUS, OP_NOT, K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
+        if (equalsAny(OP_PLUS, OP_NOT, OP_MINUS, K_TRUE, K_FALSE, INT, K_NULL, STRING, CHAR, K_STATIC, K_THIS, P_PAREN_OPEN, ID_MV, K_NEW)) {
             expresion();
         } else {
             // Nothing
+        }
+    }
+
+    private void asignacionOVacio() {
+        if (equalsAny(ASSIGN, ASSIGN_PLUS, ASSIGN_MINUS)) {
+            tipoDeAsignacion();
+            expresion();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void tipoDeAsignacion() {
+        if  (equalsAny(ASSIGN)) {
+            match(ASSIGN);
+        } else if  (equalsAny(ASSIGN_PLUS)) {
+            match(ASSIGN_PLUS);
+        } else if  (equalsAny(ASSIGN_MINUS)) {
+            match(ASSIGN_MINUS);
+        } else {
+            Token next = sequence.next().orElse(null);
+            throw new SyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro"+next.getType(), next);
         }
     }
 
@@ -234,7 +246,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void expresionResto() {
-        if (equalsAny(OP_MINUS, OP_GT, OP_GTE, OP_LTE, OP_NOTEQ, OP_PLUS, OP_LT, OP_DIV, OP_OR, OP_AND, OP_MULT, OP_EQ, OP_MOD)) {
+        if (equalsAny(OP_LTE, OP_MULT, OP_EQ, OP_OR, OP_AND, OP_LT, OP_MOD, OP_PLUS, OP_NOTEQ, OP_DIV, OP_MINUS, OP_GT, OP_GTE)) {
             operadorBinario();
             expresionUnaria();
             expresionResto();
@@ -244,32 +256,32 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void operadorBinario() {
-        if  (equalsAny(OP_MINUS)) {
+        if  (equalsAny(OP_LTE)) {
+            match(OP_LTE);
+        } else if  (equalsAny(OP_MULT)) {
+            match(OP_MULT);
+        } else if  (equalsAny(OP_EQ)) {
+            match(OP_EQ);
+        } else if  (equalsAny(OP_OR)) {
+            match(OP_OR);
+        } else if  (equalsAny(OP_AND)) {
+            match(OP_AND);
+        } else if  (equalsAny(OP_LT)) {
+            match(OP_LT);
+        } else if  (equalsAny(OP_MOD)) {
+            match(OP_MOD);
+        } else if  (equalsAny(OP_PLUS)) {
+            match(OP_PLUS);
+        } else if  (equalsAny(OP_NOTEQ)) {
+            match(OP_NOTEQ);
+        } else if  (equalsAny(OP_DIV)) {
+            match(OP_DIV);
+        } else if  (equalsAny(OP_MINUS)) {
             match(OP_MINUS);
         } else if  (equalsAny(OP_GT)) {
             match(OP_GT);
         } else if  (equalsAny(OP_GTE)) {
             match(OP_GTE);
-        } else if  (equalsAny(OP_LTE)) {
-            match(OP_LTE);
-        } else if  (equalsAny(OP_NOTEQ)) {
-            match(OP_NOTEQ);
-        } else if  (equalsAny(OP_PLUS)) {
-            match(OP_PLUS);
-        } else if  (equalsAny(OP_LT)) {
-            match(OP_LT);
-        } else if  (equalsAny(OP_DIV)) {
-            match(OP_DIV);
-        } else if  (equalsAny(OP_OR)) {
-            match(OP_OR);
-        } else if  (equalsAny(OP_AND)) {
-            match(OP_AND);
-        } else if  (equalsAny(OP_MULT)) {
-            match(OP_MULT);
-        } else if  (equalsAny(OP_EQ)) {
-            match(OP_EQ);
-        } else if  (equalsAny(OP_MOD)) {
-            match(OP_MOD);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (operadorBinario) pero se encontro"+next.getType(), next);
@@ -277,10 +289,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void expresionUnaria() {
-        if  (equalsAny(OP_MINUS, OP_PLUS, OP_NOT)) {
+        if  (equalsAny(OP_PLUS, OP_NOT, OP_MINUS)) {
             operadorUnario();
             operando();
-        } else if  (equalsAny(K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
+        } else if  (equalsAny(K_TRUE, K_FALSE, INT, K_NULL, STRING, CHAR, K_STATIC, K_THIS, P_PAREN_OPEN, ID_MV, K_NEW)) {
             operando();
         } else {
             Token next = sequence.next().orElse(null);
@@ -289,9 +301,9 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void operando() {
-        if  (equalsAny(K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT)) {
+        if  (equalsAny(K_TRUE, K_FALSE, INT, K_NULL, STRING, CHAR)) {
             literal();
-        } else if  (equalsAny(ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
+        } else if  (equalsAny(K_STATIC, K_THIS, P_PAREN_OPEN, ID_MV, K_NEW)) {
             acceso();
         } else {
             Token next = sequence.next().orElse(null);
@@ -320,43 +332,27 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void primario() {
-        if  (equalsAny(ID_MV)) {
-            accesoVarOMetodo();
-        } else if  (equalsAny(K_STATIC)) {
+        if  (equalsAny(K_STATIC)) {
             accesoEstatico();
-        } else if  (equalsAny(K_NEW)) {
-            accesoConstructor();
         } else if  (equalsAny(K_THIS)) {
             accesoThis();
         } else if  (equalsAny(P_PAREN_OPEN)) {
             match(P_PAREN_OPEN);
             expresion();
             match(P_PAREN_CLOSE);
+        } else if  (equalsAny(ID_MV)) {
+            accesoVarOMetodo();
+        } else if  (equalsAny(K_NEW)) {
+            accesoConstructor();
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (primario) pero se encontro"+next.getType(), next);
         }
     }
 
-    private void accesoThis() {
-        match(K_THIS);
-    }
-
     private void accesoConstructor() {
         match(K_NEW);
         match(ID_CLS);
-        argsActuales();
-    }
-
-    private void accesoEstatico() {
-        match(K_STATIC);
-        match(ID_CLS);
-        match(P_DOT);
-        accesoMetodo();
-    }
-
-    private void accesoMetodo() {
-        match(ID_MV);
         argsActuales();
     }
 
@@ -373,6 +369,22 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
         }
     }
 
+    private void accesoThis() {
+        match(K_THIS);
+    }
+
+    private void accesoEstatico() {
+        match(K_STATIC);
+        match(ID_CLS);
+        match(P_DOT);
+        accesoMetodo();
+    }
+
+    private void accesoMetodo() {
+        match(ID_MV);
+        argsActuales();
+    }
+
     private void argsActuales() {
         match(P_PAREN_OPEN);
         listaExpsOVacio();
@@ -380,7 +392,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void listaExpsOVacio() {
-        if (equalsAny(OP_MINUS, OP_PLUS, OP_NOT, K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
+        if (equalsAny(OP_PLUS, OP_NOT, OP_MINUS, K_TRUE, K_FALSE, INT, K_NULL, STRING, CHAR, K_STATIC, K_THIS, P_PAREN_OPEN, ID_MV, K_NEW)) {
             listaExps();
         } else {
             // Nothing
@@ -402,18 +414,18 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void literal() {
-        if  (equalsAny(K_NULL)) {
-            match(K_NULL);
+        if  (equalsAny(K_TRUE)) {
+            match(K_TRUE);
         } else if  (equalsAny(K_FALSE)) {
             match(K_FALSE);
+        } else if  (equalsAny(INT)) {
+            match(INT);
+        } else if  (equalsAny(K_NULL)) {
+            match(K_NULL);
         } else if  (equalsAny(STRING)) {
             match(STRING);
         } else if  (equalsAny(CHAR)) {
             match(CHAR);
-        } else if  (equalsAny(K_TRUE)) {
-            match(K_TRUE);
-        } else if  (equalsAny(INT)) {
-            match(INT);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (literal) pero se encontro"+next.getType(), next);
@@ -421,12 +433,12 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void operadorUnario() {
-        if  (equalsAny(OP_MINUS)) {
-            match(OP_MINUS);
-        } else if  (equalsAny(OP_PLUS)) {
+        if  (equalsAny(OP_PLUS)) {
             match(OP_PLUS);
         } else if  (equalsAny(OP_NOT)) {
             match(OP_NOT);
+        } else if  (equalsAny(OP_MINUS)) {
+            match(OP_MINUS);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (operadorUnario) pero se encontro"+next.getType(), next);
@@ -440,7 +452,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void listaArgsFormalesOVacio() {
-        if (equalsAny(ID_CLS, K_CHAR, K_INT, K_BOOLEAN, K_STRING)) {
+        if (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS)) {
             listaArgsFormales();
         } else {
             // Nothing
@@ -467,10 +479,19 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void atributo() {
-        visibilidad();
-        tipo();
-        listaDecAtrs();
-        match(P_SEMICOLON);
+        if  (equalsAny(K_PUBLIC, K_PRIVATE)) {
+            visibilidad();
+            tipo();
+            listaDecAtrs();
+            match(P_SEMICOLON);
+        } else if  (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR)) {
+            tipoPrimitivo();
+            listaDecAtrs();
+            match(P_SEMICOLON);
+        } else {
+            Token next = sequence.next().orElse(null);
+            throw new SyntacticException("Se esperaba (atributo) pero se encontro"+next.getType(), next);
+        }
     }
 
     private void listaDecAtrs() {
@@ -488,10 +509,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void tipo() {
-        if  (equalsAny(ID_CLS)) {
-            match(ID_CLS);
-        } else if  (equalsAny(K_CHAR, K_INT, K_BOOLEAN, K_STRING)) {
+        if  (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR)) {
             tipoPrimitivo();
+        } else if  (equalsAny(ID_CLS)) {
+            match(ID_CLS);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (tipo) pero se encontro"+next.getType(), next);
@@ -499,14 +520,14 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void tipoPrimitivo() {
-        if  (equalsAny(K_CHAR)) {
-            match(K_CHAR);
+        if  (equalsAny(K_STRING)) {
+            match(K_STRING);
         } else if  (equalsAny(K_INT)) {
             match(K_INT);
         } else if  (equalsAny(K_BOOLEAN)) {
             match(K_BOOLEAN);
-        } else if  (equalsAny(K_STRING)) {
-            match(K_STRING);
+        } else if  (equalsAny(K_CHAR)) {
+            match(K_CHAR);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (tipoPrimitivo) pero se encontro"+next.getType(), next);
@@ -514,10 +535,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void visibilidad() {
-        if  (equalsAny(K_PRIVATE)) {
-            match(K_PRIVATE);
-        } else if  (equalsAny(K_PUBLIC)) {
+        if  (equalsAny(K_PUBLIC)) {
             match(K_PUBLIC);
+        } else if  (equalsAny(K_PRIVATE)) {
+            match(K_PRIVATE);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (visibilidad) pero se encontro"+next.getType(), next);
