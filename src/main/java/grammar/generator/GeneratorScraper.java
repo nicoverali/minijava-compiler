@@ -2,6 +2,7 @@ package grammar.generator;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
 import grammar.Grammar;
 import grammar.GrammarBody;
 import grammar.GrammarTerm;
@@ -24,7 +25,7 @@ public class GeneratorScraper {
         visited = new ArrayList<>();
         List<GeneratorMethod> methods = new ArrayList<>();
         addMethods(methods, initialTerm);
-        return methods;
+        return Lists.reverse(methods);
     }
 
     private void addMethods(List<GeneratorMethod> methods, GrammarTerm currentTerm){

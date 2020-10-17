@@ -5,25 +5,24 @@ import com.google.common.base.Joiner;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Scanner;
 
 public class GeneratorPrinter {
 
+    private static final String EQUALS_METHOD = "equalsAny";
+
     private final PrintWriter out;
-    private final Scanner input = new Scanner(System.in);
-    private boolean askExceptions = false;
 
     public GeneratorPrinter(String filePath) throws IOException {
          out = new PrintWriter(new FileWriter(filePath));
     }
 
     public void print(List<GeneratorMethod> methods){
-        askIfShouldAskForExceptions();
         for (GeneratorMethod method : methods){
             printMethodSignature(method);
-            if (method.hasSingleBody()){
+            if (method.hasLambda() && method.hasSingleBody()) {
+                printSingleBodyWithLambda(method);
+            } else if (method.hasSingleBody()) {
                 printSingleBody(method);
             } else {
                 printMultipleBodies(method);
@@ -35,18 +34,13 @@ public class GeneratorPrinter {
         out.close();
     }
 
-    private void askIfShouldAskForExceptions() {
-        boolean repeat;
-        do {
-            try{
-                System.out.print("Ask for exceptions ? (Y|N) :");
-                askExceptions = input.nextBoolean();
-                repeat = false;
-            } catch (InputMismatchException e){
-                repeat = true;
-            }
-            input.nextLine();
-        } while (repeat);
+    private void printSingleBodyWithLambda(GeneratorMethod method) {
+        GeneratorMethodBody body = method.getMethodBodies().get(0);
+        String tokensStr = Joiner.on(", ").join(body.getPredicateTokens());
+        out.printf("\tif (%s(%s)) {\n", EQUALS_METHOD, tokensStr);
+        body.getActions().forEach(action -> out.println("\t\t"+action));
+        out.print("\t} ");
+        printElseBody(method);
     }
 
     private void printMethodSignature(GeneratorMethod method){
@@ -62,7 +56,7 @@ public class GeneratorPrinter {
         String IF_START = "\tif ";
         for (GeneratorMethodBody body : method){
             String tokens = Joiner.on(", ").join(body.getPredicateTokens());
-            out.println(IF_START+"(anyEquals("+ tokens +")) {");
+            out.printf("%s (%s(%s)) {\n", IF_START, EQUALS_METHOD, tokens);
             body.getActions().forEach(action -> out.println("\t\t"+action));
             out.print("\t} ");
             IF_START = "else if ";
@@ -72,15 +66,10 @@ public class GeneratorPrinter {
     private void printElseBody(GeneratorMethod method){
         out.println("else {");
         if (method.hasLambda()){
-            out.println("\t\t// Nada");
+            out.println("\t\t// Nothing");
         } else {
-            if (askExceptions){
-                System.out.print("Exception when \""+method.getName()+"\" has no match: ");
-                String exception = input.nextLine();
-                out.println("\t\tthrow new Exception(\""+exception+"\");");
-            } else {
-                out.println("\t\tthrow new Exception(\"Generic exception\");");
-            }
+            out.println("\t\tToken next = sequence.next().orElse(null);");
+            out.println("\t\tthrow new SyntacticException(\"Se esperaba ("+method.getName()+") pero se encontro\"+next.getType(), next);");
         }
         out.println("\t}");
     }
