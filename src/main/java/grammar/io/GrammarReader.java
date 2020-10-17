@@ -30,6 +30,12 @@ public class GrammarReader {
     }
 
     private String[] readGrammarFile() throws IOException {
-        return new BufferedReader(new FileReader(filePath)).lines().toArray(String[]::new);
+        return new BufferedReader(new FileReader(filePath))
+                .lines().filter(this::notEmptyLine)
+                .toArray(String[]::new);
+    }
+
+    private boolean notEmptyLine(String line){
+        return !line.equals("");
     }
 }
