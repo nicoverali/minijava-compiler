@@ -61,7 +61,7 @@
 <ListaExpsOVacio> ::= <ListaExps> | EOF
 <ListaExps> ::= <Expresion>
 <ListaExps> ::= <Expresion> , <ListaExps>
-<Encadenado> ::= <VarOMetodoEncadenado><Encadenado> | EOF
+<Encadenado> ::= <VarOMetodoEncadenado> <Encadenado> | EOF
 <VarOMetodoEncadenado> ::= <VarEncadenada>
 <VarOMetodoEncadenado> ::= <MetodoEncadenado>
 <VarEncadenada> ::= . idMetVar
