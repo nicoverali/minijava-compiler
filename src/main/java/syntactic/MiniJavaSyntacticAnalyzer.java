@@ -189,6 +189,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 
     private void listaDecVars() {
         match(ID_MV);
+        asignacionOVacio();
         otrosDecVars();
     }
 
@@ -209,32 +210,83 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
         }
     }
 
-    private void asignacionOVacio() {
-        if (equalsAny(ASSIGN, ASSIGN_PLUS, ASSIGN_MINUS)) {
-            tipoDeAsignacion();
-            expresion();
+    private void elseOVacio() {
+        if (equalsAny(K_ELSE)) {
+            match(K_ELSE);
+            sentencia();
         } else {
             // Nothing
         }
     }
 
-    private void tipoDeAsignacion() {
-        if  (equalsAny(ASSIGN)) {
-            match(ASSIGN);
-        } else if  (equalsAny(ASSIGN_PLUS)) {
-            match(ASSIGN_PLUS);
-        } else if  (equalsAny(ASSIGN_MINUS)) {
-            match(ASSIGN_MINUS);
+    private void argsFormales() {
+        match(P_PAREN_OPEN);
+        listaArgsFormalesOVacio();
+        match(P_PAREN_CLOSE);
+    }
+
+    private void listaArgsFormalesOVacio() {
+        if (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS)) {
+            listaArgsFormales();
         } else {
-            Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro"+next.getType(), next);
+            // Nothing
         }
     }
 
-    private void elseOVacio() {
-        if (equalsAny(K_ELSE)) {
-            match(K_ELSE);
-            sentencia();
+    private void listaArgsFormales() {
+        argFormal();
+        otrosArgsFormales();
+    }
+
+    private void otrosArgsFormales() {
+        if (equalsAny(P_COMMA)) {
+            match(P_COMMA);
+            listaArgsFormales();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void argFormal() {
+        tipo();
+        match(ID_MV);
+    }
+
+    private void atributo() {
+        if  (equalsAny(K_PUBLIC, K_PRIVATE)) {
+            visibilidad();
+            tipo();
+            listaDecAtrs();
+            match(P_SEMICOLON);
+        } else if  (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR)) {
+            tipoPrimitivo();
+            listaDecAtrs();
+            match(P_SEMICOLON);
+        } else {
+            Token next = sequence.next().orElse(null);
+            throw new SyntacticException("Se esperaba (atributo) pero se encontro"+next.getType(), next);
+        }
+    }
+
+    private void listaDecAtrs() {
+        match(ID_MV);
+        asignacionOVacio();
+        otrosDecAtrs();
+    }
+
+    private void otrosDecAtrs() {
+        if (equalsAny(P_COMMA)) {
+            match(P_COMMA);
+            listaDecAtrs();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void asignacionOVacio() {
+        if (equalsAny(ASSIGN, ASSIGN_PLUS, ASSIGN_MINUS)) {
+            tipoDeAsignacion();
+            expresion();
         } else {
             // Nothing
         }
@@ -445,66 +497,16 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
         }
     }
 
-    private void argsFormales() {
-        match(P_PAREN_OPEN);
-        listaArgsFormalesOVacio();
-        match(P_PAREN_CLOSE);
-    }
-
-    private void listaArgsFormalesOVacio() {
-        if (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS)) {
-            listaArgsFormales();
-        } else {
-            // Nothing
-        }
-    }
-
-    private void listaArgsFormales() {
-        argFormal();
-        otrosArgsFormales();
-    }
-
-    private void otrosArgsFormales() {
-        if (equalsAny(P_COMMA)) {
-            match(P_COMMA);
-            listaArgsFormales();
-        } else {
-            // Nothing
-        }
-    }
-
-    private void argFormal() {
-        tipo();
-        match(ID_MV);
-    }
-
-    private void atributo() {
-        if  (equalsAny(K_PUBLIC, K_PRIVATE)) {
-            visibilidad();
-            tipo();
-            listaDecAtrs();
-            match(P_SEMICOLON);
-        } else if  (equalsAny(K_STRING, K_INT, K_BOOLEAN, K_CHAR)) {
-            tipoPrimitivo();
-            listaDecAtrs();
-            match(P_SEMICOLON);
+    private void tipoDeAsignacion() {
+        if  (equalsAny(ASSIGN)) {
+            match(ASSIGN);
+        } else if  (equalsAny(ASSIGN_PLUS)) {
+            match(ASSIGN_PLUS);
+        } else if  (equalsAny(ASSIGN_MINUS)) {
+            match(ASSIGN_MINUS);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (atributo) pero se encontro"+next.getType(), next);
-        }
-    }
-
-    private void listaDecAtrs() {
-        match(ID_MV);
-        otrosDecAtrs();
-    }
-
-    private void otrosDecAtrs() {
-        if (equalsAny(P_COMMA)) {
-            match(P_COMMA);
-            listaDecAtrs();
-        } else {
-            // Nothing
+            throw new SyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro"+next.getType(), next);
         }
     }
 
@@ -553,7 +555,5 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             // Nothing
         }
     }
-
-
 
 }

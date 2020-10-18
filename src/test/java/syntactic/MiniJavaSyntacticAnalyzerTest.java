@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MiniJavaSyntacticAnalyzerTest {
 
-    private static final String PATH = "syntactic_tests/implicit_attributes";
-    private static final int TEST_COUNT = 3;
+    private static final String PATH = "syntactic_tests/inline_assign";
+    private static final int TEST_COUNT = 4;
 
     CodeLineFactory lineFactory = new DefaultCodeLineFactory();
 
