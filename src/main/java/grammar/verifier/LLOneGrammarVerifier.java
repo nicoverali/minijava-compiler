@@ -1,5 +1,6 @@
 package grammar.verifier;
 
+import com.google.common.collect.Iterables;
 import grammar.Grammar;
 import grammar.GrammarBody;
 import grammar.io.GrammarReader;
@@ -10,12 +11,16 @@ import java.util.stream.Collectors;
 
 public class LLOneGrammarVerifier {
 
-    private static final String FILE_PATH = "grammars/minijava-grammar-inline-assign";
+    private static final String FILE_PATH = "grammars/minijava-grammar-generics";
     private static final String LAMBDA = "EOF";
     private static final Grammar GRAMMAR = new GrammarReader(FILE_PATH, LAMBDA, new LLOneVerifierGrammarValidator()).getGrammar();
 
     public static void main(String[] args) {
         boolean isLL1 = true;
+
+
+        GrammarBody bodyy = Iterables.get(GRAMMAR.get("GenYListaAtrsOCons"), 1);
+        GRAMMAR.firstOf(bodyy);
 
         // These are not factored left
         System.out.println("These are not factored left ...");
