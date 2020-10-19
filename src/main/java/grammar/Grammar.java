@@ -137,8 +137,7 @@ public class Grammar {
         if (body.size() == 1) return firstOf(body.first());
 
         List<GrammarTerm> firsts = new ArrayList<>(firstOf(body.first()));
-        //noinspection SuspiciousMethodCalls
-        if (firsts.remove(LAMBDA)){
+        if (firsts.removeIf(term -> term.equals(LAMBDA))){
             firsts.addAll(firstOf(body.subrange(1, body.size())));
         }
         return firsts;
