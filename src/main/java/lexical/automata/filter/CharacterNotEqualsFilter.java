@@ -17,6 +17,6 @@ public class CharacterNotEqualsFilter implements LexicalFilter{
 
     @Override
     public String toString() {
-        return "not equals " + Characters.formatSpecialCharacters(testCharacter);
+        return "not equals " + Characters.explicitSpecialChars(testCharacter);
     }
 }
