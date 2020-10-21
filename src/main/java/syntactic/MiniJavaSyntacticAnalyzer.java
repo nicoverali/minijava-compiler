@@ -22,7 +22,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
         if (next.getType() == EOF) {
             throw new SyntacticException("Se esperaba " + type + " pero se llego al final del archivo", next);
         } else if (next.getType() != type) {
-            throw new SyntacticException("Se esperaba " + type + " pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba " + type + " pero se encontro " + next.getType(), next);
         }
     }
 
@@ -53,7 +53,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             otrasClasesInterfaces();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (listaClasesInterfaces) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (listaClasesInterfaces) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -143,7 +143,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             metodo();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (miembroClase) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (miembroClase) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -162,7 +162,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             tipo();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (tipoMetodo) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (tipoMetodo) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -173,7 +173,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(K_DYNAMIC);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (formaMetodo) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (formaMetodo) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -189,7 +189,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(P_SEMICOLON);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (atributo) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (atributo) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -200,7 +200,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(K_PRIVATE);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (visibilidad) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (visibilidad) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -213,7 +213,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(P_SEMICOLON);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (genYListaAtrsOCons) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (genYListaAtrsOCons) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -284,7 +284,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             bloque();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (sentencia) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (sentencia) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -330,7 +330,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(ASSIGN_PLUS);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -368,7 +368,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(OP_NOTEQ);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (opNivel1) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (opNivel1) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -436,7 +436,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(OP_LT);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (opNivel4) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (opNivel4) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -462,7 +462,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(OP_PLUS);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (opNivel5) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (opNivel5) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -490,7 +490,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(OP_DIV);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (opNivel6) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (opNivel6) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -502,7 +502,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             operando();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (expresionUnaria) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (expresionUnaria) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -515,7 +515,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(OP_NOT);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (operadorUnario) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (operadorUnario) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -526,7 +526,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             literal();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (operando) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (operando) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -545,7 +545,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(INT);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (literal) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (literal) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -584,7 +584,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(P_PAREN_CLOSE);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (primario) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (primario) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -628,7 +628,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             genRestoImplicito();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (restoGenericidad) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (restoGenericidad) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -722,7 +722,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             genExplicitaOVacio();
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (tipo) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (tipo) pero se encontro " + next.getType(), next);
         }
     }
 
@@ -737,7 +737,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(K_INT);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (tipoPrimitivo) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (tipoPrimitivo) pero se encontro " + next.getType(), next);
         }
     }
 
