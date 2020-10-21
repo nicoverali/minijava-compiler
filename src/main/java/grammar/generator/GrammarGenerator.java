@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GrammarGenerator {
 
-    private static final String FILE_PATH = "grammars/minijava-grammar-generics";
+    private static final String FILE_PATH = "grammars/minijava-grammar-operator-precedence";
     private static final String LAMBDA = "EOF";
     private static final GrammarTerm INITIAL = new GrammarTerm("Inicial", true);
 

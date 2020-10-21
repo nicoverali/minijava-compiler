@@ -34,6 +34,7 @@ class MiniJavaSyntacticAnalyzerTest {
         paths.add(Pair.of(BASE+"inline_assign", 4));
         paths.add(Pair.of(BASE+"implicit_attributes", 3));
         paths.add(Pair.of(BASE+"generics", 8));
+        paths.add(Pair.of(BASE+"operator_precedence", 1));
     }
 
 

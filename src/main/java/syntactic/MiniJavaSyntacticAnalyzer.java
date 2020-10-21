@@ -145,7 +145,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void listaSentencias() {
-        if (equalsAny(K_RETURN, ID_MV, K_STATIC, K_THIS, K_NEW, P_PAREN_OPEN, K_IF, K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS, K_WHILE, P_SEMICOLON, P_BRCKT_OPEN)) {
+        if (equalsAny(K_RETURN, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN, K_IF, K_STRING, K_INT, K_BOOLEAN, K_CHAR, ID_CLS, K_WHILE, P_SEMICOLON, P_BRCKT_OPEN)) {
             sentencia();
             listaSentencias();
         } else {
@@ -158,7 +158,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(K_RETURN);
             expresionOVacio();
             match(P_SEMICOLON);
-        } else if (equalsAny(ID_MV, K_STATIC, K_THIS, K_NEW, P_PAREN_OPEN)) {
+        } else if (equalsAny(ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
             acceso();
             asignacionOVacio();
             match(P_SEMICOLON);
@@ -214,7 +214,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void expresionOVacio() {
-        if (equalsAny(OP_PLUS, OP_NOT, OP_MINUS, K_TRUE, STRING, INT, CHAR, K_NULL, K_FALSE, ID_MV, K_STATIC, K_THIS, K_NEW, P_PAREN_OPEN)) {
+        if (equalsAny(OP_MINUS, OP_PLUS, OP_NOT, K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
             expresion();
         } else {
             // Nothing
@@ -295,58 +295,162 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void expresion() {
-        expresionUnaria();
-        expresionResto();
+        expNivel1();
     }
 
-    private void expresionResto() {
-        if (equalsAny(OP_DIV, OP_EQ, OP_MINUS, OP_LTE, OP_PLUS, OP_MULT, OP_LT, OP_OR, OP_MOD, OP_NOTEQ, OP_AND, OP_GT, OP_GTE)) {
-            operadorBinario();
-            expresionUnaria();
-            expresionResto();
+    private void expNivel1() {
+        expNivel2();
+        expNivel1Resto();
+    }
+
+    private void expNivel1Resto() {
+        if (equalsAny(OP_EQ, OP_NOTEQ)) {
+            opNivel1();
+            expNivel2();
+            expNivel1Resto();
         } else {
             // Nothing
         }
     }
 
-    private void operadorBinario() {
-        if (equalsAny(OP_DIV)) {
-            match(OP_DIV);
-        } else if (equalsAny(OP_EQ)) {
+    private void opNivel1() {
+        if (equalsAny(OP_EQ)) {
             match(OP_EQ);
-        } else if (equalsAny(OP_MINUS)) {
-            match(OP_MINUS);
-        } else if (equalsAny(OP_LTE)) {
-            match(OP_LTE);
-        } else if (equalsAny(OP_PLUS)) {
-            match(OP_PLUS);
-        } else if (equalsAny(OP_MULT)) {
-            match(OP_MULT);
-        } else if (equalsAny(OP_LT)) {
-            match(OP_LT);
-        } else if (equalsAny(OP_OR)) {
-            match(OP_OR);
-        } else if (equalsAny(OP_MOD)) {
-            match(OP_MOD);
         } else if (equalsAny(OP_NOTEQ)) {
             match(OP_NOTEQ);
-        } else if (equalsAny(OP_AND)) {
-            match(OP_AND);
+        } else {
+            Token next = sequence.next().orElse(null);
+            throw new SyntacticException("Se esperaba (opNivel1) pero se encontro" + next.getType(), next);
+        }
+    }
+
+    private void expNivel2() {
+        expNivel3();
+        expNivel2Resto();
+    }
+
+    private void expNivel2Resto() {
+        if (equalsAny(OP_AND)) {
+            opNivel2();
+            expNivel3();
+            expNivel2Resto();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void opNivel2() {
+        match(OP_AND);
+    }
+
+    private void expNivel3() {
+        expNivel4();
+        expNivel3Resto();
+    }
+
+    private void expNivel3Resto() {
+        if (equalsAny(OP_OR)) {
+            opNivel3();
+            expNivel4();
+            expNivel3Resto();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void opNivel3() {
+        match(OP_OR);
+    }
+
+    private void expNivel4() {
+        expNivel5();
+        expNivel4Resto();
+    }
+
+    private void expNivel4Resto() {
+        if (equalsAny(OP_LT, OP_GT, OP_GTE, OP_LTE)) {
+            opNivel4();
+            expNivel5();
+            expNivel4Resto();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void opNivel4() {
+        if (equalsAny(OP_LT)) {
+            match(OP_LT);
         } else if (equalsAny(OP_GT)) {
             match(OP_GT);
         } else if (equalsAny(OP_GTE)) {
             match(OP_GTE);
+        } else if (equalsAny(OP_LTE)) {
+            match(OP_LTE);
         } else {
             Token next = sequence.next().orElse(null);
-            throw new SyntacticException("Se esperaba (operadorBinario) pero se encontro" + next.getType(), next);
+            throw new SyntacticException("Se esperaba (opNivel4) pero se encontro" + next.getType(), next);
+        }
+    }
+
+    private void expNivel5() {
+        expNivel6();
+        expNivel5Resto();
+    }
+
+    private void expNivel5Resto() {
+        if (equalsAny(OP_PLUS, OP_MINUS)) {
+            opNivel5();
+            expNivel6();
+            expNivel5Resto();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void opNivel5() {
+        if (equalsAny(OP_PLUS)) {
+            match(OP_PLUS);
+        } else if (equalsAny(OP_MINUS)) {
+            match(OP_MINUS);
+        } else {
+            Token next = sequence.next().orElse(null);
+            throw new SyntacticException("Se esperaba (opNivel5) pero se encontro" + next.getType(), next);
+        }
+    }
+
+    private void expNivel6() {
+        expresionUnaria();
+        expNivel6Resto();
+    }
+
+    private void expNivel6Resto() {
+        if (equalsAny(OP_DIV, OP_MULT, OP_MOD)) {
+            opNivel6();
+            expresionUnaria();
+            expNivel6Resto();
+        } else {
+            // Nothing
+        }
+    }
+
+    private void opNivel6() {
+        if (equalsAny(OP_DIV)) {
+            match(OP_DIV);
+        } else if (equalsAny(OP_MULT)) {
+            match(OP_MULT);
+        } else if (equalsAny(OP_MOD)) {
+            match(OP_MOD);
+        } else {
+            Token next = sequence.next().orElse(null);
+            throw new SyntacticException("Se esperaba (opNivel6) pero se encontro" + next.getType(), next);
         }
     }
 
     private void expresionUnaria() {
-        if (equalsAny(OP_PLUS, OP_NOT, OP_MINUS)) {
+        if (equalsAny(OP_MINUS, OP_PLUS, OP_NOT)) {
             operadorUnario();
             operando();
-        } else if (equalsAny(K_TRUE, STRING, INT, CHAR, K_NULL, K_FALSE, ID_MV, K_STATIC, K_THIS, K_NEW, P_PAREN_OPEN)) {
+        } else if (equalsAny(K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
             operando();
         } else {
             Token next = sequence.next().orElse(null);
@@ -355,9 +459,9 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void operando() {
-        if (equalsAny(K_TRUE, STRING, INT, CHAR, K_NULL, K_FALSE)) {
+        if (equalsAny(K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT)) {
             literal();
-        } else if (equalsAny(ID_MV, K_STATIC, K_THIS, K_NEW, P_PAREN_OPEN)) {
+        } else if (equalsAny(ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
             acceso();
         } else {
             Token next = sequence.next().orElse(null);
@@ -390,10 +494,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             accesoVarOMetodo();
         } else if (equalsAny(K_STATIC)) {
             accesoEstatico();
-        } else if (equalsAny(K_THIS)) {
-            accesoThis();
         } else if (equalsAny(K_NEW)) {
             accesoConstructor();
+        } else if (equalsAny(K_THIS)) {
+            accesoThis();
         } else if (equalsAny(P_PAREN_OPEN)) {
             match(P_PAREN_OPEN);
             expresion();
@@ -402,6 +506,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (primario) pero se encontro" + next.getType(), next);
         }
+    }
+
+    private void accesoThis() {
+        match(K_THIS);
     }
 
     private void accesoConstructor() {
@@ -440,10 +548,6 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
         match(OP_GT);
     }
 
-    private void accesoThis() {
-        match(K_THIS);
-    }
-
     private void accesoEstatico() {
         match(K_STATIC);
         match(ID_CLS);
@@ -476,7 +580,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void listaExpsOVacio() {
-        if (equalsAny(OP_PLUS, OP_NOT, OP_MINUS, K_TRUE, STRING, INT, CHAR, K_NULL, K_FALSE, ID_MV, K_STATIC, K_THIS, K_NEW, P_PAREN_OPEN)) {
+        if (equalsAny(OP_MINUS, OP_PLUS, OP_NOT, K_NULL, K_FALSE, STRING, CHAR, K_TRUE, INT, ID_MV, K_STATIC, K_NEW, K_THIS, P_PAREN_OPEN)) {
             listaExps();
         } else {
             // Nothing
@@ -498,18 +602,18 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void literal() {
-        if (equalsAny(K_TRUE)) {
-            match(K_TRUE);
-        } else if (equalsAny(STRING)) {
-            match(STRING);
-        } else if (equalsAny(INT)) {
-            match(INT);
-        } else if (equalsAny(CHAR)) {
-            match(CHAR);
-        } else if (equalsAny(K_NULL)) {
+        if (equalsAny(K_NULL)) {
             match(K_NULL);
         } else if (equalsAny(K_FALSE)) {
             match(K_FALSE);
+        } else if (equalsAny(STRING)) {
+            match(STRING);
+        } else if (equalsAny(CHAR)) {
+            match(CHAR);
+        } else if (equalsAny(K_TRUE)) {
+            match(K_TRUE);
+        } else if (equalsAny(INT)) {
+            match(INT);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (literal) pero se encontro" + next.getType(), next);
@@ -517,12 +621,12 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
     private void operadorUnario() {
-        if (equalsAny(OP_PLUS)) {
+        if (equalsAny(OP_MINUS)) {
+            match(OP_MINUS);
+        } else if (equalsAny(OP_PLUS)) {
             match(OP_PLUS);
         } else if (equalsAny(OP_NOT)) {
             match(OP_NOT);
-        } else if (equalsAny(OP_MINUS)) {
-            match(OP_MINUS);
         } else {
             Token next = sequence.next().orElse(null);
             throw new SyntacticException("Se esperaba (operadorUnario) pero se encontro" + next.getType(), next);
