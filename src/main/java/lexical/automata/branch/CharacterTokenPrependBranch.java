@@ -17,9 +17,8 @@ import java.util.Optional;
  */
 public class CharacterTokenPrependBranch extends NodeBranchDecorator<AutomataToken> {
 
-    public CharacterTokenPrependBranch(NodeBranch<AutomataToken> decorated) {
-        super(decorated);
-    }
+    public CharacterTokenPrependBranch(){super();}
+
     @Override
     public @Nullable AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
         Optional<CodeCharacter> currentCharacter = reader.peek();

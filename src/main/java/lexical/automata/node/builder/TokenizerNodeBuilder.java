@@ -7,6 +7,7 @@ import lexical.automata.AutomataToken;
 import lexical.automata.NodeBranch;
 import lexical.automata.LexicalNode;
 import lexical.automata.branch.CharacterLexemePrependBranch;
+import lexical.automata.branch.CharacterTokenPrependBranch;
 import lexical.automata.filter.LexicalFilter;
 import lexical.automata.node.DefaultLexicalNode;
 import lexical.automata.node.LexicalNodeStrategy;
@@ -67,6 +68,7 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
 
         public TokenizerBranchBuilder(LexicalFilter filter, TokenizerNodeBuilder nodeBuilder) {
             super(filter, nodeBuilder);
+            super.decorate(new CharacterTokenPrependBranch());
         }
 
         @Override
