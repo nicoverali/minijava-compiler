@@ -27,7 +27,7 @@ public class TokenizeInitialStrategy implements LexicalNodeStrategy<AutomataToke
     @Override
     public @Nullable AutomataToken onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
         reader.next(); // Consume character
-        throw new LexicalException(errorMsg, AutomataLexeme.create(currentCharacter));
+        throw new LexicalException(errorMsg, AutomataLexeme.empty(currentCharacter.getCodeLine()));
     }
 
     @Override

@@ -25,7 +25,7 @@ public class LexicalErrorStrategy<T> implements LexicalNodeStrategy<T> {
 
     @Override
     public T onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
-        throw new LexicalException(errorMsg, AutomataLexeme.create(currentCharacter));
+        throw new LexicalException(errorMsg, AutomataLexeme.empty(currentCharacter.getCodeLine()));
     }
 
     @Override
