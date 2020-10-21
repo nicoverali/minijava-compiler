@@ -12,30 +12,45 @@ import lexical.analyzer.MiniJavaLexicalAnalyzer;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import util.Pair;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MiniJavaSyntacticAnalyzerTest {
 
-    private static final String PATH = "syntactic_tests/generics";
-    private static final int TEST_COUNT = 8;
+    private static final String BASE = "syntactic_tests/";
+    private static final List<Pair<String, Integer>> paths = new ArrayList<>();
+    static {
+        paths.add(Pair.of(BASE+"base", 32));
+        paths.add(Pair.of(BASE+"inline_assign", 4));
+        paths.add(Pair.of(BASE+"implicit_attributes", 3));
+        paths.add(Pair.of(BASE+"generics", 8));
+    }
 
-    CodeLineFactory lineFactory = new DefaultCodeLineFactory();
 
     private static Stream<Arguments> syntacticTestFiles() {
-        ClassLoader loader = MiniJavaSyntacticAnalyzer.class.getClassLoader();
-        Arguments[] arguments = new Arguments[TEST_COUNT];
-        for (int i = 1; i <= TEST_COUNT; i++) {
-            arguments[i-1] = Arguments.of(loader.getResource(PATH+"/test_"+i+".java").getPath());
-        }
+        Arguments[] arguments = paths.stream().flatMap(pair -> IntStream.range(1, pair.second+1)
+                                                                .mapToObj(fileNumber -> load(pair.first, fileNumber))
+                                                ).toArray(Arguments[]::new);
 
         return Stream.of(arguments);
     }
+
+    private static Arguments load(String path, int fileNumber){
+        ClassLoader loader = MiniJavaSyntacticAnalyzer.class.getClassLoader();
+        return Arguments.of(loader.getResource(path+"/test_"+fileNumber+".java").getPath());
+    }
+
+    CodeLineFactory lineFactory = new DefaultCodeLineFactory();
 
     @ParameterizedTest
     @MethodSource("syntacticTestFiles")
