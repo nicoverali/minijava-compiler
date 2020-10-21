@@ -14,7 +14,9 @@ public class GrammarTokenMapper {
     private static final Map<String, TokenType> map = new HashMap<>();
     static {
         map.put("class", K_CLASS);
+        map.put("interface", K_INTERFACE);
         map.put("extends", K_EXTENDS);
+        map.put("implements", K_IMPLEMENTS);
         map.put("public", K_PUBLIC);
         map.put("private", K_PRIVATE);
         map.put("boolean", K_BOOLEAN);
@@ -71,12 +73,12 @@ public class GrammarTokenMapper {
     }
 
     public static TokenType map(String term){
-        return Verify.verifyNotNull(map.get(term), "The given term does not exist in this map");
+        return Verify.verifyNotNull(map.get(term), "The given term ("+term+") does not exist in this map");
     }
 
     public static TokenType map(GrammarTerm term){
         if (term.isNonTerminal()) throw new IllegalArgumentException("A non terminal can't be mapped to a Token");
-        return Verify.verifyNotNull(map.get(term.toString()), "The given term does not exist in this map");
+        return Verify.verifyNotNull(map.get(term.toString()), "The given term ("+term.getName()+") does not exist in this map");
     }
 
 }

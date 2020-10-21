@@ -22,7 +22,9 @@ public class KeywordBranch extends NodeBranchDecorator<AutomataToken> {
     private static final Map<String, TokenType> keywordMap = new HashMap<>();
     static {
         keywordMap.put("class", K_CLASS);
+        keywordMap.put("interface", K_INTERFACE);
         keywordMap.put("extends", K_EXTENDS);
+        keywordMap.put("implements", K_IMPLEMENTS);
         keywordMap.put("static", K_STATIC);
         keywordMap.put("dynamic", K_DYNAMIC);
         keywordMap.put("void", K_VOID);

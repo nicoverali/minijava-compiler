@@ -31,11 +31,12 @@ class MiniJavaSyntacticAnalyzerTest {
     private static final String BASE = "syntactic_tests/";
     private static final List<Pair<String, Integer>> paths = new ArrayList<>();
     static {
-        paths.add(Pair.of(BASE+"base", 32));
+        paths.add(Pair.of(BASE+"base", 33));
         paths.add(Pair.of(BASE+"inline_assign", 4));
         paths.add(Pair.of(BASE+"implicit_attributes", 3));
         paths.add(Pair.of(BASE+"generics", 8));
         paths.add(Pair.of(BASE+"operator_precedence", 1));
+        paths.add(Pair.of(BASE+"interfaces", 18));
     }
 
 
