@@ -10,12 +10,12 @@ public class LexicalException extends RuntimeException {
     private final int lineNumber;
     private final int columnNumber;
 
-    public LexicalException(String message, PrependableLexeme lexeme) {
+    public LexicalException(String message, PrependableLexeme lexeme, int columnNumber) {
         super(message);
         this.lexeme = lexeme;
         this.line = lexeme.getFirstLine().map(CodeLine::toString).orElse("");
         this.lineNumber = lexeme.getLineNumber();
-        this.columnNumber = lexeme.getColumnNumber();
+        this.columnNumber = columnNumber;
     }
 
     /**
