@@ -17,6 +17,7 @@ import util.Pair;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,24 +49,33 @@ class MiniJavaSyntacticAnalyzerTest {
 
     private static Arguments load(String path, int fileNumber){
         ClassLoader loader = MiniJavaSyntacticAnalyzer.class.getClassLoader();
-        return Arguments.of(loader.getResource(path+"/test_"+fileNumber+".java").getPath());
+        String completePath = loader.getResource(path+"/test_"+fileNumber+".java").getPath();
+
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(completePath));
+            reader.readLine();
+            String description = reader.readLine() +" -@-> ("+path+" | "+fileNumber+")";
+            return Arguments.of(completePath, description);
+        } catch (IOException e){
+            throw new UncheckedIOException(e);
+        }
     }
 
     CodeLineFactory lineFactory = new DefaultCodeLineFactory();
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "[{index}] {1}")
     @MethodSource("syntacticTestFiles")
-    void testFiles(String filePath) throws IOException {
+    void testFiles(String filePath, String description) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
         String errorToken = getErrorToken(bufferedReader);
         SyntacticAnalyzer testSubject = getSyntacticAnalyzer(bufferedReader);
 
         try{
             testSubject.analyze();
-            assertEquals("", errorToken); // If does not throw exception then we should expect an exception
+            assertEquals("", errorToken, "Test pass, but we expected an exception"); // If does not throw exception then we should expect an exception
         } catch (SyntacticException e){
             Token eToken = e.getExceptionToken();
-            System.out.println("Exception at ["+eToken.getLineNumber()+", "+eToken.getColumnNumber()+"] token"+e.getExceptionToken().getType());
+            System.out.println("Exception at ["+eToken.getLineNumber()+", "+eToken.getColumnNumber()+"] token "+e.getExceptionToken().getType()+ " message: "+e.getMessage());
             assertEquals(errorToken, e.getExceptionToken().getType().name());
         }
     }
