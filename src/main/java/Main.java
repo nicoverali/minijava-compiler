@@ -24,6 +24,7 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
+        if (args.length < 1) throw new IllegalArgumentException("Se debe proveer el nombre del archivo a compilar.");
         SyntacticAnalyzer syntacticAnalyzer = createSyntacticAnalyzer(args[0]);
 
         try {
