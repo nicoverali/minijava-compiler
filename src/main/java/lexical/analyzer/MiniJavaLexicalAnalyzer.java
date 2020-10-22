@@ -55,12 +55,6 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
 
     private static final LexicalNode<AutomataToken> assignMinusAcceptor = new TokenizerAcceptorBuilder(ASSIGN_MINUS).build();
 
-    private static final LexicalNode<AutomataToken> assignMultAcceptor = new TokenizerAcceptorBuilder(ASSIGN_MULT).build();
-
-    private static final LexicalNode<AutomataToken> assignDivAcceptor = new TokenizerAcceptorBuilder(ASSIGN_DIV).build();
-
-    private static final LexicalNode<AutomataToken> assignModAcceptor = new TokenizerAcceptorBuilder(ASSIGN_MOD).build();
-
     // -------- //
 
     // ---------- ASSIGNMENT AND EQUALS ------------ //
@@ -86,20 +80,11 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
                     .ifEquals('=').storeInLexeme().thenMoveTo(assignMinusAcceptor)
                     .orElseReturnToken(OP_MINUS);
 
-    private static final LexicalNode<AutomataToken> multiplicationAcceptor =
-            new TokenizerNodeBuilder("Tries to match mult_assign token or else return plus token")
-                    .ifEquals('=').storeInLexeme().thenMoveTo(assignMultAcceptor)
-                    .orElseReturnToken(OP_MULT);
+    private static final LexicalNode<AutomataToken> multiplicationAcceptor = new TokenizerAcceptorBuilder(OP_MULT).build();
 
-    private static final LexicalNode<AutomataToken> divisionAcceptor =
-            new TokenizerNodeBuilder("Tries to match div_assign token or else return plus token")
-                    .ifEquals('=').storeInLexeme().thenMoveTo(assignDivAcceptor)
-                    .orElseReturnToken(OP_DIV);
+    private static final LexicalNode<AutomataToken> divisionAcceptor = new TokenizerAcceptorBuilder(OP_DIV).build();
 
-    private static final LexicalNode<AutomataToken> moduleAcceptor =
-            new TokenizerNodeBuilder("Tries to match mod_assign token or else return plus token")
-                    .ifEquals('=').storeInLexeme().thenMoveTo(assignModAcceptor)
-                    .orElseReturnToken(OP_MOD);
+    private static final LexicalNode<AutomataToken> moduleAcceptor = new TokenizerAcceptorBuilder(OP_MOD).build();
 
     private static final LexicalNode<AutomataToken> andAcceptor = new TokenizerAcceptorBuilder(OP_AND).build();
 
