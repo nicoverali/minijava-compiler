@@ -191,11 +191,11 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode<Boolean> multiLineCommentClosingNode =
             new OmitterNodeBuilder("Tries to match the final comment character, or else throws exception")
                     .ifEquals('/').thenMoveTo(multiLineCommentAcceptor)
-                    .orElseThrow("");
+                    .orElseReject();
 
     private static final LexicalNode<Boolean> multiLineCommentInitialNode =
             new OmitterNodeBuilder("Skips all characters except '*' that may mark the end of comment")
-                .ifEquals('*').thenTry(multiLineCommentClosingNode,5)
+                .ifEquals('*').thenTry(multiLineCommentClosingNode,2)
                 .ifAnyExcept('*').thenRepeat()
                 .orElseThrow("Comentario multi-linea no cerrado.");
 
@@ -212,7 +212,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode<Boolean> omitterInitialNode =
             new OmitterNodeBuilder("Skips comments and whitespaces")
                     .ifPass(new WhitespaceFilter()).thenRepeat()
-                    .ifEquals('/').consumeOnlyIfAccept(2).thenMoveTo(commentsInitialNode)
+                    .ifEquals('/').thenTry(commentsInitialNode, 2)
                     .orElseAccept();
 
     private static final LexicalNode<AutomataToken> tokenizerInitialNode =

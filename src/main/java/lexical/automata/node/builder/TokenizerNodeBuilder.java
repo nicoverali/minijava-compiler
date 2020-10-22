@@ -40,6 +40,16 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
     }
 
     /**
+     * Makes the {@link LexicalNode} being built to reject the current state and return a <code>null</code> value,
+     * meaning that it could not generate a result.
+     *
+     * @return the final {@link LexicalNode}
+     */
+    public LexicalNode<AutomataToken> orElseReject(){
+        return buildingNode;
+    }
+
+    /**
      * Makes the {@link LexicalNode} being built return a {@link Token} of the specified type whenever it cannot
      * delegate the processing of characters.
      *
