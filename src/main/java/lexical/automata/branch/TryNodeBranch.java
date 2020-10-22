@@ -7,12 +7,11 @@ import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
 import org.jetbrains.annotations.Nullable;
 
+
 /**
- * This branch works like a common branch, but when it detects a lexical error,
- * it will not propagate the exceptions and will only return a <code>null</code> value, besides in that case
- * it will not consume any character of the {@link SourceCodeReader}
- *
- * @param <T> type of element return by the {@link LexicalNode} it connects
+ * This type of {@link NodeBranch} delegates processing of characters as usual, but only consumes the
+ * current character if the delegation does actually produce a result, or put another way, if the characters
+ * are accepted by the following nodes
  */
 public class TryNodeBranch<T> extends NodeBranchDecorator<T> {
 
@@ -26,12 +25,13 @@ public class TryNodeBranch<T> extends NodeBranchDecorator<T> {
     @Override
     public @Nullable T delegate(SourceCodeReader reader) {
         reader.mark(readAheadLimit);
-        try {
-            return decorated.delegate(reader);
-        } catch (LexicalException e){
-            reader.reset();
-            return null;
-        }
+        T result = decorated.delegate(reader);
+        if (rejects(result)) reader.reset();
+        return result;
+    }
+
+    private boolean rejects(T result){
+        return result == null;
     }
 
     @Override

@@ -3,7 +3,6 @@ package lexical.automata.node.builder;
 import io.code.reader.SourceCodeReader;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
-import lexical.automata.branch.ConsumeOnlyIfAcceptBranch;
 import lexical.automata.branch.DefaultNodeBranch;
 import lexical.automata.branch.ExceptionBranch;
 import lexical.automata.branch.NodeBranchDecorator;
@@ -104,19 +103,14 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
         }
 
         /**
-         * Sets the given {@link LexicalNode} as the next node of the {@link NodeBranch} being built.
-         * The branch will try to delegate work to the node; if it can, then the result will be propagated
-         * to the parent node, else a <code>null</code> value will be propagated.
-         * The parent node then will be able select another branch in case this one fails.
-         * <br><br>
+         * Makes the branch consume a character only if the delegation actually generates a new element, otherwise
+         * the {@link SourceCodeReader} will be restore to its original state.
          * Since {@link SourceCodeReader} has a finite buffer, the branch will need the maximum numbers of characters
-         * that may be read before an exception is thrown and thus the reader is restore. Setting a low value
+         * that may be read before delegation gets rejected and thus the reader is restore. Setting a low value
          * may cause an exception.
          *
-         * @see TryNodeBranch
-         * @param nextNode next {@link LexicalNode} of this branch
-         * @param aheadLimit maximum numbers of characters that may be read before an exception is thrown
-         * @return a node builder to keep building the node
+         * @param aheadLimit maximum numbers of characters that may be read before delegation gets rejected
+         * @return a branch builder to keep building the branch
          */
         public U thenTry(LexicalNode<S> nextNode, int aheadLimit){
             buildingBranch.setNextNode(nextNode);
@@ -160,22 +154,6 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
             buildingBranch = decorator;
             return getThis();
         }
-
-        /**
-         * Makes the branch consume a character only if the delegation actually generates a new element, otherwise
-         * the {@link SourceCodeReader} will be restore to its original state.
-         * Since {@link SourceCodeReader} has a finite buffer, the branch will need the maximum numbers of characters
-         * that may be read before delegation gets rejected and thus the reader is restore. Setting a low value
-         * may cause an exception.
-         *
-         * @param aheadLimit maximum numbers of characters that may be read before delegation gets rejected
-         * @return a branch builder to keep building the branch
-         */
-        public V consumeOnlyIfAccept(int aheadLimit){
-            buildingBranch = new ConsumeOnlyIfAcceptBranch<>(buildingBranch, aheadLimit);
-            return getThis();
-        }
-
 
     }
 }
