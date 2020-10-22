@@ -14,7 +14,7 @@ public class TokenPrinter {
 
     public void print(Token token){
         int line = token.getLineNumber()+1;
-        String lexeme = Characters.explicitSpecialChars(token.getLexeme().toString());
+        String lexeme = token.getLexeme().toString();
         String tokenData = Joiner.on(',').join(token.getType(), lexeme, line);
         out.println("("+ tokenData +")");
     }
