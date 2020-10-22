@@ -32,6 +32,11 @@ public class DefaultLexicalNode<T> implements LexicalNode<T> {
         this.name = name;
     }
 
+    public DefaultLexicalNode(String name, LexicalNodeStrategy<T> strategy) {
+        this.name = name;
+        this.strategy = strategy;
+    }
+
     public void setStrategy(LexicalNodeStrategy<T> strategy){
         this.strategy = strategy;
     }
