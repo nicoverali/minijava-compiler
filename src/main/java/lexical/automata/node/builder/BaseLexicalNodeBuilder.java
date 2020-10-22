@@ -5,9 +5,12 @@ import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.branch.ConsumeOnlyIfAcceptBranch;
 import lexical.automata.branch.DefaultNodeBranch;
+import lexical.automata.branch.ExceptionBranch;
 import lexical.automata.branch.NodeBranchDecorator;
 import lexical.automata.branch.TryNodeBranch;
 import lexical.automata.filter.*;
+import lexical.automata.node.DefaultLexicalNode;
+import lexical.automata.node.strategy.LexicalErrorStrategy;
 
 /**
  * @param <T> type of branch builder
@@ -75,6 +78,7 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
      */
     public abstract static class BaseNodeBranchBuilder<S, U extends BaseLexicalNodeBuilder<?>, V extends BaseNodeBranchBuilder<S,U,V>>{
 
+        protected final LexicalFilter filter;
         protected final U nodeBuilder;
         protected NodeBranch<S> buildingBranch;
 
@@ -82,8 +86,9 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
         protected abstract LexicalNode<S> getBuildingNode();
 
         public BaseNodeBranchBuilder(LexicalFilter filter, U nodeBuilder){
-            buildingBranch = new DefaultNodeBranch<>(filter);
+            this.filter = filter;
             this.nodeBuilder = nodeBuilder;
+            buildingBranch = new DefaultNodeBranch<>(filter);
         }
 
         /**
@@ -128,6 +133,18 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
         public U thenRepeat(){
             buildingBranch.setNextNode(getBuildingNode());
             getBuildingNode().addBranch(buildingBranch);
+            return nodeBuilder;
+        }
+
+        /**
+         * Makes the branch being built to always
+         * throw a {@link lexical.LexicalException} with the given error message.
+         *
+         * @param errorMsg error message of the {@link lexical.LexicalException} thrown by the branch
+         * @return a node builder to keep building the node
+         */
+        public U thenThrow(String errorMsg){
+            getBuildingNode().addBranch(new ExceptionBranch<>(filter, errorMsg));
             return nodeBuilder;
         }
 

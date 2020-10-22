@@ -154,6 +154,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
             new TokenizerNodeBuilder("Stores all characters except the closing double-quote or new line")
                 .ifEquals('"').thenMoveTo(stringAcceptor)
                 .ifAnyExcept('"', '\n').storeInLexeme().thenRepeat()
+                .ifEquals('\n').thenThrow("El caracter de salto de linea no es valido dentro de un literal String")
                 .orElseThrow("Literal String no cerrado.");
 
     private static final LexicalNode<AutomataToken> charAcceptor = new TokenizerAcceptorBuilder(CHAR).build();
@@ -172,6 +173,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
             new TokenizerNodeBuilder("Tries to match a valid character value")
                 .ifEquals('\\').storeInLexeme().thenMoveTo(charSpecialCharacterOpen)
                 .ifAnyExcept('\\', '\n').storeInLexeme().thenMoveTo(charClosingNode)
+                .ifEquals('\n').thenThrow("El caracter de salto de linea no es un literal char valido")
                 .orElseThrow("Literal char no válido.");
 
     // -------- //
