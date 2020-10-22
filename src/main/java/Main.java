@@ -6,10 +6,8 @@ import io.code.reader.DefaultSourceCodeReader;
 import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
-import lexical.TokenType;
 import lexical.analyzer.LexicalAnalyzer;
 import lexical.analyzer.MiniJavaLexicalAnalyzer;
-import util.Characters;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -22,17 +20,18 @@ public class Main {
     private static final LexicalErrorPrinter errorPrinter = new LexicalErrorPrinter(System.out);
 
     public static void main(String[] args) throws IOException {
-        LexicalAnalyzer analyzer = createLexicalAnalyzer("test.minijava");//args[0]);
+        LexicalAnalyzer analyzer = createLexicalAnalyzer(args[0]);
 
-        Optional<Token> token = Optional.empty();
+        boolean reachEOF = false;
         do {
             try{
-                token = analyzer.getNextToken();
+                Optional<Token> token = analyzer.getNextToken();
                 token.ifPresent(tokenPrinter::print);
+                reachEOF = !token.isPresent();
             } catch (LexicalException e){
                 errorPrinter.printError(e);
             }
-        } while (token.isPresent());
+        } while (!reachEOF);
     }
 
     private static LexicalAnalyzer createLexicalAnalyzer(String filePath) throws IOException{
