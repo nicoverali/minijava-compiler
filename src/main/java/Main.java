@@ -20,6 +20,7 @@ public class Main {
     private static final LexicalErrorPrinter errorPrinter = new LexicalErrorPrinter(System.out);
 
     public static void main(String[] args) throws IOException {
+        if (args.length < 1) throw new IllegalArgumentException("Se debee proveer el archivo a a analizar");
         LexicalAnalyzer analyzer = createLexicalAnalyzer(args[0]);
 
         boolean reachEOF = false;
