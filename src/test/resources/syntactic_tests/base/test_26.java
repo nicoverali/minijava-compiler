@@ -1,5 +1,5 @@
-P_SEMICOLON
-// Static acces must have a method access, so it must have arguments too
+
+// (Removed - Now attributes can also be static) -> Static acces must have a method access, so it must have arguments too
 class Persona extends Life {
 
     public int num, age, name;
