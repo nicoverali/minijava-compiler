@@ -31,11 +31,17 @@ public class GrammarReader {
 
     private String[] readGrammarFile() throws IOException {
         return new BufferedReader(new FileReader(filePath))
-                .lines().filter(this::notEmptyLine)
+                .lines()
+                .filter(this::notEmptyLine)
+                .filter(this::comments)
                 .toArray(String[]::new);
     }
 
     private boolean notEmptyLine(String line){
         return !line.equals("");
+    }
+
+    private boolean comments(String line) {
+        return !line.startsWith("//") && !line.startsWith("#");
     }
 }
