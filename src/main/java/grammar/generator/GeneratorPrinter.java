@@ -64,14 +64,14 @@ public class GeneratorPrinter {
     }
 
     private void printElseBody(GeneratorMethod method){
-        out.println("else {");
-        if (method.hasLambda()){
-            out.println("\t\t// Nothing");
+        if (!method.hasLambda()){
+            out.println("else {");
+                out.println("\t\tsequence.next().ifPresent(token -> ");
+                out.println("\t\t\t{throw new SyntacticException(\"Se esperaba ("+method.getName()+") pero se encontro \"+token.getType(), token);});");
+            out.println("\t}");
         } else {
-            out.println("\t\tToken next = sequence.next().orElse(null);");
-            out.println("\t\tthrow new SyntacticException(\"Se esperaba ("+method.getName()+") pero se encontro\"+next.getType(), next);");
+            out.println("");
         }
-        out.println("\t}");
     }
 
     private void printMethodClose(){
