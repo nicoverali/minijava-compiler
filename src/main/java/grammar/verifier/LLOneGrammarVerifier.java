@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class LLOneGrammarVerifier {
 
-    private static final String FILE_PATH = "grammars/minijava-grammar-implicit-static";
+    private static final String FILE_PATH = "grammars/minijava-attributes-grammar-clean";
     private static final String LAMBDA = "EOF";
     private static final Grammar GRAMMAR = new GrammarReader(FILE_PATH, LAMBDA, new LLOneVerifierGrammarValidator()).getGrammar();
 

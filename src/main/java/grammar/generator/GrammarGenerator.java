@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GrammarGenerator {
 
-    private static final String FILE_PATH = "grammars/minijava-grammar-implicit-static";
+    private static final String FILE_PATH = "grammars/minijava-attributes-grammar-clean";
     private static final String LAMBDA = "EOF";
     private static final GrammarTerm INITIAL = new GrammarTerm("Inicial", true);
 
