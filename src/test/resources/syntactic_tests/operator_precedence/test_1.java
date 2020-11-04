@@ -8,6 +8,6 @@ class Persona {
     int unit = 5;
     int unitOp = +true;
     int unitOpNeg = -"hello";
-    int unitOpNeg = !null;
+    int unitOpNegNull = !null;
 
 }

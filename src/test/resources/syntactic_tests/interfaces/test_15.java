@@ -8,18 +8,18 @@ class B extends D {
 
 }
 
-class B implements D {
+class C implements D {
 
 }
 
-class C implements D, E, F{
+class D implements D, E, F{
 
 }
 
-class B extends D implements E{
+class E extends D implements E{
 
 }
 
-class C extends D implements F, G{
+class F extends D implements F, G{
 
 }

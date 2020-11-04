@@ -3,8 +3,8 @@
 class Persona {
 
     int a,b,c,d,e,f = 4;
-    String a = "abcd", b, c = 3;
-    char c;
+    String g = "abcd", h, i = 3;
+    char j;
     Persona pepe = new Persona();
     Mascota toto = new Perro("Negro", 4, "Mediano");
 

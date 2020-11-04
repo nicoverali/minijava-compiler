@@ -1,5 +1,7 @@
 package semantic.symbol;
 
+import semantic.SemanticException;
+import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.predefined.PredefinedClass;
 import semantic.symbol.predefined.PredefinedMethod;
 import semantic.symbol.predefined.PredefinedParameter;
@@ -53,19 +55,30 @@ public class SymbolTable {
     }
 
     /**
-     * Adds a new {@link ClassSymbol} to this symbol table
+     * Adds a new {@link ClassSymbol} to this symbol table.
+     * If the symbol table already had a {@link ClassSymbol} with the same name, then an exception will be thrown
+     *
      * @param c a {@link ClassSymbol} which will be added to this symbol table
+     * @throws SemanticException if the table already had a {@link ClassSymbol} with the same name as the new one
      */
-    public void add(ClassSymbol c){
-        classes.put(c.getName().getValue(), c);
+    public void add(ClassSymbol c) throws SemanticException{
+        NameAttribute className = c.getName();
+        checkForDuplicates(className);
+        classes.put(className.getValue(), c);
     }
 
     /**
      * Adds a new {@link InterfaceSymbol} to this symbol table
+     * If the symbol table already had an {@link InterfaceSymbol} with the same name,
+     * then an exception will be thrown
+     *
      * @param i a {@link InterfaceSymbol} which will be added to this symbol table
+     * @throws SemanticException if the table already had an {@link InterfaceSymbol} with the same name as the new one
      */
     public void add(InterfaceSymbol i){
-        interfaces.put(i.getName().getValue(), i);
+        NameAttribute interfaceName = i.getName();
+        checkForDuplicates(interfaceName);
+        interfaces.put(interfaceName.getValue(), i);
     }
 
     /**
@@ -76,6 +89,13 @@ public class SymbolTable {
         interfaces.clear();
         currentClass = null;
         currentInterface = null;
+    }
+
+    private void checkForDuplicates(NameAttribute name) throws SemanticException{
+        String nameValue = name.getValue();
+        if (classes.containsKey(nameValue) || interfaces.containsKey(nameValue)){
+            throw new SemanticException("El programa no puede contener dos clases o interfaces con el mismo nombre", name.getToken());
+        }
     }
 
 }

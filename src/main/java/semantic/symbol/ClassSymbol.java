@@ -1,5 +1,6 @@
 package semantic.symbol;
 
+import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
@@ -24,11 +25,14 @@ public class ClassSymbol {
 
     /**
      * Adds a {@link ReferenceType} pointing to a class from which this class extends.
-     * If this class already extended another class, then the original {@link ReferenceType} will be replaced
+     * If this class already extended another class, then an exception will be thrown
      *
      * @param classReference a {@link ReferenceType} pointing to a class extended by this class
+     * @throws SemanticException if the class was already extending another class
      */
-    public void addExtends(ReferenceType classReference){
+    public void addExtends(ReferenceType classReference) throws SemanticException {
+        if (parent != null)
+            throw new SemanticException("Las clases solo pueden extender una unica clase", classReference.getToken());
         parent = classReference;
     }
 
@@ -43,41 +47,56 @@ public class ClassSymbol {
 
     /**
      * Adds a {@link GenericityAttribute} to this class which in turn means that this class is generic.
-     * If a previous {@link GenericityAttribute} was set in this class, then it will be replaced.
+     * If a previous {@link GenericityAttribute} was set in this class, then an exception will be thrown
      *
      * @see #isGeneric()
      * @param generic a {@link GenericityAttribute} which will be added to this class
+     * @throws SemanticException if the class was already associated with a generic type
      */
-    public void add(GenericityAttribute generic){
+    public void add(GenericityAttribute generic) throws SemanticException{
+        if (this.generic != null)
+            throw new SemanticException("Una clase no puede tener mas de un tipo generico", generic.getToken());
         this.generic = generic;
     }
 
     /**
      * Adds a {@link ConstructorSymbol} to this class.
-     * If another constructor was previously set, then it will be reaplaced.
+     * If another constructor was previously set, then an exception will be thrown
      *
      * @param constructor a {@link ConstructorSymbol} which will be added to this class
+     * @throws SemanticException if the class already had a {@link ConstructorSymbol}
      */
-    public void add(ConstructorSymbol constructor){
+    public void add(ConstructorSymbol constructor) throws SemanticException{
+        if (this.constructor != null)
+            throw new SemanticException("Las clases solo pueden tener un unico constructor", constructor.getClassReference().getToken());
         this.constructor = constructor;
     }
 
     /**
      * Adds a {@link MethodSymbol} as a member of this class.
+     * If a method with the same name was already added to this class, then an exception will be thrown
      *
      * @param method a {@link MethodSymbol} which will be added as a memeber of this class
+     * @throws SemanticException if the class already had a {@link MethodSymbol} with the same name
      */
-    public void add(MethodSymbol method){
-        methods.put(method.getName().getValue(), method);
+    public void add(MethodSymbol method) throws SemanticException{
+        NameAttribute methodName = method.getName();
+        if (methods.containsKey(methodName.getValue()))
+            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", methodName.getToken());
+        methods.put(methodName.getValue(), method);
     }
 
     /**
-     * Adds a {@link AttributeSymbol} as a member of this class
+     * Adds a {@link AttributeSymbol} as a member of this class.
+     * If an attribute with the same name was already added to this class, then an exception will be thrown
      *
      * @param attribute a {@link AttributeSymbol} which will be added as a memeber of this class
      */
-    public void add(AttributeSymbol attribute){
-        attributes.put(attribute.getName().getValue(), attribute);
+    public void add(AttributeSymbol attribute) throws SemanticException{
+        NameAttribute attributeName = attribute.getName();
+        if (attributes.containsKey(attributeName.getValue()))
+            throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attributeName.getToken());
+        attributes.put(attributeName.getValue(), attribute);
     }
 
     /**

@@ -1,10 +1,11 @@
 package semantic.symbol;
 
+import semantic.SemanticException;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
-import java.util.List;
+import java.util.*;
 
 public class MethodSymbol {
 
@@ -12,31 +13,43 @@ public class MethodSymbol {
     private final Type returnType;
     private final NameAttribute name;
 
-    private final List<ParameterSymbol> parameters;
+    private final LinkedHashMap<String, ParameterSymbol> parameters = new LinkedHashMap<>(); // This type of map maintains order
 
     public MethodSymbol(IsStaticAttribute isStatic, Type returnType, NameAttribute name, List<ParameterSymbol> parameters) {
         this.isStatic = isStatic;
         this.returnType = returnType;
         this.name = name;
-        this.parameters = parameters;
+        parameters.forEach(this::add);
     }
 
     /**
      * Adds a list of {@link ParameterSymbol} to this method. The order in which parameters
-     * are position in the list will be maintained
+     * are position in the list will be maintained.
+     * <br>
+     * If the method already had a parameter with the same name as one of the new ones, then an exception will be thrown
+     *
      * @param parameters a list of {@link ParameterSymbol} which will be added as parameters of this method
+     * @throws SemanticException if the method already had a parameter with the same name as one of the new ones
      */
-    public void add(List<ParameterSymbol> parameters){
+    public void add(List<ParameterSymbol> parameters) throws SemanticException{
         parameters.forEach(this::add);
     }
 
     /**
      * Adds a {@link ParameterSymbol} to this method. The parameter will be positioned at the end of the method's
-     * parameter list
+     * parameter list.
+     * <br>
+     * If the method already had a parameter with the same name as one of the new ones, then an exception will be thrown
+     *
      * @param parameter a {@link ParameterSymbol} which will be added as parameter of this method
+     * @throws SemanticException if the method already had a parameter with the same name as the new one
      */
-    public void add(ParameterSymbol parameter){
-        parameters.add(parameter);
+    public void add(ParameterSymbol parameter) throws SemanticException {
+        NameAttribute paramName = parameter.getName();
+        if (parameters.containsKey(paramName.getValue())){
+            throw new SemanticException("Un metodo no puede tener dos parametros con el mismo nombre", paramName.getToken());
+        }
+        parameters.put(paramName.getValue(), parameter);
     }
 
     /**
@@ -64,6 +77,6 @@ public class MethodSymbol {
      * @return a list of all the {@link ParameterSymbol} of this method
      */
     public List<ParameterSymbol> getParameters() {
-        return parameters;
+        return new ArrayList<>(parameters.values());
     }
 }

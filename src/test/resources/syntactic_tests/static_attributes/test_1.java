@@ -4,7 +4,7 @@ class Persona {
 
     public int edad = 4;
     private int a = 3, b, c, e = 18;
-    static int f = 4, e = 5;
+    static int f = 4, g = 5;
     public static Persona p = new Persona();
     String name = "Nico";
     String apellido;

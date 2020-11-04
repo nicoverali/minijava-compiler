@@ -2,6 +2,7 @@ package semantic.symbol.attribute.type;
 
 import lexical.Token;
 import org.jetbrains.annotations.Nullable;
+import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 
 import java.util.Optional;
@@ -24,10 +25,15 @@ public class ReferenceType extends Type{
     }
 
     /**
-     * Adds a {@link GenericityAttribute} to this type, which in turn converts this type into a generic type
+     * Adds a {@link GenericityAttribute} to this type, which in turn converts this type into a generic type.
+     * If the type already had a {@link GenericityAttribute} then an exception will be thrown
+     *
      * @param generic a {@link GenericityAttribute} which will be added to this reference type
+     * @throws SemanticException if the type already had a {@link GenericityAttribute}
      */
-    public void addGeneric(GenericityAttribute generic){
+    public void addGeneric(GenericityAttribute generic) throws SemanticException {
+        if (this.generic != null)
+            throw new SemanticException("Las referencias solo pueden tener un unico tipo generico", generic.getToken());
         this.generic = generic;
     }
 

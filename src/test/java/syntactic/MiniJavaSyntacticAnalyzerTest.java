@@ -12,6 +12,7 @@ import lexical.analyzer.MiniJavaLexicalAnalyzer;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import semantic.symbol.SymbolTable;
 import util.Pair;
 
 import java.io.BufferedReader;
@@ -73,6 +74,7 @@ class MiniJavaSyntacticAnalyzerTest {
         String errorToken = getErrorToken(bufferedReader);
         SyntacticAnalyzer testSubject = getSyntacticAnalyzer(bufferedReader);
 
+        SymbolTable.getInstance().reset(); // Clear classes and interfaces of previous tests
         try{
             testSubject.analyze();
             assertEquals("", errorToken, "Test pass, but we expected an exception"); // If does not throw exception then we should expect an exception
