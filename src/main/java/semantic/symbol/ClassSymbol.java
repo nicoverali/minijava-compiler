@@ -11,7 +11,7 @@ public class ClassSymbol {
     private final NameAttribute name;
     private GenericityAttribute generic;
 
-    private final List<ConstructorSymbol> constructors = new ArrayList<>();
+    private ConstructorSymbol constructor;
     private final Map<String, AttributeSymbol> attributes = new HashMap<>();
     private final Map<String, MethodSymbol> methods = new HashMap<>();
 
@@ -54,11 +54,12 @@ public class ClassSymbol {
 
     /**
      * Adds a {@link ConstructorSymbol} to this class.
+     * If another constructor was previously set, then it will be reaplaced.
      *
      * @param constructor a {@link ConstructorSymbol} which will be added to this class
      */
     public void add(ConstructorSymbol constructor){
-        constructors.add(constructor);
+        this.constructor = constructor;
     }
 
     /**
@@ -104,10 +105,10 @@ public class ClassSymbol {
     }
 
     /**
-     * @return a collection of all the {@link ConstructorSymbol} of this class
+     * @return the {@link ConstructorSymbol} of this class
      */
-    public Collection<ConstructorSymbol> getConstructors() {
-        return constructors;
+    public ConstructorSymbol getConstructor() {
+        return constructor;
     }
 
     /**
