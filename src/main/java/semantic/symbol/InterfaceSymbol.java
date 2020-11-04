@@ -1,9 +1,8 @@
-package syntactic.entity;
+package semantic.symbol;
 
-import org.jetbrains.annotations.Nullable;
-import syntactic.entity.attribute.GenericityAttribute;
-import syntactic.entity.attribute.NameAttribute;
-import syntactic.entity.attribute.type.ReferenceType;
+import semantic.symbol.attribute.GenericityAttribute;
+import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
 

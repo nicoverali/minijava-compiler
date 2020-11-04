@@ -1,8 +1,8 @@
-package syntactic.entity.attribute.type;
+package semantic.symbol.attribute.type;
 
 import lexical.Token;
 import org.jetbrains.annotations.Nullable;
-import syntactic.entity.attribute.GenericityAttribute;
+import semantic.symbol.attribute.GenericityAttribute;
 
 import java.util.Optional;
 

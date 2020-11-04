@@ -1,7 +1,7 @@
-package syntactic.entity.predefined;
+package semantic.symbol.predefined;
 
 import lexical.Token;
-import syntactic.entity.attribute.type.Type;
+import semantic.symbol.attribute.type.Type;
 
 import java.util.Arrays;
 import java.util.List;

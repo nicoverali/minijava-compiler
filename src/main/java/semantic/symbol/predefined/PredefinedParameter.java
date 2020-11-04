@@ -1,6 +1,6 @@
-package syntactic.entity.predefined;
+package semantic.symbol.predefined;
 
-import syntactic.entity.attribute.type.Type;
+import semantic.symbol.attribute.type.Type;
 
 /**
  * A predefined parameter is part of a {@link PredefinedMethod}.

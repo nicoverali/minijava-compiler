@@ -1,7 +1,7 @@
-package syntactic.entity;
+package semantic.symbol;
 
-import syntactic.entity.attribute.NameAttribute;
-import syntactic.entity.attribute.type.Type;
+import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.Type;
 
 public class ParameterSymbol {
 

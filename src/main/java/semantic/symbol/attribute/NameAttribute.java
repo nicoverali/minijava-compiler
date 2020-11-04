@@ -1,4 +1,4 @@
-package syntactic.entity.attribute;
+package semantic.symbol.attribute;
 
 import lexical.Token;
 

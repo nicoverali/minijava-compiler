@@ -1,8 +1,6 @@
-package syntactic.entity.attribute;
+package semantic.symbol.attribute;
 
 import lexical.Token;
-
-import java.util.function.Consumer;
 
 /**
  * This attribute determines the genericity of a Symbol

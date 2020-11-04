@@ -1,8 +1,8 @@
-package syntactic.entity.attribute.type;
+package semantic.symbol.attribute.type;
 
 import lexical.Token;
 import org.jetbrains.annotations.Nullable;
-import syntactic.entity.attribute.SymbolAttribute;
+import semantic.symbol.attribute.SymbolAttribute;
 
 /**
  * A type is another {@link SymbolAttribute} that represents the type of a symbol.

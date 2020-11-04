@@ -1,4 +1,4 @@
-package syntactic.entity.predefined;
+package semantic.symbol.predefined;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * A predefined class is inserted into the {@link syntactic.entity.SymbolTable} at initialization of the program.
+ * A predefined class is inserted into the {@link semantic.symbol.SymbolTable} at initialization of the program.
  * It defines the name and methods that will already exist at the beginning, so that classes and methods from
  * a source code can call them of make references to them.
  */

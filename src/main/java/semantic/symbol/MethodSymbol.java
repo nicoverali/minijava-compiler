@@ -1,13 +1,10 @@
-package syntactic.entity;
+package semantic.symbol;
 
-import syntactic.entity.attribute.IsStaticAttribute;
-import syntactic.entity.attribute.NameAttribute;
-import syntactic.entity.attribute.type.Type;
+import semantic.symbol.attribute.IsStaticAttribute;
+import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.Type;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MethodSymbol {
 

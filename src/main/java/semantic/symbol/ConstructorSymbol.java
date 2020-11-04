@@ -1,6 +1,6 @@
-package syntactic.entity;
+package semantic.symbol;
 
-import syntactic.entity.attribute.type.ReferenceType;
+import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.List;
 

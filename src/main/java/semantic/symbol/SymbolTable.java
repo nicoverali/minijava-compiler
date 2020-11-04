@@ -1,14 +1,14 @@
-package syntactic.entity;
+package semantic.symbol;
 
-import syntactic.entity.predefined.PredefinedClass;
-import syntactic.entity.predefined.PredefinedMethod;
-import syntactic.entity.predefined.PredefinedParameter;
+import semantic.symbol.predefined.PredefinedClass;
+import semantic.symbol.predefined.PredefinedMethod;
+import semantic.symbol.predefined.PredefinedParameter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static syntactic.entity.attribute.type.PrimitiveType.*;
-import static syntactic.entity.attribute.type.VoidType.VOID;
+import static semantic.symbol.attribute.type.PrimitiveType.*;
+import static semantic.symbol.attribute.type.VoidType.VOID;
 
 public class SymbolTable {
 
