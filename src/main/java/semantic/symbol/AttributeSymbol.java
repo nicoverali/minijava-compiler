@@ -1,16 +1,19 @@
 package semantic.symbol;
 
+import semantic.SemanticException;
 import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
-public class AttributeSymbol {
+public class AttributeSymbol implements InnerLevelSymbol {
 
     private IsPublicAttribute isPublic = IsPublicAttribute.defaultAttribute();
     private IsStaticAttribute isStatic = IsStaticAttribute.defaultAttribute();
     private final Type type;
     private final NameAttribute name;
+
+    private TopLevelSymbol topSymbol;
 
     public AttributeSymbol(Type type, NameAttribute name) {
         this.type = type;
@@ -54,7 +57,17 @@ public class AttributeSymbol {
     /**
      * @return the {@link NameAttribute} of this attribute, which contains the name of it
      */
-    public NameAttribute getName() {
+    public NameAttribute getNameAttribute() {
         return name;
+    }
+
+    @Override
+    public void consolidate() throws SemanticException {
+
+    }
+
+    @Override
+    public void setTopLevelSymbol(TopLevelSymbol symbol) {
+        topSymbol = symbol;
     }
 }

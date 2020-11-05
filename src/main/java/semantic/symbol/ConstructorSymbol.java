@@ -6,12 +6,13 @@ import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
-public class ConstructorSymbol {
+public class ConstructorSymbol implements InnerLevelSymbol {
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
+
+    private TopLevelSymbol topSymbol;
 
     public ConstructorSymbol(ReferenceType classReference, List<ParameterSymbol> parameters) {
         checkForDuplicates(parameters);
@@ -36,12 +37,23 @@ public class ConstructorSymbol {
     private void checkForDuplicates(List<ParameterSymbol> parameters) throws SemanticException {
         HashSet<String> visited = new HashSet<>(parameters.size());
         NameAttribute duplicate = parameters.stream()
-                .map(ParameterSymbol::getName)
+                .map(ParameterSymbol::getNameAttribute)
                 .filter(name -> !visited.add(name.getValue()))
                 .findFirst().orElse(null);
 
         if (duplicate != null){
             throw new SemanticException("Un constructor no puede tener dos argumentos con el mismo nombre", duplicate.getToken());
         }
+    }
+
+    @Override
+    public void consolidate() throws SemanticException {
+        parameters.forEach(ParameterSymbol::consolidate);
+    }
+
+    @Override
+    public void setTopLevelSymbol(TopLevelSymbol symbol) {
+        topSymbol = symbol;
+        parameters.forEach(param -> param.setTopLevelSymbol(symbol));
     }
 }

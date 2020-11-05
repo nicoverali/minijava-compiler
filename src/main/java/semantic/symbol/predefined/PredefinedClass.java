@@ -1,5 +1,9 @@
 package semantic.symbol.predefined;
 
+import semantic.SemanticException;
+import semantic.symbol.TopLevelSymbol;
+import semantic.symbol.attribute.GenericityAttribute;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,7 +14,7 @@ import java.util.Optional;
  * It defines the name and methods that will already exist at the beginning, so that classes and methods from
  * a source code can call them of make references to them.
  */
-public class PredefinedClass {
+public class PredefinedClass implements TopLevelSymbol {
 
     private final String name;
     private final List<PredefinedMethod> methods = new ArrayList<>();
@@ -35,6 +39,11 @@ public class PredefinedClass {
         return name;
     }
 
+    @Override
+    public Optional<GenericityAttribute> getGeneric() {
+        return Optional.empty();
+    }
+
     /**
      * @return a collection of all the {@link PredefinedMethod} of this predefined class
      */
@@ -55,4 +64,8 @@ public class PredefinedClass {
                 .findFirst();
     }
 
+    @Override
+    public void consolidate() throws SemanticException, IllegalStateException {
+
+    }
 }

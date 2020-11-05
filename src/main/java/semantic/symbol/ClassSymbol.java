@@ -7,7 +7,7 @@ import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
 
-public class ClassSymbol {
+public class ClassSymbol implements TopLevelSymbol {
 
     private final NameAttribute name;
     private GenericityAttribute generic;
@@ -80,7 +80,7 @@ public class ClassSymbol {
      * @throws SemanticException if the class already had a {@link MethodSymbol} with the same name
      */
     public void add(MethodSymbol method) throws SemanticException{
-        NameAttribute methodName = method.getName();
+        NameAttribute methodName = method.getNameAttribute();
         if (methods.containsKey(methodName.getValue()))
             throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", methodName.getToken());
         methods.put(methodName.getValue(), method);
@@ -93,7 +93,7 @@ public class ClassSymbol {
      * @param attribute a {@link AttributeSymbol} which will be added as a memeber of this class
      */
     public void add(AttributeSymbol attribute) throws SemanticException{
-        NameAttribute attributeName = attribute.getName();
+        NameAttribute attributeName = attribute.getNameAttribute();
         if (attributes.containsKey(attributeName.getValue()))
             throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attributeName.getToken());
         attributes.put(attributeName.getValue(), attribute);
@@ -102,10 +102,14 @@ public class ClassSymbol {
     /**
      * @return the {@link NameAttribute} of this class which contains the name of it
      */
-    public NameAttribute getName() {
+    public NameAttribute getNameAttribute() {
         return name;
     }
 
+    @Override
+    public String getName() {
+        return name.getValue();
+    }
 
     /**
      * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this class
@@ -156,5 +160,12 @@ public class ClassSymbol {
      */
     public Collection<ReferenceType> getInterfaces() {
         return interfaces;
+    }
+
+    @Override
+    public void consolidate() throws SemanticException {
+        constructor.consolidate();
+        attributes.values().forEach(AttributeSymbol::consolidate);
+        methods.values().forEach(MethodSymbol::consolidate);
     }
 }

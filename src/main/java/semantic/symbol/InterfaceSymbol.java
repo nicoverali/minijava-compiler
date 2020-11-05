@@ -7,7 +7,7 @@ import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
 
-public class InterfaceSymbol {
+public class InterfaceSymbol implements TopLevelSymbol {
 
     private NameAttribute name;
     private GenericityAttribute generic;
@@ -50,7 +50,7 @@ public class InterfaceSymbol {
      * @throws SemanticException if the interface already had a method with the same name
      */
     public void add(MethodSymbol method) throws SemanticException{
-        NameAttribute methodName = method.getName();
+        NameAttribute methodName = method.getNameAttribute();
         if (methods.containsKey(methodName.getValue()))
             throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", methodName.getToken());
         methods.put(methodName.getValue(), method);
@@ -59,8 +59,13 @@ public class InterfaceSymbol {
     /**
      * @return the {@link NameAttribute} of this interface which contains the name of it
      */
-    public NameAttribute getName() {
+    public NameAttribute getNameAttribute() {
         return name;
+    }
+
+    @Override
+    public String getName() {
+        return name.getValue();
     }
 
     /**
@@ -90,5 +95,10 @@ public class InterfaceSymbol {
      */
     public Collection<ReferenceType> getExtend() {
         return extend;
+    }
+
+    @Override
+    public void consolidate() throws SemanticException {
+
     }
 }

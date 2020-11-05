@@ -1,5 +1,6 @@
 package semantic.symbol;
 
+import lexical.Token;
 import semantic.SemanticException;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.predefined.PredefinedClass;
@@ -8,6 +9,9 @@ import semantic.symbol.predefined.PredefinedParameter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static semantic.symbol.attribute.type.PrimitiveType.*;
 import static semantic.symbol.attribute.type.VoidType.VOID;
@@ -62,7 +66,7 @@ public class SymbolTable {
      * @throws SemanticException if the table already had a {@link ClassSymbol} with the same name as the new one
      */
     public void add(ClassSymbol c) throws SemanticException{
-        NameAttribute className = c.getName();
+        NameAttribute className = c.getNameAttribute();
         checkForDuplicates(className);
         classes.put(className.getValue(), c);
     }
@@ -76,7 +80,7 @@ public class SymbolTable {
      * @throws SemanticException if the table already had an {@link InterfaceSymbol} with the same name as the new one
      */
     public void add(InterfaceSymbol i){
-        NameAttribute interfaceName = i.getName();
+        NameAttribute interfaceName = i.getNameAttribute();
         checkForDuplicates(interfaceName);
         interfaces.put(interfaceName.getValue(), i);
     }
@@ -89,6 +93,54 @@ public class SymbolTable {
         interfaces.clear();
         currentClass = null;
         currentInterface = null;
+    }
+
+    /**
+     * @param name the name of the {@link ClassSymbol} to look for
+     * @return an {@link Optional} wrapping a {@link ClassSymbol} from this table that has the name given as argument
+     */
+    public Optional<ClassSymbol> getClass(String name){
+        return Optional.ofNullable(classes.get(name));
+    }
+
+    /**
+     * @param name the name of the {@link InterfaceSymbol} to look for
+     * @return an {@link Optional} wrapping a {@link InterfaceSymbol} from this table that has the name given as argument
+     */
+    public Optional<InterfaceSymbol> getInterface(String name){
+        return Optional.ofNullable(interfaces.get(name));
+    }
+
+    /**
+     * @param name the name of the {@link PredefinedClass} to look for
+     * @return an {@link Optional} wrapping a {@link PredefinedClass} from this table that has the name given as argument
+     */
+    public Optional<PredefinedClass> getPredefinedClass(String name){
+        return Optional.ofNullable(predefineClasses.get(name));
+    }
+
+    /**
+     * Searches through all the table looking for a {@link TopLevelSymbol} that has the name given as argument.
+     *
+     * @param name the name of the symbol to look for
+     * @return an {@link Optional} wrapping a {@link TopLevelSymbol} that has the name given as argument
+     */
+    public Optional<TopLevelSymbol> getTopLevelSymbol(String name){
+        return Stream.of(classes, interfaces, predefineClasses)
+                .map(symbolMap -> (TopLevelSymbol) symbolMap.get(name))
+                .filter(Objects::nonNull)
+                .findFirst();
+    }
+
+    /**
+     * Goes through all the table, checking if all declarations are valid.
+     * If a semantic error is detected, then an exception will be thrown
+     *
+     * @throws SemanticException if a semantic error is detected during consolidation
+     */
+    public void consolidate() throws SemanticException {
+        classes.values().forEach(ClassSymbol::consolidate);
+        interfaces.values().forEach(InterfaceSymbol::consolidate);
     }
 
     private void checkForDuplicates(NameAttribute name) throws SemanticException{

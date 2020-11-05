@@ -7,11 +7,13 @@ import semantic.symbol.attribute.type.Type;
 
 import java.util.*;
 
-public class MethodSymbol {
+public class MethodSymbol implements InnerLevelSymbol {
 
     private final IsStaticAttribute isStatic;
     private final Type returnType;
     private final NameAttribute name;
+
+    private TopLevelSymbol topSymbol;
 
     private final LinkedHashMap<String, ParameterSymbol> parameters = new LinkedHashMap<>(); // This type of map maintains order
 
@@ -45,10 +47,11 @@ public class MethodSymbol {
      * @throws SemanticException if the method already had a parameter with the same name as the new one
      */
     public void add(ParameterSymbol parameter) throws SemanticException {
-        NameAttribute paramName = parameter.getName();
+        NameAttribute paramName = parameter.getNameAttribute();
         if (parameters.containsKey(paramName.getValue())){
             throw new SemanticException("Un metodo no puede tener dos parametros con el mismo nombre", paramName.getToken());
         }
+        parameter.setTopLevelSymbol(topSymbol);
         parameters.put(paramName.getValue(), parameter);
     }
 
@@ -69,7 +72,7 @@ public class MethodSymbol {
     /**
      * @return the {@link NameAttribute} of this method which contains the name of it
      */
-    public NameAttribute getName() {
+    public NameAttribute getNameAttribute() {
         return name;
     }
 
@@ -78,5 +81,16 @@ public class MethodSymbol {
      */
     public List<ParameterSymbol> getParameters() {
         return new ArrayList<>(parameters.values());
+    }
+
+    @Override
+    public void consolidate() throws SemanticException {
+        parameters.values().forEach(ParameterSymbol::consolidate);
+    }
+
+    @Override
+    public void setTopLevelSymbol(TopLevelSymbol symbol) {
+        topSymbol = symbol;
+        parameters.values().forEach(param -> param.setTopLevelSymbol(symbol));
     }
 }
