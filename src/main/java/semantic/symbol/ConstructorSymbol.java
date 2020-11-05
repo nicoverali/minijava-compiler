@@ -47,8 +47,17 @@ public class ConstructorSymbol implements InnerLevelSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException {
+    public void consolidate() throws SemanticException, IllegalStateException {
         parameters.forEach(ParameterSymbol::consolidate);
+
+        if (topSymbol == null)
+            throw new IllegalStateException("El constructor no esta contenido dentro de ninguna clase");
+        if (!constructorNameMatchesClass())
+            throw new SemanticException("El nombre del constructor no es el de la clase que lo contiene", getClassReference().getToken());
+    }
+
+    private boolean constructorNameMatchesClass() {
+        return topSymbol.getName().equals(this.classReference.getValue());
     }
 
     @Override

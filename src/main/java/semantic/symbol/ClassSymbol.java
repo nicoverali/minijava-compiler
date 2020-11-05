@@ -69,6 +69,7 @@ public class ClassSymbol implements TopLevelSymbol {
     public void add(ConstructorSymbol constructor) throws SemanticException{
         if (this.constructor != null)
             throw new SemanticException("Las clases solo pueden tener un unico constructor", constructor.getClassReference().getToken());
+        constructor.setTopLevelSymbol(this);
         this.constructor = constructor;
     }
 
@@ -164,7 +165,7 @@ public class ClassSymbol implements TopLevelSymbol {
 
     @Override
     public void consolidate() throws SemanticException {
-        constructor.consolidate();
+        if (constructor != null) constructor.consolidate();
         attributes.values().forEach(AttributeSymbol::consolidate);
         methods.values().forEach(MethodSymbol::consolidate);
     }

@@ -35,7 +35,9 @@ public class MiniJavaSemanticAnalyzerTest {
     private static final List<Pair<String, Integer>> paths = new ArrayList<>();
     static {
         paths.add(Pair.of(BASE+"duplicates", 11));
+        paths.add(Pair.of(BASE+"constructor", 3));
         paths.add(Pair.of(BASE+"simple_references", 11));
+
     }
 
 
@@ -74,7 +76,7 @@ public class MiniJavaSemanticAnalyzerTest {
         try{
             testSubject.analyze();
             SymbolTable.getInstance().consolidate();
-            assertEquals("", failLexeme, "Test pass, but we expected an exception"); // If does not throw exception then we should expect an exception
+            assertEquals(failLexeme, "", "Test pass, but we expected an exception"); // If does not throw exception then we should expect an exception
         } catch (SemanticException e){
             Token eToken = e.getExceptionToken();
             System.out.println("Exception at ["+eToken.getLineNumber()+", "+eToken.getColumnNumber()+"] token "+e.getExceptionToken().getType()+ " message: "+e.getMessage());
