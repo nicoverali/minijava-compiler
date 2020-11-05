@@ -93,8 +93,12 @@ public class SymbolTable {
 
     private void checkForDuplicates(NameAttribute name) throws SemanticException{
         String nameValue = name.getValue();
+        Token token = name.getToken();
         if (classes.containsKey(nameValue) || interfaces.containsKey(nameValue)){
-            throw new SemanticException("El programa no puede contener dos clases o interfaces con el mismo nombre", name.getToken());
+            throw new SemanticException("El programa no puede contener dos clases o interfaces con el mismo nombre", token);
+        }
+        if (predefineClasses.containsKey(nameValue)){
+            throw new SemanticException("No es posible declarar una clase o interfaz "+nameValue+" porque es una clase predefinida del sistema", token);
         }
     }
 
