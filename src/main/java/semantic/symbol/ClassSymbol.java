@@ -84,6 +84,7 @@ public class ClassSymbol implements TopLevelSymbol {
         NameAttribute methodName = method.getNameAttribute();
         if (methods.containsKey(methodName.getValue()))
             throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", methodName.getToken());
+        method.setTopLevelSymbol(this);
         methods.put(methodName.getValue(), method);
     }
 
@@ -97,6 +98,7 @@ public class ClassSymbol implements TopLevelSymbol {
         NameAttribute attributeName = attribute.getNameAttribute();
         if (attributes.containsKey(attributeName.getValue()))
             throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attributeName.getToken());
+        attribute.setTopLevelSymbol(this);
         attributes.put(attributeName.getValue(), attribute);
     }
 
@@ -165,6 +167,8 @@ public class ClassSymbol implements TopLevelSymbol {
 
     @Override
     public void consolidate() throws SemanticException {
+        if (parent != null) parent.validate(SymbolTable.getInstance(), this);
+        interfaces.forEach(i -> i.validate(SymbolTable.getInstance(), this));
         if (constructor != null) constructor.consolidate();
         attributes.values().forEach(AttributeSymbol::consolidate);
         methods.values().forEach(MethodSymbol::consolidate);

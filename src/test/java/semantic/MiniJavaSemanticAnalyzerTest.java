@@ -37,6 +37,7 @@ public class MiniJavaSemanticAnalyzerTest {
         paths.add(Pair.of(BASE+"duplicates", 11));
         paths.add(Pair.of(BASE+"constructor", 3));
         paths.add(Pair.of(BASE+"simple_references", 11));
+        paths.add(Pair.of(BASE+"generic_references", 19));
 
     }
 

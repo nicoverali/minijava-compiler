@@ -84,7 +84,9 @@ public class MethodSymbol implements InnerLevelSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException {
+    public void consolidate() throws SemanticException, IllegalStateException {
+        if (topSymbol == null) throw new IllegalStateException("El metodo no esta contenido dentro de ningun simbolo de nivel superior");
+        returnType.validate(SymbolTable.getInstance(), topSymbol);
         parameters.values().forEach(ParameterSymbol::consolidate);
     }
 

@@ -3,6 +3,8 @@ package semantic.symbol.attribute.type;
 import lexical.Token;
 import org.jetbrains.annotations.Nullable;
 import semantic.SemanticException;
+import semantic.symbol.SymbolTable;
+import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.GenericityAttribute;
 
 import java.util.Optional;
@@ -55,4 +57,39 @@ public class ReferenceType extends Type{
         return Optional.ofNullable(generic);
     }
 
+    @Override
+    public void validate(SymbolTable st, TopLevelSymbol container) throws SemanticException {
+        boolean referenceExists = checkInSymbolTable(st, container) || checkInTopLevelGenericity(container);
+        if (!referenceExists){
+            throw new SemanticException("El simbolo al que se hace referencia no pudo ser encontrado.", this.token);
+        }
+    }
+
+    public boolean checkInSymbolTable(SymbolTable st, TopLevelSymbol container){
+        Optional<TopLevelSymbol> symbol = st.getTopLevelSymbol(this.name);
+        if(symbol.isPresent()){
+            checkSymbolGenericity(st, symbol.get(), container);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void checkSymbolGenericity(SymbolTable st, TopLevelSymbol symbol, TopLevelSymbol container) {
+        Optional<GenericityAttribute> generic = symbol.getGeneric();
+        if (generic.isPresent() && this.generic == null) {
+            throw new SemanticException("Se hace referencia a un simbolo generico sin indicar el tipo generico", this.token);
+        } else if (generic.isPresent()) {
+            this.generic.validate(st, container);
+        } else if (this.generic != null) {
+            throw new SemanticException("Se declaro un tipo generico en una referencia a un simbolo no generico", this.generic.getToken());
+        }
+    }
+
+    public boolean checkInTopLevelGenericity(TopLevelSymbol container){
+        return container.getGeneric()
+                .map(GenericityAttribute::getValue)
+                .map(gen -> gen.equals(this.name))
+                .orElse(false);
+    }
 }

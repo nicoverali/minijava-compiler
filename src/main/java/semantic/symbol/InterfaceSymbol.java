@@ -53,6 +53,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
         NameAttribute methodName = method.getNameAttribute();
         if (methods.containsKey(methodName.getValue()))
             throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", methodName.getToken());
+        method.setTopLevelSymbol(this);
         methods.put(methodName.getValue(), method);
     }
 
@@ -99,6 +100,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
 
     @Override
     public void consolidate() throws SemanticException {
-
+        extend.forEach(extend -> extend.validate(SymbolTable.getInstance(), this));
+        methods.values().forEach(MethodSymbol::consolidate);
     }
 }

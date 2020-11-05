@@ -32,7 +32,9 @@ public class ParameterSymbol implements InnerLevelSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException {
+    public void consolidate() throws SemanticException, IllegalStateException {
+        if (topSymbol == null) throw new IllegalStateException("El parametro no forma parte de ningun simbolo de nivel superior.");
+        this.type.validate(SymbolTable.getInstance(), topSymbol);
     }
 
     @Override

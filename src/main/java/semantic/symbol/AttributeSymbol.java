@@ -62,8 +62,9 @@ public class AttributeSymbol implements InnerLevelSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException {
-
+    public void consolidate() throws SemanticException, IllegalStateException {
+        if (topSymbol == null) throw new IllegalStateException("El atributo no esta contenido dentro de ninguna clase");
+        type.validate(SymbolTable.getInstance(), topSymbol);
     }
 
     @Override
