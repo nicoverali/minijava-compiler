@@ -48,9 +48,13 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 
     @Override
     public void analyze() throws SyntacticException {
-        sequence.peek()
-                .filter(token -> token.getType() != EOF)
-                .ifPresent((t) -> inicial());
+        Token next = sequence.peek().get();
+        boolean isEof = next.getType() == EOF;
+        if (!isEof){
+            inicial();
+        } else {
+            throw new SyntacticException("El archivo se encuentra vacío", next);
+        }
     }
 
     private void inicial() {
