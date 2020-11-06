@@ -4,21 +4,19 @@ import util.Characters;
 
 import java.io.PrintStream;
 
-public class LexicalErrorPrinter {
-
-    private static final String DETAIL_PREFIX = "Detalle: ";
-    private static final String INITIAL_PADDING = Strings.padStart("", DETAIL_PREFIX.length(), ' ');
+public class LexicalErrorPrinter extends AbstractErrorPrinter {
 
     private final PrintStream out;
 
     public LexicalErrorPrinter(PrintStream out){
+        super(out);
         this.out = out;
     }
 
     public void printError(LexicalException exception){
         printDescription(exception);
-        printDetail(exception);
-        printErrorCode(exception);
+        printDetail(exception.getLine(), exception.getColumnNumber());
+        printErrorCode(exception.getLexeme().toString(), exception.getLineNumber());
     }
 
     private void printDescription(LexicalException exception){
@@ -26,33 +24,6 @@ public class LexicalErrorPrinter {
         String errorMsg = exception.getMessage();
         out.println("Error Léxico en linea "+line+": "+errorMsg);
     }
-
-    private void printDetail(LexicalException exception){
-        String line = Characters.removeNewLine(exception.getLine());
-        String indicator = createIndicator(line, exception.getColumnNumber());
-
-        out.println(DETAIL_PREFIX+line);
-        out.println(indicator);
-    }
-
-    private String createIndicator(String line, int indicatorColumn){
-        StringBuilder indicator = new StringBuilder(INITIAL_PADDING);
-        for (int i = 0; i < indicatorColumn && i < line.length(); i++) {
-            if (line.charAt(i) == '\t')
-                indicator.append('\t');
-            else
-                indicator.append(' ');
-        }
-        if (line.length() == indicatorColumn) indicator.append(' ');
-        return indicator.append('^').toString();
-    }
-
-    private void printErrorCode(LexicalException exception){
-        int line = exception.getLineNumber()+1;
-        String lexeme = exception.getLexeme().toString();
-        out.println("[Error:"+lexeme+"|"+line+"]");
-    }
-
 
 
 }

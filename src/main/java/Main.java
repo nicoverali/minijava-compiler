@@ -8,6 +8,8 @@ import lexical.LexicalException;
 import lexical.analyzer.LexicalAnalyzer;
 import lexical.analyzer.LexicalSequence;
 import lexical.analyzer.MiniJavaLexicalAnalyzer;
+import semantic.SemanticException;
+import semantic.symbol.SymbolTable;
 import syntactic.MiniJavaSyntacticAnalyzer;
 import syntactic.SyntacticAnalyzer;
 import syntactic.SyntacticException;
@@ -19,20 +21,24 @@ import java.io.IOException;
 public class Main {
 
     private static final LexicalErrorPrinter LEXICAL_ERROR_PRINTER = new LexicalErrorPrinter(System.out);
-    private static final SyntacticErrorPrinter ERROR_PRINTER = new SyntacticErrorPrinter(System.out);
-    private static final SyntacticSuccessPrinter SUCCESS_PRINTER = new SyntacticSuccessPrinter(System.out);
+    private static final SyntacticErrorPrinter SYNTACTIC_ERROR_PRINTER = new SyntacticErrorPrinter(System.out);
+    private static final SemanticErrorPrinter SEMANTIC_ERROR_PRINTER_ERROR_PRINTER = new SemanticErrorPrinter(System.out);
+    private static final SemanticSuccessPrinter SUCCESS_PRINTER = new SemanticSuccessPrinter(System.out);
 
 
     public static void main(String[] args) throws IOException {
-        SyntacticAnalyzer syntacticAnalyzer = createSyntacticAnalyzer(args[0]);
+        SyntacticAnalyzer syntacticAnalyzer = createSyntacticAnalyzer("test.java");//args[0]);
 
         try {
             syntacticAnalyzer.analyze();
+            SymbolTable.getInstance().consolidate();
             SUCCESS_PRINTER.printSuccess();
         } catch (LexicalException le) {
             LEXICAL_ERROR_PRINTER.printError(le);
         } catch (SyntacticException se) {
-            ERROR_PRINTER.printError(se);
+            SYNTACTIC_ERROR_PRINTER.printError(se);
+        } catch (SemanticException se) {
+            SEMANTIC_ERROR_PRINTER_ERROR_PRINTER.printError(se);
         }
     }
 

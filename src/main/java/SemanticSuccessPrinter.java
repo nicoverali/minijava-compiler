@@ -4,11 +4,11 @@ import util.Characters;
 
 import java.io.PrintStream;
 
-public class SyntacticSuccessPrinter {
+public class SemanticSuccessPrinter {
 
     private final PrintStream out;
 
-    public SyntacticSuccessPrinter(PrintStream out) {
+    public SemanticSuccessPrinter(PrintStream out) {
         this.out = out;
     }
 
