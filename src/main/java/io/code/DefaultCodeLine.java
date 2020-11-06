@@ -1,12 +1,6 @@
 package io.code;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
+import java.util.*;
 
 class DefaultCodeLine implements CodeLine {
 
@@ -102,7 +96,7 @@ class DefaultCodeLine implements CodeLine {
 
     @Override
     public List<CodeCharacter> getAllCharacters() {
-        return ImmutableList.copyOf(characters);
+        return Collections.unmodifiableList(characters);
     }
 
     @Override

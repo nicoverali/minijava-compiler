@@ -1,7 +1,3 @@
-import com.google.common.base.Joiner;
-import lexical.Token;
-import util.Characters;
-
 import java.io.PrintStream;
 
 public class SemanticSuccessPrinter {

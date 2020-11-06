@@ -1,4 +1,3 @@
-import com.google.common.base.Strings;
 import io.code.CodeLine;
 import lexical.Token;
 import util.Characters;
@@ -8,7 +7,7 @@ import java.io.PrintStream;
 public abstract class AbstractErrorPrinter {
 
     private static final String DETAIL_PREFIX = "Detalle: ";
-    private static final String INITIAL_PADDING = Strings.padStart("", DETAIL_PREFIX.length(), ' ');
+    private static final String INITIAL_PADDING = padLeft("", DETAIL_PREFIX.length());
 
     private final PrintStream out;
 
@@ -49,6 +48,10 @@ public abstract class AbstractErrorPrinter {
 
     protected void printErrorCode(String lexeme, int lineNumber){
         out.println("[Error:"+lexeme+"|"+lineNumber+"]");
+    }
+
+    private static String padLeft(String s, int n) {
+        return String.format("%" + n + "s", s);
     }
 
 }

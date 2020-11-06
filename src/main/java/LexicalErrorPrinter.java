@@ -1,6 +1,4 @@
-import com.google.common.base.Strings;
 import lexical.LexicalException;
-import util.Characters;
 
 import java.io.PrintStream;
 

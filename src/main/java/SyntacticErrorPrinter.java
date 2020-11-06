@@ -1,9 +1,5 @@
-import com.google.common.base.Strings;
-import io.code.CodeLine;
-import lexical.LexicalException;
 import lexical.Token;
 import syntactic.SyntacticException;
-import util.Characters;
 
 import java.io.PrintStream;
 

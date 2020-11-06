@@ -1,8 +1,8 @@
 package sequence;
 
-import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +50,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void emptySequence_appendListOfElements_thenGetThem() {
-        testSubject.appendAll(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT, THIRD_ELEMENT));
+        testSubject.appendAll(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT, THIRD_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.next().get());
         assertEquals(THIRD_ELEMENT, testSubject.next().get());
@@ -65,7 +65,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void emptySequence_appendListTwoElementsAndNull_shouldIgnoreNull() {
-        testSubject.appendAll(Lists.newArrayList(FIRST_ELEMENT, null, THIRD_ELEMENT));
+        testSubject.appendAll(Arrays.asList(FIRST_ELEMENT, null, THIRD_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(THIRD_ELEMENT, testSubject.next().get());
         assertFalse(testSubject.next().isPresent());
@@ -76,7 +76,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void emptySequence_appendListOfNull_shouldIgnoreAndKeepEmpty() {
-        testSubject.appendAll(Lists.newArrayList(null, null, null, null));
+        testSubject.appendAll(Arrays.asList(null, null, null, null));
         assertFalse(testSubject.next().isPresent());
         assertFalse(testSubject.peek().isPresent());
         assertFalse(testSubject.hasNext());
@@ -104,7 +104,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_mark_getTheTwo_reset_shouldGetTheTwoAgain() {
-        testSubject.appendAll(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject.appendAll(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         testSubject.mark(2);
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.next().get());
@@ -117,7 +117,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_getFirst_mark_getSecond_reset_shouldGetSecondAgain() {
-        testSubject.appendAll(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject.appendAll(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         testSubject.mark(1);
         assertEquals(SECOND_ELEMENT, testSubject.next().get());
@@ -128,7 +128,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_interlaceMarkWithGet_shouldResetThreeTimes_thenThrowException() {
-        testSubject.appendAll(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject.appendAll(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         testSubject.mark(2);
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         testSubject.mark(1);
@@ -200,28 +200,28 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void singleElement_shouldReturnElement_onGet() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
     }
 
     @Override
 	@Test
     public void singleElement_shouldReturnElement_onPeek() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.peek().get());
     }
 
     @Override
 	@Test
     public void singleElement_shouldReturnElement_onHasNext() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
         assertTrue(testSubject.hasNext());
     }
 
     @Override
 	@Test
     public void twoElements_afterGettingFirst_shouldReturnSecond_onGet() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.next().get());
     }
@@ -229,7 +229,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_afterGettingFirst_shouldReturnSecond_onPeek() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.peek().get());
     }
@@ -237,7 +237,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_afterGettingFirst_shouldReturnTrue_onHasNext() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertTrue(testSubject.hasNext());
     }
@@ -245,7 +245,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_afterGettingBoth_shouldReturnEmptyOptional_onGet() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.next().get());
         assertFalse(testSubject.next().isPresent());
@@ -254,7 +254,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_afterGettingBoth_shouldReturnEmptyOptional_onPeek() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.next().get());
         assertFalse(testSubject.peek().isPresent());
@@ -263,7 +263,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElements_afterGettingBoth_shouldReturnFalse_onHasNext() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.next().get());
         assertFalse(testSubject.hasNext());
@@ -272,7 +272,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void singleElement_peeking_shouldNotAffectGet() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.peek().get());
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
     }
@@ -280,7 +280,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void twoElement_peeking_shouldNotAffectGet() {
-        testSubject = new ListMarkableSequence<>(Lists.newArrayList(FIRST_ELEMENT, SECOND_ELEMENT));
+        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT, SECOND_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.peek().get());
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
         assertEquals(SECOND_ELEMENT, testSubject.peek().get());

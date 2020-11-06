@@ -1,9 +1,9 @@
 package io.code;
 
-import com.google.common.collect.Iterables;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import util.Iterables;
 
 import java.util.Iterator;
 import java.util.List;
