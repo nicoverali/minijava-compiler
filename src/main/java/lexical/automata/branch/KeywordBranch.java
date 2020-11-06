@@ -5,7 +5,6 @@ import lexical.LexicalException;
 import lexical.TokenType;
 import lexical.automata.AutomataToken;
 import lexical.automata.NodeBranch;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,11 +45,11 @@ public class KeywordBranch extends NodeBranchDecorator<AutomataToken> {
     }
 
     @Override
-    public @Nullable AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
+    public AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
         return applyMap(decorated.delegate(reader));
     }
 
-    private AutomataToken applyMap(@Nullable AutomataToken sourceToken){
+    private AutomataToken applyMap(AutomataToken sourceToken){
         if (sourceToken != null){
             TokenType keywordType = keywordMap.get(sourceToken.getLexeme().toString());
             if (keywordType != null){

@@ -3,7 +3,6 @@ package lexical.automata;
 import io.code.CodeCharacter;
 import io.code.CodeLine;
 import lexical.PrependableLexeme;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -41,7 +40,7 @@ public class AutomataLexeme implements PrependableLexeme {
      * @param character the first {@link CodeCharacter} of the new Lexeme
      * @return a new Lexeme with an initial first character
      */
-    public static AutomataLexeme create(@NotNull CodeCharacter character){
+    public static AutomataLexeme create(CodeCharacter character){
         return new AutomataLexeme(character);
     }
 
@@ -65,7 +64,7 @@ public class AutomataLexeme implements PrependableLexeme {
     }
 
     @Override
-    public void prepend(@NotNull CodeCharacter character) {
+    public void prepend(CodeCharacter character) {
         lexemeBuilder.insert(0, character.getValue());
         firstCharacter = character;
         firstLine = character.getCodeLine();

@@ -1,7 +1,6 @@
 package semantic.symbol.attribute.type;
 
 import lexical.Token;
-import org.jetbrains.annotations.Nullable;
 import semantic.SemanticException;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.TopLevelSymbol;
@@ -21,7 +20,7 @@ public abstract class Type implements SymbolAttribute<String> {
     }
 
     @Override
-    @Nullable
+
     public Token getToken() {
         return token;
     }

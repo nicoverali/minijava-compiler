@@ -2,8 +2,6 @@ package lexical.automata;
 
 import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A LexicalNode represents a single node in a lexical automata.
@@ -33,8 +31,7 @@ public interface LexicalNode<T>{
      * or null if the node couldn't process the characters
      * @throws LexicalException if a lexical error is detected
      */
-    @Nullable
-    T process(@NotNull SourceCodeReader reader) throws LexicalException;
+    T process(SourceCodeReader reader) throws LexicalException;
 
     /**
      * Adds a new {@link NodeBranch} to this node.
@@ -43,7 +40,7 @@ public interface LexicalNode<T>{
      *
      * @param branch a {@link NodeBranch} that connects this node with another one
      */
-    void addBranch(@NotNull NodeBranch<T> branch);
+    void addBranch(NodeBranch<T> branch);
 
     /**
      * Sets a name for this node.

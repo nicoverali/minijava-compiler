@@ -5,7 +5,6 @@ import lexical.LexicalException;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
-import org.jetbrains.annotations.Nullable;
 
 public class DefaultNodeBranch<T> implements NodeBranch<T> {
 
@@ -27,7 +26,7 @@ public class DefaultNodeBranch<T> implements NodeBranch<T> {
     }
 
     @Override
-    public @Nullable T delegate(SourceCodeReader reader) throws LexicalException {
+    public T delegate(SourceCodeReader reader) throws LexicalException {
         if (nextNode != null && shouldDelegate(reader)){
             reader.next(); // Consume character
             return nextNode.process(reader);

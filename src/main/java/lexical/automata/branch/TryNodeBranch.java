@@ -5,7 +5,6 @@ import lexical.LexicalException;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
-import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -23,7 +22,7 @@ public class TryNodeBranch<T> extends NodeBranchDecorator<T> {
     }
 
     @Override
-    public @Nullable T delegate(SourceCodeReader reader) {
+    public T delegate(SourceCodeReader reader) {
         reader.mark(readAheadLimit);
         T result = decorated.delegate(reader);
         if (rejects(result)) reader.reset();

@@ -9,8 +9,6 @@ import lexical.TokenType;
 import lexical.automata.node.LexicalNodeStrategy;
 import lexical.automata.AutomataLexeme;
 import lexical.automata.AutomataToken;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * This {@link LexicalNodeStrategy} generates a new {@link Token} when the node cannot delegate.
@@ -24,12 +22,12 @@ public class TokenizeStrategy implements LexicalNodeStrategy<AutomataToken> {
     }
 
     @Override
-    public @NotNull AutomataToken onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
+    public  AutomataToken onNoBranchSelected(SourceCodeReader reader,  CodeCharacter currentCharacter) throws LexicalException {
         return new AutomataToken(type, AutomataLexeme.empty(currentCharacter.getCodeLine()));
     }
 
     @Override
-    public @NotNull AutomataToken onEndOfFile(SourceCodeReader reader, @Nullable CodeLine currentLine) throws LexicalException {
+    public  AutomataToken onEndOfFile(SourceCodeReader reader,  CodeLine currentLine) throws LexicalException {
         return new AutomataToken(type, AutomataLexeme.empty(currentLine));
     }
 }

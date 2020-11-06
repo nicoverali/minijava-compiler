@@ -3,7 +3,6 @@ package lexical.automata;
 import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.automata.filter.LexicalFilter;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A branch that connects two {@link LexicalNode} together.
@@ -46,7 +45,6 @@ public interface NodeBranch<T> {
      * the next character
      * @throws LexicalException if a lexical error is detected
      */
-    @Nullable
     T delegate(SourceCodeReader reader) throws LexicalException;
 
 

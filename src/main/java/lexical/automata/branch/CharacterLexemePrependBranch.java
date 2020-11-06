@@ -8,7 +8,6 @@ import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.AutomataToken;
 import lexical.automata.filter.LexicalFilter;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -23,7 +22,7 @@ public class CharacterLexemePrependBranch extends NodeBranchDecorator<AutomataTo
     }
 
     @Override
-    public @Nullable AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
+    public AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
         Optional<CodeCharacter> currentChar = reader.peek();
         return currentChar.map(character -> this.delegate(reader, character))
                 .orElseGet(() -> decorated.delegate(reader));

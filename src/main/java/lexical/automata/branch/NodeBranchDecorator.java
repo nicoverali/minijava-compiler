@@ -5,7 +5,6 @@ import lexical.LexicalException;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class NodeBranchDecorator<T> implements NodeBranch<T> {
 
@@ -63,7 +62,7 @@ public abstract class NodeBranchDecorator<T> implements NodeBranch<T> {
      * @throws IllegalStateException if the branch does not have a decorated branch set
      */
     @Override
-    public abstract @Nullable T delegate(SourceCodeReader reader) throws LexicalException, IllegalStateException;
+    public abstract T delegate(SourceCodeReader reader) throws LexicalException, IllegalStateException;
 
     /**
      * This is just a helper class to avoid having to check for null decorated branch.
@@ -84,7 +83,7 @@ public abstract class NodeBranchDecorator<T> implements NodeBranch<T> {
         }
 
         @Override
-        public @Nullable T delegate(SourceCodeReader reader) throws LexicalException {
+        public T delegate(SourceCodeReader reader) throws LexicalException {
             throw new IllegalStateException(ERROR_MSG);
         }
     }

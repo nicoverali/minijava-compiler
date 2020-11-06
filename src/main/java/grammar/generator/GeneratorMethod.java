@@ -1,7 +1,5 @@
 package grammar.generator;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -71,7 +69,6 @@ public class GeneratorMethod implements Iterable<GeneratorMethodBody> {
         return "void "+name+"() { // Has LAMBDA: "+hasLambda;
     }
 
-    @NotNull
     @Override
     public Iterator<GeneratorMethodBody> iterator() {
         return methodBodies.iterator();

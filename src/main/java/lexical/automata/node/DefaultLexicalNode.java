@@ -6,8 +6,6 @@ import lexical.LexicalException;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.node.strategy.NullStrategy;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -42,13 +40,13 @@ public class DefaultLexicalNode<T> implements LexicalNode<T> {
     }
 
     @Override
-    public void addBranch(@NotNull NodeBranch<T> branch) {
+    public void addBranch(NodeBranch<T> branch) {
         branches.add(branch);
     }
 
 
     @Override
-    public @Nullable T process(@NotNull SourceCodeReader reader) throws LexicalException {
+    public T process(SourceCodeReader reader) throws LexicalException {
         Optional<CodeCharacter> nextChar = reader.peek();
         if (!nextChar.isPresent()){
             return strategy.onEndOfFile(reader, reader.getCurrentLine().orElse(null));

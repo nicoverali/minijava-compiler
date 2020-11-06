@@ -6,8 +6,6 @@ import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.automata.AutomataLexeme;
 import lexical.automata.node.LexicalNodeStrategy;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * With this {@link LexicalNodeStrategy}, if the node cannot delegate processing of characters, it detects
@@ -24,12 +22,12 @@ public class LexicalErrorStrategy<T> implements LexicalNodeStrategy<T> {
     }
 
     @Override
-    public T onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
+    public T onNoBranchSelected(SourceCodeReader reader, CodeCharacter currentCharacter) throws LexicalException {
         throw new LexicalException(errorMsg, AutomataLexeme.empty(currentCharacter.getCodeLine()), currentCharacter.getColumnNumber());
     }
 
     @Override
-    public T onEndOfFile(SourceCodeReader reader, @Nullable CodeLine currentLine) throws LexicalException {
+    public T onEndOfFile(SourceCodeReader reader, CodeLine currentLine) throws LexicalException {
         int columnNumber = currentLine != null ? currentLine.getSize() : 0;
         throw new LexicalException(errorMsg, AutomataLexeme.empty(currentLine), columnNumber);
     }

@@ -1,6 +1,5 @@
 package io.code;
 
-import org.jetbrains.annotations.NotNull;
 
 class DefaultCodeCharacter implements CodeCharacter {
 
@@ -18,7 +17,7 @@ class DefaultCodeCharacter implements CodeCharacter {
      * @param line the {@link CodeLine} where this <code>CodeCharacter</code> belongs
      * @throws IllegalArgumentException if the column number is negative or the line is null
      */
-    public DefaultCodeCharacter(char character, int columnNumber, @NotNull CodeLine line) throws IllegalArgumentException{
+    public DefaultCodeCharacter(char character, int columnNumber, CodeLine line) throws IllegalArgumentException{
         if (columnNumber < 0) throw new IllegalArgumentException("The column number of a CodeCharacter can't be negative");
         this.character = character;
         this.line = line;
