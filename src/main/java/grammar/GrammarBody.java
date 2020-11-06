@@ -1,7 +1,6 @@
 package grammar;
 
 import com.google.common.base.Joiner;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,7 +67,6 @@ public class GrammarBody implements Iterable<GrammarTerm>{
         return body.stream();
     }
 
-    @NotNull
     @Override
     public Iterator<GrammarTerm> iterator() {
         return body.iterator();

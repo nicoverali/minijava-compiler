@@ -5,8 +5,6 @@ import io.code.CodeLine;
 import io.code.reader.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.automata.node.LexicalNodeStrategy;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * This {@link LexicalNodeStrategy} does not do anything if the node cannot delegate, and simply returns a
@@ -17,12 +15,12 @@ import org.jetbrains.annotations.Nullable;
 public class NullStrategy<T> implements LexicalNodeStrategy<T> {
 
     @Override
-    public @Nullable T onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
+    public  T onNoBranchSelected(SourceCodeReader reader,  CodeCharacter currentCharacter) throws LexicalException {
         return null;
     }
 
     @Override
-    public @Nullable T onEndOfFile(SourceCodeReader reader, @Nullable CodeLine currentLine) throws LexicalException {
+    public  T onEndOfFile(SourceCodeReader reader,  CodeLine currentLine) throws LexicalException {
         return null;
     }
 

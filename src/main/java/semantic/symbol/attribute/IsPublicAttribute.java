@@ -1,7 +1,6 @@
 package semantic.symbol.attribute;
 
 import lexical.Token;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * This attribute determines if a Symbol is public or not
@@ -31,7 +30,7 @@ public class IsPublicAttribute implements SymbolAttribute<Boolean> {
     }
 
     @Override
-    @Nullable
+
     public Token getToken() {
         return token;
     }

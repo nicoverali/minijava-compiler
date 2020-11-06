@@ -8,8 +8,6 @@ import lexical.TokenType;
 import lexical.automata.AutomataLexeme;
 import lexical.automata.AutomataToken;
 import lexical.automata.node.LexicalNodeStrategy;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -25,13 +23,13 @@ public class TokenizeInitialStrategy implements LexicalNodeStrategy<AutomataToke
     }
 
     @Override
-    public @Nullable AutomataToken onNoBranchSelected(SourceCodeReader reader, @NotNull CodeCharacter currentCharacter) throws LexicalException {
+    public  AutomataToken onNoBranchSelected(SourceCodeReader reader,  CodeCharacter currentCharacter) throws LexicalException {
         reader.next(); // Consume character
         throw new LexicalException(errorMsg, AutomataLexeme.empty(currentCharacter.getCodeLine()), currentCharacter.getColumnNumber());
     }
 
     @Override
-    public @Nullable AutomataToken onEndOfFile(SourceCodeReader reader, @Nullable CodeLine currentLine) throws LexicalException {
+    public  AutomataToken onEndOfFile(SourceCodeReader reader,  CodeLine currentLine) throws LexicalException {
         return new AutomataToken(TokenType.EOF, AutomataLexeme.empty(currentLine));
     }
 }

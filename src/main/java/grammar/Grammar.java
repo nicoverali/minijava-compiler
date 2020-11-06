@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -132,7 +131,6 @@ public class Grammar {
      * @param body the {@link GrammarBody} of which will be computed the firsts
      * @return a {@link List} of <b>firsts</b> of the given {@link GrammarBody}
      */
-    @NotNull
     public List<GrammarTerm> firstOf(GrammarBody body){
         if (body.size() == 1) return firstOf(body.first());
 

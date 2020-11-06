@@ -1,7 +1,5 @@
 package io.code;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -73,7 +71,7 @@ public interface CodeLine extends Iterable<CodeCharacter> {
      * @return a {@link ListIterator} of all the characters in this line
      */
     @Override
-    @NotNull ListIterator<CodeCharacter> iterator();
+    ListIterator<CodeCharacter> iterator();
 
     /**
      * @return this entire line as a single String, including line separators

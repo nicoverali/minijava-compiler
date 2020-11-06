@@ -2,7 +2,6 @@ package io.code;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +111,7 @@ class DefaultCodeLine implements CodeLine {
     }
 
     @Override
-    public @NotNull ListIterator<CodeCharacter> iterator() {
+    public ListIterator<CodeCharacter> iterator() {
         return characters.listIterator();
     }
 

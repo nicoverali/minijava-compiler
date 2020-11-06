@@ -1,7 +1,6 @@
 package semantic.symbol.attribute;
 
 import lexical.Token;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A {@link SymbolAttribute} determines a certain aspect of a Symbol.
@@ -18,7 +17,7 @@ public interface SymbolAttribute<T> {
      * @return the {@link Token} associated with this attribute. This value may be null if the value of the attribute
      * was not obtained from the source code
      */
-    @Nullable
+
     Token getToken();
 
     /**

@@ -8,7 +8,6 @@ import lexical.automata.AutomataLexeme;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
-import org.jetbrains.annotations.Nullable;
 
 public class ExceptionBranch<T> implements NodeBranch<T> {
 
@@ -29,7 +28,7 @@ public class ExceptionBranch<T> implements NodeBranch<T> {
     public void setNextNode(LexicalNode<T> nextNode) {}
 
     @Override
-    public @Nullable T delegate(SourceCodeReader reader) throws LexicalException {
+    public T delegate(SourceCodeReader reader) throws LexicalException {
         if (shouldDelegate(reader)){
             CodeLine line = reader.getCurrentLine().orElse(null);
             int column = getColumnNumber(reader);
