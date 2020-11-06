@@ -25,6 +25,8 @@ public class UserClassSymbol implements ClassSymbol {
     private ReferenceType parent;
     private final List<ReferenceType> interfaces = new ArrayList<>();
 
+    private Map<String, AttributeSymbol> inheritedAttributes;
+    private Map<String, MethodSymbol> inheritedMethods;
     private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public UserClassSymbol(NameAttribute name){
@@ -41,9 +43,9 @@ public class UserClassSymbol implements ClassSymbol {
      */
     public void setParent(ReferenceType classReference) throws SemanticException {
         if (parent != ST.getDefaultClass()){
-            throw new SemanticException("Las clases solo pueden extender una unica clase", classReference.getToken());
+            throw new SemanticException("Las clases solo pueden extender una unica clase", classReference);
         } else if (classReference.getValue().equals(this.name.getValue())){
-            throw new SemanticException("Una clase no puede extenderse a si misma", classReference.getToken());
+            throw new SemanticException("Una clase no puede extenderse a si misma", classReference);
         }
         parent = classReference;
     }
@@ -67,7 +69,7 @@ public class UserClassSymbol implements ClassSymbol {
      */
     public void add(GenericityAttribute generic) throws SemanticException{
         if (this.generic != null)
-            throw new SemanticException("Una clase no puede tener mas de un tipo generico", generic.getToken());
+            throw new SemanticException("Una clase no puede tener mas de un tipo generico", generic);
         this.generic = generic;
     }
 
@@ -80,7 +82,7 @@ public class UserClassSymbol implements ClassSymbol {
      */
     public void add(ConstructorSymbol constructor) throws SemanticException{
         if (this.constructor != null)
-            throw new SemanticException("Las clases solo pueden tener un unico constructor", constructor.getClassReference().getToken());
+            throw new SemanticException("Las clases solo pueden tener un unico constructor", constructor.getClassReference());
         constructor.setTopLevelSymbol(this);
         this.constructor = constructor;
     }
@@ -95,7 +97,7 @@ public class UserClassSymbol implements ClassSymbol {
     public void add(MethodSymbol method) throws SemanticException{
         NameAttribute methodName = method.getNameAttribute();
         if (methods.containsKey(methodName.getValue()))
-            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", methodName.getToken());
+            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", methodName);
         method.setTopLevelSymbol(this);
         methods.put(methodName.getValue(), method);
     }
@@ -109,7 +111,7 @@ public class UserClassSymbol implements ClassSymbol {
     public void add(AttributeSymbol attribute) throws SemanticException{
         NameAttribute attributeName = attribute.getNameAttribute();
         if (attributes.containsKey(attributeName.getValue()))
-            throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attributeName.getToken());
+            throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attributeName);
         attribute.setTopLevelSymbol(this);
         attributes.put(attributeName.getValue(), attribute);
     }
@@ -170,22 +172,49 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     @Override
+    public Map<String, AttributeSymbol> inheritAttributes() throws SemanticException {
+        if (inheritedAttributes == null) this.obtainInheritedAttributesAndMethods();
+
+        Map<String, AttributeSymbol> resultMap = new HashMap<>(inheritedAttributes);
+        attributes.forEach(resultMap::put);
+        return Collections.unmodifiableMap(resultMap);
+    }
+
+    @Override
+    public Map<String, MethodSymbol> inheritMethods() throws SemanticException {
+        if (inheritedMethods == null)  this.obtainInheritedAttributesAndMethods();
+
+        Map<String, MethodSymbol> resultMap = new HashMap<>(inheritedMethods);
+        methods.forEach(resultMap::put);
+        return Collections.unmodifiableMap(resultMap);
+    }
+
+    private void obtainInheritedAttributesAndMethods(){
+        ClassSymbol parentSym = ST.getClass(parent.getValue())
+                .orElseThrow(() -> new SemanticException("No se pudo encontrar el simbolo", parent));
+        inheritedAttributes = parentSym.inheritAttributes();
+        inheritedMethods = parentSym.inheritMethods();
+    }
+
+    @Override
     public void consolidate() throws SemanticException {
         consolidateInheritance();
         checkForCircularInheritance(new ArrayList<>());
+        obtainInheritedAttributesAndMethods();
+        checkForOverwrittenMethods();
         consolidateMembers();
     }
 
     private void consolidateInheritance() {
         parent.validate(ST, this);
         if (!ST.isAClass(parent.getValue())) {
-            throw new SemanticException("Una clase solo puede extender otra clase", parent.getToken());
+            throw new SemanticException("Una clase solo puede extender otra clase", parent);
         }
 
         for (ReferenceType i : interfaces) {
             i.validate(ST, this);
             if (!ST.isAnInterface(i.getValue())){
-                throw new SemanticException("Una clase solo puede implementar interfaces", i.getToken());
+                throw new SemanticException("Una clase solo puede implementar interfaces", i);
             }
         }
     }
@@ -202,6 +231,20 @@ public class UserClassSymbol implements ClassSymbol {
         ST.getUserClass(parent.getValue())
             .ifPresent(c -> c.checkForCircularInheritance(visited));
         circularInheritanceCheck = true;
+    }
+
+    private void checkForOverwrittenMethods(){
+        List<String> overwritten = methods.values().stream()
+                                            .map(MethodSymbol::getName)
+                                            .filter(inheritedMethods::containsKey)
+                                            .collect(Collectors.toList());
+        for (String methodName : overwritten) {
+            MethodSymbol ours = methods.get(methodName);
+            MethodSymbol theirs = inheritedMethods.get(methodName);
+            if (!ours.equals(theirs)){
+                throw new SemanticException("Se sobreescribe un metodo pero no se respeta el encabezado original", ours.getNameAttribute());
+            }
+        }
     }
 
     private void consolidateMembers() {

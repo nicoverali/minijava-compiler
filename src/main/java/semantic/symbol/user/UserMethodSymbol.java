@@ -53,7 +53,7 @@ public class UserMethodSymbol implements MethodSymbol {
     public void add(ParameterSymbol parameter) throws SemanticException {
         NameAttribute paramName = parameter.getNameAttribute();
         if (parameters.containsKey(paramName.getValue())){
-            throw new SemanticException("Un metodo no puede tener dos parametros con el mismo nombre", paramName.getToken());
+            throw new SemanticException("Un metodo no puede tener dos parametros con el mismo nombre", paramName);
         }
         parameter.setTopLevelSymbol(topSymbol);
         parameters.put(paramName.getValue(), parameter);

@@ -42,7 +42,7 @@ public class ConstructorSymbol implements InnerLevelSymbol {
                 .findFirst().orElse(null);
 
         if (duplicate != null){
-            throw new SemanticException("Un constructor no puede tener dos argumentos con el mismo nombre", duplicate.getToken());
+            throw new SemanticException("Un constructor no puede tener dos argumentos con el mismo nombre", duplicate);
         }
     }
 
@@ -53,7 +53,7 @@ public class ConstructorSymbol implements InnerLevelSymbol {
         if (topSymbol == null)
             throw new IllegalStateException("El constructor no esta contenido dentro de ninguna clase");
         if (!constructorNameMatchesClass())
-            throw new SemanticException("El nombre del constructor no es el de la clase que lo contiene", getClassReference().getToken());
+            throw new SemanticException("El nombre del constructor no es el de la clase que lo contiene", getClassReference());
     }
 
     private boolean constructorNameMatchesClass() {

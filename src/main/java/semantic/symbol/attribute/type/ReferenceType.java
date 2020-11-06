@@ -39,7 +39,7 @@ public class ReferenceType extends Type{
      */
     public void addGeneric(GenericityAttribute generic) throws SemanticException {
         if (this.generic != null)
-            throw new SemanticException("Las referencias solo pueden tener un unico tipo generico", generic.getToken());
+            throw new SemanticException("Las referencias solo pueden tener un unico tipo generico", generic);
         this.generic = generic;
     }
 

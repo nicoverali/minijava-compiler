@@ -1,10 +1,19 @@
 package semantic;
 
 import lexical.Token;
+import semantic.symbol.attribute.SymbolAttribute;
 
 public class SemanticException extends RuntimeException{
 
-    private Token exceptionToken;
+    private final Token exceptionToken;
+
+    public SemanticException(String message, SymbolAttribute<?> attribute) {
+        super(message);
+        this.exceptionToken = attribute.getToken();
+        if (exceptionToken == null){
+            throw new IllegalArgumentException("Attributes provided to SemanticException must have an associated Token");
+        }
+    }
 
     public SemanticException(String message, Token exceptionToken) {
         super(message);

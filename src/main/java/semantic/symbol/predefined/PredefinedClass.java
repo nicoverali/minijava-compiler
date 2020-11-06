@@ -4,7 +4,7 @@ import semantic.SemanticException;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
-import semantic.symbol.TopLevelSymbol;
+import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
@@ -73,6 +73,26 @@ public class PredefinedClass implements ClassSymbol {
     @Override
     public Optional<ReferenceType> getParent() {
         return Optional.empty();
+    }
+
+    @Override
+    public Map<String, AttributeSymbol> inheritAttributes() throws SemanticException {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public Map<String, MethodSymbol> inheritMethods() throws SemanticException {
+        Map<String, MethodSymbol> resultMap;
+        ClassSymbol parentSym = null;
+        if (parent != null){
+            parentSym = SymbolTable.getInstance().getPredefinedClass(parent.getValue())
+            .orElseThrow(() -> new IllegalStateException("The predefined class has a parent that does not exists"));
+        }
+        resultMap = parentSym != null ? new HashMap<>(parentSym.inheritMethods()) : new HashMap<>();
+        for (PredefinedMethod method : methods) {
+            resultMap.put(method.getName(), method);
+        }
+        return Collections.unmodifiableMap(resultMap);
     }
 
     /**

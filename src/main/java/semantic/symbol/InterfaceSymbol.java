@@ -34,7 +34,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
      */
     public void addExtends(ReferenceType extendsReference){
         if (extendsReference.getValue().equals(this.name.getValue())){
-            throw new SemanticException("Una interfaz no puede extenderse a si misma", extendsReference.getToken());
+            throw new SemanticException("Una interfaz no puede extenderse a si misma", extendsReference);
         }
         extend.add(extendsReference);
     }
@@ -48,7 +48,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
      */
     public void add(GenericityAttribute generic) throws SemanticException {
         if (this.generic != null)
-            throw new SemanticException("Una interfaz puede tener un unico tipo generico", generic.getToken());
+            throw new SemanticException("Una interfaz puede tener un unico tipo generico", generic);
         this.generic = generic;
     }
 
@@ -62,7 +62,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
     public void add(MethodSymbol method) throws SemanticException{
         NameAttribute methodName = method.getNameAttribute();
         if (methods.containsKey(methodName.getValue()))
-            throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", methodName.getToken());
+            throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", methodName);
         method.setTopLevelSymbol(this);
         methods.put(methodName.getValue(), method);
     }
@@ -119,7 +119,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
         extend.forEach(extend -> extend.validate(ST, this));
         for (ReferenceType ref : extend) {
             if (!ST.isAnInterface(ref.getValue())){
-                throw new SemanticException("Una interfaz solo puede extender interfaces", ref.getToken());
+                throw new SemanticException("Una interfaz solo puede extender interfaces", ref);
             }
         }
     }
