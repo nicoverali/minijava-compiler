@@ -202,6 +202,7 @@ public class UserClassSymbol implements ClassSymbol {
         checkForCircularInheritance(new ArrayList<>());
         obtainInheritedAttributesAndMethods();
         checkForOverwrittenMethods();
+        checkInterfacesAreActuallyImplemented();
         consolidateMembers();
     }
 
@@ -251,5 +252,32 @@ public class UserClassSymbol implements ClassSymbol {
         if (constructor != null) constructor.consolidate();
         attributes.values().forEach(AttributeSymbol::consolidate);
         methods.values().forEach(MethodSymbol::consolidate);
+    }
+
+    private void checkInterfacesAreActuallyImplemented() {
+        Map<String, MethodSymbol> toImplement = new HashMap<>();
+        List<InterfaceSymbol> parents = interfaces.stream()
+                .map(ref -> ST.getInterface(ref.getValue()))
+                .filter(Optional::isPresent)
+                .map(Optional::get).collect(Collectors.toList());
+
+        for (InterfaceSymbol parent : parents){
+            for (Map.Entry<String, MethodSymbol> entry : parent.inheritMethods().entrySet()){
+                MethodSymbol overwritten = toImplement.get(entry.getKey());
+                if (overwritten != null && !overwritten.equals(entry.getValue())){
+                    throw new SemanticException("La clase extiende dos interfaces cuyos metodos colisionan", this.name);
+                }
+                toImplement.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        for (Map.Entry<String, MethodSymbol> entry : toImplement.entrySet()){
+            MethodSymbol ours = methods.get(entry.getKey());
+            if (ours == null){
+                throw new SemanticException("La clase no implementa el metodo "+entry.getValue().getName(), this.name);
+            } else if (!ours.equals(entry.getValue())){
+                throw new SemanticException("Se implementa el metodo pero no se respeta el encabezado", ours.getNameAttribute());
+            }
+        }
     }
 }
