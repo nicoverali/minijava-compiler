@@ -8,6 +8,7 @@ import lexical.LexicalException;
 import lexical.analyzer.LexicalAnalyzer;
 import lexical.analyzer.LexicalSequence;
 import lexical.analyzer.MiniJavaLexicalAnalyzer;
+import semantic.CircularInheritanceException;
 import semantic.SemanticException;
 import semantic.symbol.SymbolTable;
 import syntactic.MiniJavaSyntacticAnalyzer;
@@ -22,7 +23,8 @@ public class Main {
 
     private static final LexicalErrorPrinter LEXICAL_ERROR_PRINTER = new LexicalErrorPrinter(System.out);
     private static final SyntacticErrorPrinter SYNTACTIC_ERROR_PRINTER = new SyntacticErrorPrinter(System.out);
-    private static final SemanticErrorPrinter SEMANTIC_ERROR_PRINTER_ERROR_PRINTER = new SemanticErrorPrinter(System.out);
+    private static final SemanticErrorPrinter SEMANTIC_ERROR_PRINTER = new SemanticErrorPrinter(System.out);
+    private static final CircularInheritanceErrorPrinter CIRCULAR_INHERITANCE_ERROR_PRINTER = new CircularInheritanceErrorPrinter(System.out);
     private static final SemanticSuccessPrinter SUCCESS_PRINTER = new SemanticSuccessPrinter(System.out);
 
 
@@ -41,7 +43,9 @@ public class Main {
         } catch (SyntacticException se) {
             SYNTACTIC_ERROR_PRINTER.printError(se);
         } catch (SemanticException se) {
-            SEMANTIC_ERROR_PRINTER_ERROR_PRINTER.printError(se);
+            SEMANTIC_ERROR_PRINTER.printError(se);
+        } catch (CircularInheritanceException ce){
+            CIRCULAR_INHERITANCE_ERROR_PRINTER.printError(ce);
         }
     }
 
