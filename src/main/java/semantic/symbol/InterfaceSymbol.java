@@ -20,6 +20,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
     private Map<String, MethodSymbol> methods = new HashMap<>();
     private List<ReferenceType> extend = new ArrayList<>();
 
+    private Map<String, MethodSymbol> superMethods;
     private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public InterfaceSymbol(NameAttribute name){
@@ -108,11 +109,46 @@ public class InterfaceSymbol implements TopLevelSymbol {
         return extend;
     }
 
+    public Map<String, MethodSymbol> inheritMethods(){
+        if (superMethods == null) this.obtainSuperMethods();
+
+        Map<String, MethodSymbol> resultMap = new HashMap<>(superMethods);
+        for (Map.Entry<String, MethodSymbol> entry : methods.entrySet()){
+            MethodSymbol overwritten = resultMap.get(entry.getKey());
+            if (overwritten != null && !overwritten.equals(entry.getValue())){
+                throw new SemanticException("Se sobreescribe el metodo pero no se respeta el encabezado", entry.getValue().getNameAttribute());
+            }
+            resultMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return Collections.unmodifiableMap(resultMap);
+    }
+
+    private void obtainSuperMethods(){
+        superMethods = new HashMap<>();
+        List<InterfaceSymbol> parents = extend.stream()
+                                            .map(ref -> ST.getInterface(ref.getValue()))
+                                            .filter(Optional::isPresent)
+                                            .map(Optional::get).collect(Collectors.toList());
+
+        for (InterfaceSymbol parent : parents){
+            for (Map.Entry<String, MethodSymbol> entry : parent.inheritMethods().entrySet()){
+                MethodSymbol overwritten = superMethods.get(entry.getKey());
+                if (overwritten != null && !overwritten.equals(entry.getValue())){
+                    throw new SemanticException("La interfaz extiende dos interfaces cuyos metodos colisionan", this.name);
+                }
+                superMethods.put(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
     @Override
     public void consolidate() throws SemanticException {
         consolidateInheritance();
         consolidateMembers();
         checkForCircularInheritance(new ArrayList<>());
+        obtainSuperMethods();
+        checkForOverwrittenMethods();
     }
 
     private void consolidateInheritance() {
@@ -122,6 +158,10 @@ public class InterfaceSymbol implements TopLevelSymbol {
                 throw new SemanticException("Una interfaz solo puede extender interfaces", ref);
             }
         }
+    }
+
+    private void consolidateMembers() {
+        methods.values().forEach(MethodSymbol::consolidate);
     }
 
     private void checkForCircularInheritance(List<InterfaceSymbol> visited){
@@ -142,7 +182,12 @@ public class InterfaceSymbol implements TopLevelSymbol {
         circularInheritanceCheck = true;
     }
 
-    private void consolidateMembers() {
-        methods.values().forEach(MethodSymbol::consolidate);
+    private void checkForOverwrittenMethods() {
+        for (Map.Entry<String, MethodSymbol> entry : methods.entrySet()){
+            MethodSymbol overwritten = superMethods.get(entry.getKey());
+            if (overwritten != null && !overwritten.equals(entry.getValue())){
+                throw new SemanticException("Se sobreescribe el metodo pero no se respeta el encabezado", entry.getValue().getNameAttribute());
+            }
+        }
     }
 }
