@@ -27,7 +27,10 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        SyntacticAnalyzer syntacticAnalyzer = createSyntacticAnalyzer("test.java");//args[0]);
+        if(args.length < 1){
+            throw new IllegalArgumentException("Se debe proveer el archivo de entrada como argumento");
+        }
+        SyntacticAnalyzer syntacticAnalyzer = createSyntacticAnalyzer(args[0]);
 
         try {
             syntacticAnalyzer.analyze();
