@@ -39,4 +39,19 @@ public class NameAttribute implements SymbolAttribute<String> {
     public String getValue() {
         return name;
     }
+
+    /**
+     * @return true if the given object is a {@link NameAttribute} and has the same name as this one
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof NameAttribute && equals((NameAttribute) obj);
+    }
+
+    /**
+     * @return true if the given {@link NameAttribute} has the same name as this one, false otherwise
+     */
+    public boolean equals(NameAttribute attribute){
+        return this.name.equals(attribute.name);
+    }
 }

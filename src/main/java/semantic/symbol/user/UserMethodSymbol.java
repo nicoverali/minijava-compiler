@@ -80,6 +80,31 @@ public class UserMethodSymbol implements MethodSymbol {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof MethodSymbol && equals((MethodSymbol) obj);
+    }
+
+    @Override
+    public boolean equals(MethodSymbol method) {
+        return this.isStatic.equals(method.isStatic())
+                && this.returnType.equals(method.getReturnType())
+                && this.name.equals(method.getNameAttribute())
+                && parametersAreEqual(method);
+    }
+
+    private boolean parametersAreEqual(MethodSymbol method) {
+        List<ParameterSymbol> ours = new ArrayList<>(parameters.values());
+        List<ParameterSymbol> theirs = method.getParameters();
+        if (ours.size() != theirs.size()) return false;
+        for (int i = 0; i < ours.size(); i++) {
+            if (!ours.get(i).equals(theirs.get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void consolidate() throws SemanticException, IllegalStateException {
         if (topSymbol == null) throw new IllegalStateException("El metodo no esta contenido dentro de ningun simbolo de nivel superior");
         returnType.validate(SymbolTable.getInstance(), topSymbol);

@@ -53,4 +53,19 @@ public class GenericityAttribute implements SymbolAttribute<String> {
                 .map(gen -> gen.name.equals(this.name))
                 .orElse(false);
     }
+
+    /**
+     * @return true if the given object is a {@link GenericityAttribute} and has the same value as this one
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof GenericityAttribute && equals((GenericityAttribute) obj);
+    }
+
+    /**
+     * @return true if the given {@link GenericityAttribute} has the same value as this one
+     */
+    public boolean equals(GenericityAttribute attribute){
+        return this.name.equals(attribute.name);
+    }
 }

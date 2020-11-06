@@ -96,4 +96,18 @@ public class ReferenceType extends Type{
                 .map(gen -> gen.equals(this.name))
                 .orElse(false);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ReferenceType && equals((ReferenceType) obj);
+    }
+
+    public boolean equals(ReferenceType type) {
+        if (this.generic != null && type.generic != null){
+            return this.name.equals(type.name) && this.generic.equals(type.generic);
+        } else if (this.generic == null && type.generic == null){
+            return this.name.equals(type.name);
+        }
+        return false;
+    }
 }

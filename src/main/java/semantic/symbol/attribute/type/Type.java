@@ -45,4 +45,19 @@ public abstract class Type implements SymbolAttribute<String> {
     public void validate(SymbolTable st, TopLevelSymbol topSymbol) throws SemanticException {
         // By default every type is valid
     }
+
+    /**
+     * @return true if the given object is a {@link Type} and has the same value as this one
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Type && equals((Type) obj);
+    }
+
+    /**
+     * @return true if the given {@link Type} has the same value as this one
+     */
+    public boolean equals(Type type) {
+        return this.name.equals(type.name);
+    }
 }

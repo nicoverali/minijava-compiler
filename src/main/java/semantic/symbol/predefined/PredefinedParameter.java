@@ -30,6 +30,16 @@ public class PredefinedParameter implements ParameterSymbol {
         return type;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ParameterSymbol && equals((ParameterSymbol) obj);
+    }
+
+    @Override
+    public boolean equals(ParameterSymbol parameter) {
+        return this.type.equals(parameter.getType());
+    }
+
     /**
      * @return the name of the predefined parameter as a {@link String}
      */

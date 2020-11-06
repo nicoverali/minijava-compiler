@@ -65,6 +65,30 @@ public class PredefinedMethod implements MethodSymbol {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof MethodSymbol && equals((MethodSymbol) obj);
+    }
+
+    @Override
+    public boolean equals(MethodSymbol method) {
+        return this.isStatic.equals(method.isStatic())
+                && this.returnType.equals(method.getReturnType())
+                && this.name.equals(method.getNameAttribute())
+                && parametersAreEqual(method);
+    }
+
+    private boolean parametersAreEqual(MethodSymbol method) {
+        if (parameters.size() != method.getParameters().size()) return false;
+        for (int i = 0; i < parameters.size(); i++) {
+            if (!parameters.get(i).equals(method.getParameters().get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    @Override
     public void setTopLevelSymbol(TopLevelSymbol symbol) {
         // Unnecessary
     }

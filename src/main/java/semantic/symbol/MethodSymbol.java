@@ -31,4 +31,9 @@ public interface MethodSymbol extends InnerLevelSymbol {
      * @return a list of all the {@link ParameterSymbol} of this method
      */
     List<ParameterSymbol> getParameters();
+
+    /**
+     * @return true if the given method has the same staticness, type, name, and parameters types, false otherwise
+     */
+    boolean equals(MethodSymbol method);
 }

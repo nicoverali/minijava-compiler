@@ -28,6 +28,16 @@ public class UserParameterSymbol implements ParameterSymbol {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ParameterSymbol && equals((ParameterSymbol) obj);
+    }
+
+    @Override
+    public boolean equals(ParameterSymbol parameter) {
+        return this.type.equals(parameter.getType());
+    }
+
+    @Override
     public void consolidate() throws SemanticException, IllegalStateException {
         if (topSymbol == null) throw new IllegalStateException("El parametro no forma parte de ningun simbolo de nivel superior.");
         this.type.validate(SymbolTable.getInstance(), topSymbol);
