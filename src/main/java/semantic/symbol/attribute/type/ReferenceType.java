@@ -17,6 +17,10 @@ public class ReferenceType extends Type{
 
     private GenericityAttribute generic;
 
+    public ReferenceType(String name){
+        super(null, name);
+    }
+
     public ReferenceType(Token token) {
         super(token, token.getLexeme().toString());
     }

@@ -1,58 +1,76 @@
 package semantic.symbol.predefined;
 
-import lexical.Token;
+import semantic.SemanticException;
+import semantic.symbol.MethodSymbol;
+import semantic.symbol.ParameterSymbol;
+import semantic.symbol.TopLevelSymbol;
+import semantic.symbol.attribute.IsStaticAttribute;
+import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * A predefined method is a member of a {@link PredefinedClass}.
  * It has a name, staticness, type and a list of {@link PredefinedParameter}
  */
-public class PredefinedMethod {
+public class PredefinedMethod implements MethodSymbol {
 
-    private final boolean isStatic;
+    private final IsStaticAttribute isStatic;
     private final Type returnType;
-    private final String name;
+    private final NameAttribute name;
     private final List<PredefinedParameter> parameters;
 
     public static PredefinedMethod createStatic(Type type, String name, PredefinedParameter... parameters){
-        return new PredefinedMethod(true, type, name, parameters);
+        return new PredefinedMethod(IsStaticAttribute.emptyStatic(), type, name, parameters);
     }
 
     public static PredefinedMethod createDynamic(Type type, String name, PredefinedParameter... parameters){
-        return new PredefinedMethod(false, type, name, parameters);
+        return new PredefinedMethod(IsStaticAttribute.emptyDynamic(), type, name, parameters);
     }
 
-    private PredefinedMethod(boolean isStatic, Type returnType, String name, PredefinedParameter... parameters) {
+    private PredefinedMethod(IsStaticAttribute isStatic, Type returnType, String name, PredefinedParameter... parameters) {
         this.isStatic = isStatic;
         this.returnType = returnType;
-        this.name = name;
+        this.name = NameAttribute.predefined(name);
         this.parameters = Arrays.asList(parameters);
     }
 
-    /**
-     * @return true if the predefined method is static, false if not
-     */
-    public boolean isStatic() {
+
+    @Override
+    public IsStaticAttribute isStatic() {
         return isStatic;
     }
 
-    /**
-     * Returns the return {@link Type} of the method. Is type won't have a {@link Token} associated since it's
-     * created at initialization and not read from a source code
-     *
-     * @return the return {@link Type} of the predefined method.
-     */
+    @Override
     public Type getReturnType(){
         return returnType;
     }
 
-    /**
-     * @return the name of this predefined method as a {@link String}
-     */
+    @Override
     public String getName() {
+        return name.getValue();
+    }
+
+    @Override
+    public NameAttribute getNameAttribute() {
         return name;
+    }
+
+    @Override
+    public List<ParameterSymbol> getParameters() {
+        return Collections.unmodifiableList(parameters);
+    }
+
+    @Override
+    public void setTopLevelSymbol(TopLevelSymbol symbol) {
+        // Unnecessary
+    }
+
+    @Override
+    public void consolidate() throws SemanticException, IllegalStateException {
+        // Do nothing
     }
 }

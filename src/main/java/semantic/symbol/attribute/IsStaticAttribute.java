@@ -18,6 +18,10 @@ public class IsStaticAttribute implements SymbolAttribute<Boolean>{
         return new IsStaticAttribute(token, false);
     }
 
+    public static IsStaticAttribute emptyStatic(){
+        return new IsStaticAttribute(null, true);
+    }
+
     public static IsStaticAttribute emptyDynamic(){
         return new IsStaticAttribute(null, false);
     }

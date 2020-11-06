@@ -1,26 +1,30 @@
 package semantic.symbol.predefined;
 
 import semantic.SemanticException;
+import semantic.symbol.AttributeSymbol;
+import semantic.symbol.ClassSymbol;
+import semantic.symbol.MethodSymbol;
 import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.GenericityAttribute;
+import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A predefined class is inserted into the {@link semantic.symbol.SymbolTable} at initialization of the program.
  * It defines the name and methods that will already exist at the beginning, so that classes and methods from
  * a source code can call them of make references to them.
  */
-public class PredefinedClass implements TopLevelSymbol {
+public class PredefinedClass implements ClassSymbol {
 
-    private final String name;
+    private final NameAttribute name;
     private final List<PredefinedMethod> methods = new ArrayList<>();
 
+    private ReferenceType parent;
+
     public PredefinedClass(String name){
-        this.name = name;
+        this.name = NameAttribute.predefined(name);
     }
 
     /**
@@ -33,10 +37,27 @@ public class PredefinedClass implements TopLevelSymbol {
     }
 
     /**
-     * @return the name of this predefined class as a {@link String}
+     * Sets the parent class of this predefined class.
+     * This parent should be another {@link PredefinedClass}, but this won't be verified.
+     *
+     * @param reference a {@link ReferenceType} that points to the parent of this predefined class
      */
+    public void setParent(ReferenceType reference){
+        parent = reference;
+    }
+
+    @Override
+    public NameAttribute getNameAttribute() {
+        return null;
+    }
+
     public String getName(){
-        return name;
+        return name.getValue();
+    }
+
+    @Override
+    public Collection<AttributeSymbol> getAttributes() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -44,11 +65,14 @@ public class PredefinedClass implements TopLevelSymbol {
         return Optional.empty();
     }
 
-    /**
-     * @return a collection of all the {@link PredefinedMethod} of this predefined class
-     */
-    public Collection<PredefinedMethod> getMethods(){
-        return methods;
+    @Override
+    public Collection<MethodSymbol> getMethods(){
+        return Collections.unmodifiableList(methods);
+    }
+
+    @Override
+    public Optional<ReferenceType> getParent() {
+        return Optional.empty();
     }
 
     /**
@@ -66,6 +90,6 @@ public class PredefinedClass implements TopLevelSymbol {
 
     @Override
     public void consolidate() throws SemanticException, IllegalStateException {
-
+        // Do nothing
     }
 }

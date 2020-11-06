@@ -12,6 +12,9 @@ import semantic.symbol.attribute.type.PrimitiveType;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 import semantic.symbol.attribute.type.VoidType;
+import semantic.symbol.user.UserClassSymbol;
+import semantic.symbol.user.UserMethodSymbol;
+import semantic.symbol.user.UserParameterSymbol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -147,13 +150,13 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
         NameAttribute name = NameAttribute.of(match(ID_MV));
         List<ParameterSymbol> parameters = argsFormales();
         match(P_SEMICOLON);
-        st.currentInterface.add(new MethodSymbol(isStatic, type, name, parameters));
+        st.currentInterface.add(new UserMethodSymbol(isStatic, type, name, parameters));
     }
 
     private void clase() {
         match(K_CLASS);
         NameAttribute name = NameAttribute.of(match(ID_CLS));
-        st.currentClass = new ClassSymbol(name);
+        st.currentClass = new UserClassSymbol(name);
 
         // Check if class is generic
         genExplicitaOVacio().ifPresent(st.currentClass::add);
@@ -183,7 +186,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
             match(K_EXTENDS);
             ReferenceType extendsType = new ReferenceType(match(ID_CLS));
             genExplicitaOVacio().ifPresent(extendsType::addGeneric);
-            st.currentClass.addExtends(extendsType);
+            st.currentClass.setParent(extendsType);
         }
     }
 
@@ -250,7 +253,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
         bloque();
 
         // Add method to current class
-        st.currentClass.add(new MethodSymbol(isStatic, type, name, parameters));
+        st.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters));
     }
 
     private void atributoOConstructor(ReferenceType classReference) {
@@ -376,7 +379,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     private void restoMetodo(IsStaticAttribute isStatic, Type type, NameAttribute name) {
         List<ParameterSymbol> parameters = argsFormales();
         bloque();
-        st.currentClass.add(new MethodSymbol(isStatic, type, name, parameters));
+        st.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters));
     }
 
     /**
@@ -879,7 +882,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     private ParameterSymbol argFormal() {
         Type type = tipo();
         NameAttribute name = NameAttribute.of(match(ID_MV));
-        return new ParameterSymbol(type, name);
+        return new UserParameterSymbol(type, name);
     }
 
     private void expNivel1() {

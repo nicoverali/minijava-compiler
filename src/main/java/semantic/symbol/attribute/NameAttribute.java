@@ -14,6 +14,14 @@ public class NameAttribute implements SymbolAttribute<String> {
         return new NameAttribute(token);
     }
 
+    public static NameAttribute predefined(String name){
+        return new NameAttribute(name);
+    }
+
+    private NameAttribute(String name){
+        this.name = name;
+    }
+
     private NameAttribute(Token tokenName){
         token = tokenName;
         name = tokenName.getLexeme().toString();
