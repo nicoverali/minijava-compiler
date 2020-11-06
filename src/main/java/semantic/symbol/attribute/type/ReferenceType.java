@@ -65,7 +65,7 @@ public class ReferenceType extends Type{
         }
     }
 
-    public boolean checkInSymbolTable(SymbolTable st, TopLevelSymbol container){
+    private boolean checkInSymbolTable(SymbolTable st, TopLevelSymbol container){
         Optional<TopLevelSymbol> symbol = st.getTopLevelSymbol(this.name);
         if(symbol.isPresent()){
             checkSymbolGenericity(st, symbol.get(), container);
@@ -86,7 +86,7 @@ public class ReferenceType extends Type{
         }
     }
 
-    public boolean checkInTopLevelGenericity(TopLevelSymbol container){
+    private boolean checkInTopLevelGenericity(TopLevelSymbol container){
         return container.getGeneric()
                 .map(GenericityAttribute::getValue)
                 .map(gen -> gen.equals(this.name))

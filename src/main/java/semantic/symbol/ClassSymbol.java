@@ -1,13 +1,18 @@
 package semantic.symbol;
 
+import lexical.Token;
+import semantic.CircularInheritanceException;
 import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClassSymbol implements TopLevelSymbol {
+
+    private static final SymbolTable ST = SymbolTable.getInstance();
 
     private final NameAttribute name;
     private GenericityAttribute generic;
@@ -18,6 +23,8 @@ public class ClassSymbol implements TopLevelSymbol {
 
     private ReferenceType parent;
     private final List<ReferenceType> interfaces = new ArrayList<>();
+
+    private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public ClassSymbol(NameAttribute name){
         this.name = name;
@@ -31,8 +38,11 @@ public class ClassSymbol implements TopLevelSymbol {
      * @throws SemanticException if the class was already extending another class
      */
     public void addExtends(ReferenceType classReference) throws SemanticException {
-        if (parent != null)
+        if (parent != null){
             throw new SemanticException("Las clases solo pueden extender una unica clase", classReference.getToken());
+        } else if (classReference.getValue().equals(this.name.getValue())){
+            throw new SemanticException("Una clase no puede extenderse a si misma", classReference.getToken());
+        }
         parent = classReference;
     }
 
@@ -167,8 +177,45 @@ public class ClassSymbol implements TopLevelSymbol {
 
     @Override
     public void consolidate() throws SemanticException {
-        if (parent != null) parent.validate(SymbolTable.getInstance(), this);
-        interfaces.forEach(i -> i.validate(SymbolTable.getInstance(), this));
+        consolidateInheritance();
+        checkForCircularInheritance(new ArrayList<>());
+        consolidateMembers();
+    }
+
+    private void consolidateInheritance() {
+        if (parent != null) {
+            parent.validate(ST, this);
+            if (!ST.isAClass(parent.getValue())) {
+                throw new SemanticException("Una clase solo puede extender otra clase", parent.getToken());
+            }
+        }
+
+        for (ReferenceType i : interfaces) {
+            i.validate(ST, this);
+            if (!ST.isAnInterface(i.getValue())){
+                throw new SemanticException("Una clase solo puede implementar interfaces", i.getToken());
+            }
+        }
+    }
+
+
+
+    private void checkForCircularInheritance(List<ClassSymbol> visited) {
+        if (circularInheritanceCheck){
+            return;
+        } else if (visited.contains(this)){
+            List<Token> involved = visited.stream().map(i -> i.name.getToken()).collect(Collectors.toList());
+            throw new CircularInheritanceException("La clase "+name.getValue()+ " sufre de herencia circular", involved);
+        }
+
+        visited.add(this);
+        if (parent != null){
+            ST.getClass(parent.getValue()).ifPresent(c -> c.checkForCircularInheritance(visited));
+        }
+        circularInheritanceCheck = true;
+    }
+
+    private void consolidateMembers() {
         if (constructor != null) constructor.consolidate();
         attributes.values().forEach(AttributeSymbol::consolidate);
         methods.values().forEach(MethodSymbol::consolidate);

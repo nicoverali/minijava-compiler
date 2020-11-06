@@ -133,6 +133,30 @@ public class SymbolTable {
     }
 
     /**
+     * Checks whether the given name is the name of one of the {@link ClassSymbol} in this table.
+     * If no {@link ClassSymbol} matches the given name then it will also return false.
+     * <br>
+     * This search will also include any {@link PredefinedClass} present in this table.
+     *
+     * @param name the name of the {@link ClassSymbol} to look for
+     * @return true if the given name is of one of the {@link ClassSymbol} in this table, false otherwise
+     */
+    public boolean isAClass(String name) {
+        return classes.get(name) != null || predefineClasses.get(name) != null;
+    }
+
+    /**
+     * Checks whether the given name is the name of one of the {@link InterfaceSymbol} in this table.
+     * If no {@link InterfaceSymbol} matches the given name then it will also return false.
+     *
+     * @param name the name of the {@link InterfaceSymbol} to look for
+     * @return true if the given name is of one of the {@link InterfaceSymbol} in this table, false otherwise
+     */
+    public boolean isAnInterface(String name) {
+        return interfaces.get(name) != null;
+    }
+
+    /**
      * Goes through all the table, checking if all declarations are valid.
      * If a semantic error is detected, then an exception will be thrown
      *

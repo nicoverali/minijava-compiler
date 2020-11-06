@@ -1,19 +1,26 @@
 package semantic.symbol;
 
+import lexical.Token;
+import semantic.CircularInheritanceException;
 import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InterfaceSymbol implements TopLevelSymbol {
+
+    private static final SymbolTable ST = SymbolTable.getInstance();
 
     private NameAttribute name;
     private GenericityAttribute generic;
 
     private Map<String, MethodSymbol> methods = new HashMap<>();
     private List<ReferenceType> extend = new ArrayList<>();
+
+    private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public InterfaceSymbol(NameAttribute name){
         this.name = name;
@@ -26,6 +33,9 @@ public class InterfaceSymbol implements TopLevelSymbol {
      *                         which is extended by this interface
      */
     public void addExtends(ReferenceType extendsReference){
+        if (extendsReference.getValue().equals(this.name.getValue())){
+            throw new SemanticException("Una interfaz no puede extenderse a si misma", extendsReference.getToken());
+        }
         extend.add(extendsReference);
     }
 
@@ -100,7 +110,39 @@ public class InterfaceSymbol implements TopLevelSymbol {
 
     @Override
     public void consolidate() throws SemanticException {
-        extend.forEach(extend -> extend.validate(SymbolTable.getInstance(), this));
+        consolidateInheritance();
+        consolidateMembers();
+        checkForCircularInheritance(new ArrayList<>());
+    }
+
+    private void consolidateInheritance() {
+        extend.forEach(extend -> extend.validate(ST, this));
+        for (ReferenceType ref : extend) {
+            if (!ST.isAnInterface(ref.getValue())){
+                throw new SemanticException("Una interfaz solo puede extender interfaces", ref.getToken());
+            }
+        }
+    }
+
+    private void checkForCircularInheritance(List<InterfaceSymbol> visited){
+        if (circularInheritanceCheck){
+            return;
+        } else if (visited.contains(this)){
+            List<Token> involved = visited.stream().map(i -> i.name.getToken()).collect(Collectors.toList());
+            throw new CircularInheritanceException("La interfaz "+name.getValue()+ " sufre de herencia circular", involved);
+        }
+
+        visited.add(this);
+        extend.stream()
+                .map(ReferenceType::getValue)
+                .map(ST::getInterface)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(i -> i.checkForCircularInheritance(new ArrayList<>(visited)));
+        circularInheritanceCheck = true;
+    }
+
+    private void consolidateMembers() {
         methods.values().forEach(MethodSymbol::consolidate);
     }
 }

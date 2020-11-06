@@ -23,7 +23,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -38,6 +40,7 @@ public class MiniJavaSemanticAnalyzerTest {
         paths.add(Pair.of(BASE+"constructor", 3));
         paths.add(Pair.of(BASE+"simple_references", 11));
         paths.add(Pair.of(BASE+"generic_references", 19));
+        paths.add(Pair.of(BASE+"inheritance", 10));
 
     }
 
@@ -85,6 +88,10 @@ public class MiniJavaSemanticAnalyzerTest {
             assertEquals(eToken.getLexeme().toString(), failLexeme, "The fail lexeme is not the one we expected");
         } catch (SyntacticException e){
             fail("The analyzer threw a SyntacticException: \n"+e.getMessage());
+        } catch (CircularInheritanceException e){
+            List<String> tokens = e.getInvolvedTokens().stream().map(t -> t.getLexeme().toString()).collect(Collectors.toList());
+            List<String> lexemes = Arrays.asList(failLexeme.split(","));
+            tokens.forEach(s -> assertTrue(lexemes.contains(s), "Se incluyo mas tokens en la herencia circular de lo esperado"));
         }
     }
 
