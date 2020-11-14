@@ -82,6 +82,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     private void otrasClasesInterfaces() {
         if (equalsAny(K_INTERFACE, K_CLASS)) {
             listaClasesInterfaces();
+        } else if (!equalsAny(EOF)){
+            sequence.next().ifPresent(token ->
+                {
+                    throw new SyntacticException("Se esperaba (otrasClasesInterfaces) pero se encontro " + token.getType(), token);
+                });
         }
     }
 
