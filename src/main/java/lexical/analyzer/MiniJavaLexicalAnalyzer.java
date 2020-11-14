@@ -216,7 +216,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode<AutomataToken> charInitialNode =
             new TokenizerNodeBuilder("Tries to match a valid character value")
                 .ifEquals('\\').storeInLexeme().thenMoveTo(charSpecialCharacterOpen)
-                .ifAnyExcept('\\', '\n').storeInLexeme().thenMoveTo(charClosingNode)
+                .ifAnyExcept('\\', '\n', '\'').storeInLexeme().thenMoveTo(charClosingNode)
                 .ifEquals('\n').thenThrow("El caracter de salto de linea no es un literal char valido")
                 .orElseThrow("Literal char no válido.");
 
