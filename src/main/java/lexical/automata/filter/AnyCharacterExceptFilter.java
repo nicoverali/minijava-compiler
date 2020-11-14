@@ -1,11 +1,6 @@
 package lexical.automata.filter;
 
-import com.google.common.base.Joiner;
-import com.google.common.primitives.Chars;
-import util.Characters;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 public class AnyCharacterExceptFilter implements LexicalFilter{
 
@@ -27,8 +22,9 @@ public class AnyCharacterExceptFilter implements LexicalFilter{
 
     @Override
     public String toString() {
-        List<String> exceptionsStr = Chars.asList(exceptions).stream()
-                .map(Characters::explicitSpecialChars).collect(Collectors.toList());
-        return "not ( " + Joiner.on(" | ").join(exceptionsStr) + ")";
+//        List<String> exceptionsStr = Chars.asList(exceptions).stream()
+//                .map(Characters::explicitSpecialChars).collect(Collectors.toList());
+//        return "not ( " + Joiner.on(" | ").join(exceptionsStr) + ")";
+        return "not ("+ Arrays.toString(exceptions)+")";
     }
 }

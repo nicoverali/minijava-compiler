@@ -1,8 +1,10 @@
 package sequence;
 
-import com.google.common.collect.Iterables;
-
-import java.util.*;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 public class ListMarkableSequence<T> implements MarkableSequence<T>, AppendableSequence<T> {
 
@@ -35,7 +37,8 @@ public class ListMarkableSequence<T> implements MarkableSequence<T>, AppendableS
 
     @Override
     public void appendAll(Iterable<T> elements) {
-        Iterables.filter(elements, Objects::nonNull)
+        StreamSupport.stream(elements.spliterator(), false)
+                .filter(Objects::nonNull)
                 .forEach(this.elements::addLast);
         flushMarkers();
     }

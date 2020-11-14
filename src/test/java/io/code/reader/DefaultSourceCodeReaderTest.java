@@ -1,20 +1,14 @@
 package io.code.reader;
 
-import com.google.common.collect.Iterables;
-import io.code.CodeCharacter;
 import io.code.CodeLine;
 import io.code.CodeLineFactory;
 import io.code.DefaultCodeLineFactory;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import util.Iterables;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.*;
-
-import static org.mockito.Mockito.when;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Queue;
 
 class DefaultSourceCodeReaderTest implements SourceCodeReaderTest<DefaultSourceCodeReader> {
 
