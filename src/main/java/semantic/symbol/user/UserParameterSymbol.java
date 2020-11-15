@@ -23,6 +23,11 @@ public class UserParameterSymbol implements ParameterSymbol {
         return name;
     }
 
+    @Override
+    public String getName() {
+        return name.getValue();
+    }
+
     @Override public Type getType() {
         return type;
     }
@@ -38,9 +43,14 @@ public class UserParameterSymbol implements ParameterSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
         if (topSymbol == null) throw new IllegalStateException("El parametro no forma parte de ningun simbolo de nivel superior.");
         this.type.validate(SymbolTable.getInstance(), topSymbol);
+    }
+
+    @Override
+    public void consolidate() throws SemanticException, IllegalStateException {
+
     }
 
     @Override

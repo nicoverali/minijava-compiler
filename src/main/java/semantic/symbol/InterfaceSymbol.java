@@ -33,6 +33,9 @@ public class InterfaceSymbol implements TopLevelSymbol {
      *                         which is extended by this interface
      */
     public void addExtends(ReferenceType extendsReference){
+        if (extend.contains(extendsReference)){
+            throw new SemanticException("No se puede extender multiples veces de la misma interfaz", extendsReference);
+        }
         if (extendsReference.getValue().equals(this.name.getValue())){
             throw new SemanticException("Una interfaz no puede extenderse a si misma", extendsReference);
         }
@@ -60,16 +63,13 @@ public class InterfaceSymbol implements TopLevelSymbol {
      * @throws SemanticException if the interface already had a method with the same name
      */
     public void add(MethodSymbol method) throws SemanticException{
-        NameAttribute methodName = method.getNameAttribute();
-        if (methods.containsKey(methodName.getValue()))
-            throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", methodName);
+        if (methods.containsKey(method.getName()))
+            throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", method);
         method.setTopLevelSymbol(this);
-        methods.put(methodName.getValue(), method);
+        methods.put(method.getName(), method);
     }
 
-    /**
-     * @return the {@link NameAttribute} of this interface which contains the name of it
-     */
+    @Override
     public NameAttribute getNameAttribute() {
         return name;
     }
@@ -130,27 +130,29 @@ public class InterfaceSymbol implements TopLevelSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException {
-        consolidateInheritance();
-        consolidateMembers();
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        methods.values().forEach(MethodSymbol::checkDeclaration);
+        checkExtensions();
         CircularInheritanceValidator.validate(this);
-        superMethods = superMethods == null
-                ? InheritHelper.inheritMethods(this)
-                : superMethods;
-        checkForOverwrittenMethods();
     }
 
-    private void consolidateInheritance() {
-        extend.forEach(extend -> extend.validate(ST, this));
+    private void checkExtensions() {
         for (ReferenceType ref : extend) {
+            ref.validate(ST, this);
             if (!ST.isAnInterface(ref.getValue())){
                 throw new SemanticException("Una interfaz solo puede extender interfaces", ref);
             }
         }
     }
 
-    private void consolidateMembers() {
-        methods.values().forEach(MethodSymbol::consolidate);
+    @Override
+    public void consolidate() throws SemanticException {
+        //consolidateInheritance();
+        //consolidateMembers();
+        superMethods = superMethods == null
+                ? InheritHelper.inheritMethods(this)
+                : superMethods;
+        checkForOverwrittenMethods();
     }
 
     private void checkForOverwrittenMethods() {

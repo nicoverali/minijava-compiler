@@ -94,6 +94,11 @@ public class PredefinedMethod implements MethodSymbol {
     }
 
     @Override
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        // Do nothing
+    }
+
+    @Override
     public void consolidate() throws SemanticException, IllegalStateException {
         // Do nothing
     }

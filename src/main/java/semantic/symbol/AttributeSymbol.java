@@ -54,17 +54,25 @@ public class AttributeSymbol implements InnerLevelSymbol {
         return type;
     }
 
-    /**
-     * @return the {@link NameAttribute} of this attribute, which contains the name of it
-     */
+    @Override
     public NameAttribute getNameAttribute() {
         return name;
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public String getName() {
+        return name.getValue();
+    }
+
+    @Override
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
         if (topSymbol == null) throw new IllegalStateException("El atributo no esta contenido dentro de ninguna clase");
         type.validate(SymbolTable.getInstance(), topSymbol);
+    }
+
+    @Override
+    public void consolidate() throws SemanticException, IllegalStateException {
+
     }
 
     @Override

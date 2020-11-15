@@ -34,6 +34,12 @@ public class ConstructorSymbol implements InnerLevelSymbol {
         return parameters;
     }
 
+    @Override
+    public void setTopLevelSymbol(TopLevelSymbol symbol) {
+        topSymbol = symbol;
+        parameters.forEach(param -> param.setTopLevelSymbol(symbol));
+    }
+
     private void checkForDuplicates(List<ParameterSymbol> parameters) throws SemanticException {
         HashSet<String> visited = new HashSet<>(parameters.size());
         NameAttribute duplicate = parameters.stream()
@@ -47,8 +53,18 @@ public class ConstructorSymbol implements InnerLevelSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
-        parameters.forEach(ParameterSymbol::consolidate);
+    public String getName() {
+        return "";
+    }
+
+    @Override
+    public NameAttribute getNameAttribute() {
+        return NameAttribute.predefined("");
+    }
+
+    @Override
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        parameters.forEach(ParameterSymbol::checkDeclaration);
 
         if (topSymbol == null)
             throw new IllegalStateException("El constructor no esta contenido dentro de ninguna clase");
@@ -61,8 +77,7 @@ public class ConstructorSymbol implements InnerLevelSymbol {
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
-        parameters.forEach(param -> param.setTopLevelSymbol(symbol));
+    public void consolidate() throws SemanticException, IllegalStateException {
+
     }
 }

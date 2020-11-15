@@ -105,10 +105,15 @@ public class UserMethodSymbol implements MethodSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
         if (topSymbol == null) throw new IllegalStateException("El metodo no esta contenido dentro de ningun simbolo de nivel superior");
         returnType.validate(SymbolTable.getInstance(), topSymbol);
-        parameters.values().forEach(ParameterSymbol::consolidate);
+        parameters.values().forEach(ParameterSymbol::checkDeclaration);
+    }
+
+    @Override
+    public void consolidate() throws SemanticException, IllegalStateException {
+
     }
 
     @Override

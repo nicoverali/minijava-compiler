@@ -12,11 +12,6 @@ import java.util.Optional;
 public interface TopLevelSymbol extends Symbol {
 
     /**
-     * @return the name of this symbol as a {@link String}
-     */
-    String getName();
-
-    /**
      * @return the {@link Token} associated with the {@link NameAttribute} of this symbol if any
      */
     Token getNameToken();

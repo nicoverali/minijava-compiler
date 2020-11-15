@@ -40,9 +40,7 @@ public class PredefinedParameter implements ParameterSymbol {
         return this.type.equals(parameter.getType());
     }
 
-    /**
-     * @return the name of the predefined parameter as a {@link String}
-     */
+    @Override
     public String getName() {
         return name.getValue();
     }
@@ -50,6 +48,11 @@ public class PredefinedParameter implements ParameterSymbol {
     @Override
     public void setTopLevelSymbol(TopLevelSymbol symbol) {
         // Unnecessary
+    }
+
+    @Override
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        // Do nothing
     }
 
     @Override

@@ -55,6 +55,9 @@ public class UserClassSymbol implements ClassSymbol {
      * @param interfaceReference a {@link ReferenceType} pointing to an interface implemented by this class
      */
     public void addImplements(ReferenceType interfaceReference){
+        if (interfaces.contains(interfaceReference)) {
+            throw new SemanticException("No se pude implementar multiples veces la misma interfaz", interfaceReference);
+        }
         interfaces.add(interfaceReference);
     }
 
@@ -94,11 +97,10 @@ public class UserClassSymbol implements ClassSymbol {
      * @throws SemanticException if the class already had a {@link MethodSymbol} with the same name
      */
     public void add(MethodSymbol method) throws SemanticException{
-        NameAttribute methodName = method.getNameAttribute();
-        if (methods.containsKey(methodName.getValue()))
-            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", methodName);
+        if (methods.containsKey(method.getName()))
+            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", method);
         method.setTopLevelSymbol(this);
-        methods.put(methodName.getValue(), method);
+        methods.put(method.getName(), method);
     }
 
     /**
@@ -108,11 +110,10 @@ public class UserClassSymbol implements ClassSymbol {
      * @param attribute a {@link AttributeSymbol} which will be added as a memeber of this class
      */
     public void add(AttributeSymbol attribute) throws SemanticException{
-        NameAttribute attributeName = attribute.getNameAttribute();
-        if (attributes.containsKey(attributeName.getValue()))
-            throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attributeName);
+        if (attributes.containsKey(attribute.getName()))
+            throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attribute);
         attribute.setTopLevelSymbol(this);
-        attributes.put(attributeName.getValue(), attribute);
+        attributes.put(attribute.getName(), attribute);
     }
 
     @Override
@@ -206,27 +207,39 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException {
-        consolidateInheritance();
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        if (constructor != null) constructor.checkDeclaration();
+        attributes.values().forEach(AttributeSymbol::checkDeclaration);
+        methods.values().forEach(MethodSymbol::checkDeclaration);
+        checkParent();
+        checkInterfaces();
         CircularInheritanceValidator.validate(this);
-        obtainInheritedAttributesAndMethods();
-        checkForOverwrittenMethods();
-        checkInterfacesAreActuallyImplemented();
-        consolidateMembers();
     }
 
-    private void consolidateInheritance() {
+    private void checkParent() {
         parent.validate(ST, this);
-        if (!ST.isAClass(parent.getValue())) {
+        if (!ST.isAClass(parent.getValue())){
             throw new SemanticException("Una clase solo puede extender otra clase", parent);
         }
 
+    }
+
+    private void checkInterfaces() {
         for (ReferenceType i : interfaces) {
             i.validate(ST, this);
             if (!ST.isAnInterface(i.getValue())){
                 throw new SemanticException("Una clase solo puede implementar interfaces", i);
             }
         }
+    }
+
+    @Override
+    public void consolidate() throws SemanticException {
+        //consolidateInheritance();
+        obtainInheritedAttributesAndMethods();
+        checkForOverwrittenMethods();
+        checkInterfacesAreActuallyImplemented();
+        //consolidateMembers();
     }
 
     private void checkForOverwrittenMethods(){
@@ -241,12 +254,6 @@ public class UserClassSymbol implements ClassSymbol {
                 throw new SemanticException("Se sobreescribe un metodo pero no se respeta el encabezado original", ours.getNameAttribute());
             }
         }
-    }
-
-    private void consolidateMembers() {
-        if (constructor != null) constructor.consolidate();
-        attributes.values().forEach(AttributeSymbol::consolidate);
-        methods.values().forEach(MethodSymbol::consolidate);
     }
 
     private void checkInterfacesAreActuallyImplemented() {

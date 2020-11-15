@@ -18,16 +18,6 @@ public interface MethodSymbol extends InnerLevelSymbol {
     Type getReturnType();
 
     /**
-     * @return the name of this method as a {@link String}
-     */
-    String getName();
-
-    /**
-     * @return the {@link NameAttribute} of this method which contains the name of it
-     */
-    NameAttribute getNameAttribute();
-
-    /**
      * @return a list of all the {@link ParameterSymbol} of this method
      */
     List<ParameterSymbol> getParameters();
