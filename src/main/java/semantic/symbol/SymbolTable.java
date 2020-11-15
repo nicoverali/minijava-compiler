@@ -186,8 +186,8 @@ public class SymbolTable {
      * @throws SemanticException if a semantic error is detected during consolidation
      */
     public void consolidate() throws SemanticException {
-        classes.values().forEach(ClassSymbol::consolidate);
         interfaces.values().forEach(InterfaceSymbol::consolidate);
+        classes.values().forEach(ClassSymbol::consolidate);
     }
 
     private void checkForDuplicates(NameAttribute name) throws SemanticException{

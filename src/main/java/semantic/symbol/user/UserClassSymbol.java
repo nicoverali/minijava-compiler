@@ -1,12 +1,12 @@
 package semantic.symbol.user;
 
 import lexical.Token;
-import semantic.CircularInheritanceException;
 import semantic.SemanticException;
 import semantic.symbol.*;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import semantic.symbol.validators.CircularInheritanceValidator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,7 +27,6 @@ public class UserClassSymbol implements ClassSymbol {
 
     private Map<String, AttributeSymbol> inheritedAttributes;
     private Map<String, MethodSymbol> inheritedMethods;
-    private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public UserClassSymbol(NameAttribute name){
         this.name = name;
@@ -126,12 +125,22 @@ public class UserClassSymbol implements ClassSymbol {
         return name.getValue();
     }
 
+    @Override
+    public Token getNameToken() {
+        return name.getToken();
+    }
+
     /**
      * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this class
      * which describes the genericity of it
      */
     public Optional<GenericityAttribute> getGeneric() {
         return Optional.ofNullable(generic);
+    }
+
+    @Override
+    public Collection<ReferenceType> getParents() {
+        return Collections.singleton(parent);
     }
 
     /**
@@ -199,7 +208,7 @@ public class UserClassSymbol implements ClassSymbol {
     @Override
     public void consolidate() throws SemanticException {
         consolidateInheritance();
-        checkForCircularInheritance(new ArrayList<>());
+        CircularInheritanceValidator.validate(this);
         obtainInheritedAttributesAndMethods();
         checkForOverwrittenMethods();
         checkInterfacesAreActuallyImplemented();
@@ -218,20 +227,6 @@ public class UserClassSymbol implements ClassSymbol {
                 throw new SemanticException("Una clase solo puede implementar interfaces", i);
             }
         }
-    }
-
-    private void checkForCircularInheritance(List<UserClassSymbol> visited) {
-        if (circularInheritanceCheck){
-            return;
-        } else if (visited.contains(this)){
-            List<Token> involved = visited.stream().map(i -> i.name.getToken()).collect(Collectors.toList());
-            throw new CircularInheritanceException("La clase "+name.getValue()+ " sufre de herencia circular", involved);
-        }
-
-        visited.add(this);
-        ST.getUserClass(parent.getValue())
-            .ifPresent(c -> c.checkForCircularInheritance(visited));
-        circularInheritanceCheck = true;
     }
 
     private void checkForOverwrittenMethods(){

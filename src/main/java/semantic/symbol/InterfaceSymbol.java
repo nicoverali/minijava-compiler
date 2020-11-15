@@ -1,14 +1,14 @@
 package semantic.symbol;
 
 import lexical.Token;
-import semantic.CircularInheritanceException;
 import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import semantic.symbol.user.InheritHelper;
+import semantic.symbol.validators.CircularInheritanceValidator;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class InterfaceSymbol implements TopLevelSymbol {
 
@@ -21,7 +21,6 @@ public class InterfaceSymbol implements TopLevelSymbol {
     private List<ReferenceType> extend = new ArrayList<>();
 
     private Map<String, MethodSymbol> superMethods;
-    private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public InterfaceSymbol(NameAttribute name){
         this.name = name;
@@ -80,12 +79,22 @@ public class InterfaceSymbol implements TopLevelSymbol {
         return name.getValue();
     }
 
+    @Override
+    public Token getNameToken() {
+        return name.getToken();
+    }
+
     /**
      * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this interface
      * which describes the genericity of it
      */
     public Optional<GenericityAttribute> getGeneric() {
         return Optional.ofNullable(generic);
+    }
+
+    @Override
+    public Collection<ReferenceType> getParents() {
+        return extend;
     }
 
     /**
@@ -102,15 +111,11 @@ public class InterfaceSymbol implements TopLevelSymbol {
         return methods.values();
     }
 
-    /**
-     * @return a collection of all the {@link InterfaceSymbol} extended by this interface
-     */
-    public Collection<ReferenceType> getExtend() {
-        return extend;
-    }
-
+    @Override
     public Map<String, MethodSymbol> inheritMethods(){
-        if (superMethods == null) this.obtainSuperMethods();
+        superMethods = superMethods == null
+                ? InheritHelper.inheritMethods(this)
+                : superMethods;
 
         Map<String, MethodSymbol> resultMap = new HashMap<>(superMethods);
         for (Map.Entry<String, MethodSymbol> entry : methods.entrySet()){
@@ -124,30 +129,14 @@ public class InterfaceSymbol implements TopLevelSymbol {
         return Collections.unmodifiableMap(resultMap);
     }
 
-    private void obtainSuperMethods(){
-        superMethods = new HashMap<>();
-        List<InterfaceSymbol> parents = extend.stream()
-                                            .map(ref -> ST.getInterface(ref.getValue()))
-                                            .filter(Optional::isPresent)
-                                            .map(Optional::get).collect(Collectors.toList());
-
-        for (InterfaceSymbol parent : parents){
-            for (Map.Entry<String, MethodSymbol> entry : parent.inheritMethods().entrySet()){
-                MethodSymbol overwritten = superMethods.get(entry.getKey());
-                if (overwritten != null && !overwritten.equals(entry.getValue())){
-                    throw new SemanticException("La interfaz extiende dos interfaces cuyos metodos colisionan", this.name);
-                }
-                superMethods.put(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
     @Override
     public void consolidate() throws SemanticException {
         consolidateInheritance();
         consolidateMembers();
-        checkForCircularInheritance(new ArrayList<>());
-        obtainSuperMethods();
+        CircularInheritanceValidator.validate(this);
+        superMethods = superMethods == null
+                ? InheritHelper.inheritMethods(this)
+                : superMethods;
         checkForOverwrittenMethods();
     }
 
@@ -162,24 +151,6 @@ public class InterfaceSymbol implements TopLevelSymbol {
 
     private void consolidateMembers() {
         methods.values().forEach(MethodSymbol::consolidate);
-    }
-
-    private void checkForCircularInheritance(List<InterfaceSymbol> visited){
-        if (circularInheritanceCheck){
-            return;
-        } else if (visited.contains(this)){
-            List<Token> involved = visited.stream().map(i -> i.name.getToken()).collect(Collectors.toList());
-            throw new CircularInheritanceException("La interfaz "+name.getValue()+ " sufre de herencia circular", involved);
-        }
-
-        visited.add(this);
-        extend.stream()
-                .map(ReferenceType::getValue)
-                .map(ST::getInterface)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(i -> i.checkForCircularInheritance(new ArrayList<>(visited)));
-        circularInheritanceCheck = true;
     }
 
     private void checkForOverwrittenMethods() {

@@ -1,5 +1,6 @@
 package semantic.symbol.predefined;
 
+import lexical.Token;
 import semantic.SemanticException;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
@@ -56,6 +57,11 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
+    public Token getNameToken() {
+        return name.getToken();
+    }
+
+    @Override
     public Collection<AttributeSymbol> getAttributes() {
         return Collections.emptyList();
     }
@@ -63,6 +69,14 @@ public class PredefinedClass implements ClassSymbol {
     @Override
     public Optional<GenericityAttribute> getGeneric() {
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<ReferenceType> getParents() {
+        if (parent != null){
+            return Collections.singleton(parent);
+        }
+        return Collections.emptyList();
     }
 
     @Override
