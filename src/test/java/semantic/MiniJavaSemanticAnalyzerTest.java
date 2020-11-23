@@ -46,7 +46,7 @@ public class MiniJavaSemanticAnalyzerTest {
         paths.add(Pair.of(BASE+"interface_implementation", 6));
         paths.add(Pair.of(BASE+"predefined_classes", 8));
         paths.add(Pair.of(BASE+"inheritance_generics", 6));
-        paths.add(Pair.of(BASE+"overwritten_methods_generics", 1));
+        paths.add(Pair.of(BASE+"overwritten_methods_generics", 3));
     }
 
 

@@ -126,12 +126,11 @@ public class UserMethodSymbol implements MethodSymbol {
 
     @Override
     public MethodSymbol instantiate(String newType) {
+        List<ParameterSymbol> params = parameters.values().stream()
+                .map(param -> param.instantiate(newType)).collect(Collectors.toList());
         if (returnType instanceof ReferenceType){
-            List<ParameterSymbol> params = parameters.values().stream()
-                    .map(param -> param.instantiate(newType)).collect(Collectors.toList());
-
             return new UserMethodSymbol(isStatic, ((ReferenceType) returnType).instantiate(topSymbol, newType), name, params);
         }
-        return this;
+        return new UserMethodSymbol(isStatic, returnType, name, params);
     }
 }

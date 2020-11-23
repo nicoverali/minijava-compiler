@@ -8,7 +8,6 @@ import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserClassSymbol implements ClassSymbol {
 
@@ -180,7 +179,7 @@ public class UserClassSymbol implements ClassSymbol {
 
     @Override
     public Map<String, AttributeSymbol> inheritAttributes() throws SemanticException {
-        if (inheritedAttributes == null) this.obtainInheritedAttributesAndMethods();
+        if (inheritedAttributes == null) this.inheritMembers();
 
         Map<String, AttributeSymbol> resultMap = new HashMap<>(inheritedAttributes);
         attributes.forEach(resultMap::put);
@@ -189,19 +188,13 @@ public class UserClassSymbol implements ClassSymbol {
 
     @Override
     public Map<String, MethodSymbol> inheritMethods() throws SemanticException {
-        if (inheritedMethods == null)  this.obtainInheritedAttributesAndMethods();
+        if (inheritedMethods == null)  this.inheritMembers();
 
         Map<String, MethodSymbol> resultMap = new HashMap<>(inheritedMethods);
         methods.forEach(resultMap::put);
         return Collections.unmodifiableMap(resultMap);
     }
 
-    private void obtainInheritedAttributesAndMethods(){
-        ClassSymbol parentSym = ST.getClass(parent)
-                .orElseThrow(() -> new SemanticException("No se pudo encontrar el simbolo", parent));
-        inheritedAttributes = parentSym.inheritAttributes();
-        inheritedMethods = parentSym.inheritMethods();
-    }
 
     @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {
@@ -231,51 +224,14 @@ public class UserClassSymbol implements ClassSymbol {
 
     @Override
     public void consolidate() throws SemanticException {
-        //consolidateInheritance();
-        obtainInheritedAttributesAndMethods();
-        checkForOverwrittenMethods();
-        checkInterfacesAreActuallyImplemented();
-        //consolidateMembers();
+        inheritMembers();
+        OverwrittenValidator.validateMethods(inheritedMethods, methods);
+        OverwrittenValidator.validateImplementation(interfaces, methods, name);
     }
 
-    private void checkForOverwrittenMethods(){
-        List<String> overwritten = methods.values().stream()
-                                            .map(MethodSymbol::getName)
-                                            .filter(inheritedMethods::containsKey)
-                                            .collect(Collectors.toList());
-        for (String methodName : overwritten) {
-            MethodSymbol ours = methods.get(methodName);
-            MethodSymbol theirs = inheritedMethods.get(methodName);
-            if (!ours.equals(theirs)){
-                throw new SemanticException("Se sobreescribe un metodo pero no se respeta el encabezado original", ours.getNameAttribute());
-            }
-        }
+    private void inheritMembers(){
+        inheritedAttributes = InheritHelper.inheritAttributes(this);
+        inheritedMethods = InheritHelper.inheritMethods(this);
     }
 
-    private void checkInterfacesAreActuallyImplemented() {
-        Map<String, MethodSymbol> toImplement = new HashMap<>();
-        List<InterfaceSymbol> parents = interfaces.stream()
-                .map(ST::getInterface)
-                .filter(Optional::isPresent)
-                .map(Optional::get).collect(Collectors.toList());
-
-        for (InterfaceSymbol parent : parents){
-            for (Map.Entry<String, MethodSymbol> entry : parent.inheritMethods().entrySet()){
-                MethodSymbol overwritten = toImplement.get(entry.getKey());
-                if (overwritten != null && !overwritten.equals(entry.getValue())){
-                    throw new SemanticException("La clase extiende dos interfaces cuyos metodos colisionan", this.name);
-                }
-                toImplement.put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        for (Map.Entry<String, MethodSymbol> entry : toImplement.entrySet()){
-            MethodSymbol ours = methods.get(entry.getKey());
-            if (ours == null){
-                throw new SemanticException("La clase no implementa el metodo "+entry.getValue().getName(), this.name);
-            } else if (!ours.equals(entry.getValue())){
-                throw new SemanticException("Se implementa el metodo pero no se respeta el encabezado", ours.getNameAttribute());
-            }
-        }
-    }
 }

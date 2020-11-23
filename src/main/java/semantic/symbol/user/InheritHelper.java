@@ -2,11 +2,12 @@ package semantic.symbol.user;
 
 import semantic.SemanticException;
 import semantic.symbol.*;
+import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 public class InheritHelper {
 
     /*
@@ -14,20 +15,20 @@ public class InheritHelper {
         remember to check that inheritance is correct before calling this method.
      */
     public static Map<String, MethodSymbol> inheritMethods(TopLevelSymbol symbol){
+        SymbolTable ST = SymbolTable.getInstance();
         Map<String, MethodSymbol> methods = new HashMap<>();
-        List<TopLevelSymbol> parents = symbol.getParents().stream()
-                .map(SymbolTable.getInstance()::getTopLevelSymbol)
-                .filter(Optional::isPresent)
-                .map(Optional::get).collect(Collectors.toList());
+        for (ReferenceType parent : symbol.getParents()){
 
-        for (TopLevelSymbol parent : parents){
-            for (Map.Entry<String, MethodSymbol> entry : parent.inheritMethods().entrySet()){
-                MethodSymbol overwritten = methods.get(entry.getKey());
-                if (overwritten != null && !overwritten.equals(entry.getValue())){
+            TopLevelSymbol parentSymbol = ST.getTopLevelSymbol(parent).get();
+            for (MethodSymbol inherit : parentSymbol.inheritMethods().values()){
+                inherit = parent.getGeneric().map(GenericityAttribute::getValue).map(inherit::instantiate).orElse(inherit);
+                MethodSymbol overwritten = methods.get(inherit.getName());
+                if (overwritten != null && !overwritten.equals(inherit)){
                     throw new SemanticException("Se extiende dos interfaces cuyos metodos colisionan", symbol.getNameToken());
                 }
-                methods.put(entry.getKey(), entry.getValue());
+                methods.put(inherit.getName(), inherit);
             }
+
         }
 
         return methods;
@@ -38,10 +39,19 @@ public class InheritHelper {
         return an empty map
      */
     public static Map<String, AttributeSymbol> inheritAttributes(ClassSymbol symbol){
-        return symbol.getParentClass()
-                .flatMap(SymbolTable.getInstance()::getUserClass)
-                .map(UserClassSymbol::inheritAttributes)
-                .orElse(Collections.emptyMap());
+        Map<String, AttributeSymbol> attributes = new HashMap<>();
+
+        if (symbol.getParentClass().isPresent()){
+            Optional<String> parentGen = symbol.getParentClass().flatMap(ReferenceType::getGeneric).map(GenericityAttribute::getValue);
+            ClassSymbol parent = SymbolTable.getInstance().getClass(symbol.getParentClass().get()).get();
+
+            for (AttributeSymbol inherit : parent.inheritAttributes().values()){
+                inherit = parentGen.map(inherit::instantiate).orElse(inherit);
+                attributes.put(inherit.getName(), inherit);
+            }
+        }
+
+        return attributes;
     }
 
 }

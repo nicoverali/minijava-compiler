@@ -6,6 +6,7 @@ import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.user.InheritHelper;
+import semantic.symbol.user.OverwrittenValidator;
 
 import java.util.*;
 
@@ -117,14 +118,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
                 : superMethods;
 
         Map<String, MethodSymbol> resultMap = new HashMap<>(superMethods);
-        for (Map.Entry<String, MethodSymbol> entry : methods.entrySet()){
-            MethodSymbol overwritten = resultMap.get(entry.getKey());
-            if (overwritten != null && !overwritten.equals(entry.getValue())){
-                throw new SemanticException("Se sobreescribe el metodo pero no se respeta el encabezado", entry.getValue().getNameAttribute());
-            }
-            resultMap.put(entry.getKey(), entry.getValue());
-        }
-
+        methods.forEach(resultMap::put);
         return Collections.unmodifiableMap(resultMap);
     }
 
@@ -145,20 +139,8 @@ public class InterfaceSymbol implements TopLevelSymbol {
 
     @Override
     public void consolidate() throws SemanticException {
-        //consolidateInheritance();
-        //consolidateMembers();
-        superMethods = superMethods == null
-                ? InheritHelper.inheritMethods(this)
-                : superMethods;
-        checkForOverwrittenMethods();
+        superMethods = InheritHelper.inheritMethods(this);
+        OverwrittenValidator.validateMethods(superMethods, methods);
     }
 
-    private void checkForOverwrittenMethods() {
-        for (Map.Entry<String, MethodSymbol> entry : methods.entrySet()){
-            MethodSymbol overwritten = superMethods.get(entry.getKey());
-            if (overwritten != null && !overwritten.equals(entry.getValue())){
-                throw new SemanticException("Se sobreescribe el metodo pero no se respeta el encabezado", entry.getValue().getNameAttribute());
-            }
-        }
-    }
 }
