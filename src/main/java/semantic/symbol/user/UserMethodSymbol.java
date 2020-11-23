@@ -7,9 +7,11 @@ import semantic.symbol.SymbolTable;
 import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserMethodSymbol implements MethodSymbol {
 
@@ -120,5 +122,16 @@ public class UserMethodSymbol implements MethodSymbol {
     public void setTopLevelSymbol(TopLevelSymbol symbol) {
         topSymbol = symbol;
         parameters.values().forEach(param -> param.setTopLevelSymbol(symbol));
+    }
+
+    @Override
+    public MethodSymbol instantiate(String newType) {
+        if (returnType instanceof ReferenceType){
+            List<ParameterSymbol> params = parameters.values().stream()
+                    .map(param -> param.instantiate(newType)).collect(Collectors.toList());
+
+            return new UserMethodSymbol(isStatic, ((ReferenceType) returnType).instantiate(topSymbol, newType), name, params);
+        }
+        return this;
     }
 }

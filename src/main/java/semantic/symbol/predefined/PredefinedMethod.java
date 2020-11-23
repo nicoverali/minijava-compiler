@@ -102,4 +102,9 @@ public class PredefinedMethod implements MethodSymbol {
     public void consolidate() throws SemanticException, IllegalStateException {
         // Do nothing
     }
+
+    @Override
+    public MethodSymbol instantiate(String newType) {
+        return this;
+    }
 }

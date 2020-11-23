@@ -16,6 +16,11 @@ public class ReferenceType extends Type{
 
     private GenericityAttribute generic;
 
+    public ReferenceType(String name, String generic){
+        super(null, name);
+        this.generic = new GenericityAttribute(generic);
+    }
+
     public ReferenceType(String name){
         super(null, name);
     }
@@ -55,9 +60,29 @@ public class ReferenceType extends Type{
      * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this reference type,
      * which determines the genericity of it
      */
-
     public Optional<GenericityAttribute> getGeneric(){
         return Optional.ofNullable(generic);
+    }
+
+    /**
+     * Returns a copy of this reference but with the generic type of the <code>container</code> instantiated
+     * to the given <code>newType</code>.
+     *
+     * @param container the container {@link TopLevelSymbol} of this reference
+     * @param newType the name of the generic instance
+     * @return a copy of this reference instantiated with the given <code>newType</code>
+     */
+    public ReferenceType instantiate(TopLevelSymbol container, String newType) {
+        if (container.getGeneric().isPresent()){
+            String containerGen = container.getGeneric().get().getValue();
+            if (name.equals(containerGen)){
+                if (generic != null) throw new SemanticException("El tipo "+name+" no es parametrizable", this);
+                return new ReferenceType(newType);
+            } else if (generic != null && generic.getValue().equals(containerGen)) {
+                return new ReferenceType(name, newType);
+            }
+        }
+        return this;
     }
 
     @Override

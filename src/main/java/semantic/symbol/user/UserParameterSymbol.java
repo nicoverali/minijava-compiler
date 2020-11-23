@@ -5,6 +5,7 @@ import semantic.symbol.ParameterSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 public class UserParameterSymbol implements ParameterSymbol {
@@ -56,5 +57,13 @@ public class UserParameterSymbol implements ParameterSymbol {
     @Override
     public void setTopLevelSymbol(TopLevelSymbol symbol) {
         topSymbol = symbol;
+    }
+
+    @Override
+    public ParameterSymbol instantiate(String newType) {
+        if (type instanceof ReferenceType){
+            return new UserParameterSymbol(((ReferenceType) type).instantiate(topSymbol, newType), name);
+        }
+        return this;
     }
 }

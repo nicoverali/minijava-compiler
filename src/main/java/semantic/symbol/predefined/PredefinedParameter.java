@@ -59,4 +59,9 @@ public class PredefinedParameter implements ParameterSymbol {
     public void consolidate() throws SemanticException, IllegalStateException {
         // Do nothing
     }
+
+    @Override
+    public ParameterSymbol instantiate(String newType) {
+        return this;
+    }
 }

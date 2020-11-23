@@ -18,6 +18,11 @@ public class GenericityAttribute implements SymbolAttribute<String> {
         name = token.getLexeme().toString();
     }
 
+    public GenericityAttribute(String name){
+        token = null;
+        this.name = name;
+    }
+
     @Override
     public Token getToken() {
         return token;

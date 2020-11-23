@@ -4,9 +4,10 @@ import semantic.SemanticException;
 import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
-public class AttributeSymbol implements InnerLevelSymbol {
+public class AttributeSymbol implements InstantiableSymbol<AttributeSymbol> {
 
     private IsPublicAttribute isPublic = IsPublicAttribute.defaultAttribute();
     private IsStaticAttribute isStatic = IsStaticAttribute.defaultAttribute();
@@ -78,5 +79,13 @@ public class AttributeSymbol implements InnerLevelSymbol {
     @Override
     public void setTopLevelSymbol(TopLevelSymbol symbol) {
         topSymbol = symbol;
+    }
+
+    @Override
+    public AttributeSymbol instantiate(String newType) {
+        if (type instanceof ReferenceType){
+            return new AttributeSymbol(isPublic, isStatic, ((ReferenceType) type).instantiate(topSymbol, newType), name);
+        }
+        return this;
     }
 }

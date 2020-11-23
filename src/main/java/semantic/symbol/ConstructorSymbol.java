@@ -6,8 +6,9 @@ import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class ConstructorSymbol implements InnerLevelSymbol {
+public class ConstructorSymbol implements InstantiableSymbol<ConstructorSymbol> {
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
@@ -79,5 +80,11 @@ public class ConstructorSymbol implements InnerLevelSymbol {
     @Override
     public void consolidate() throws SemanticException, IllegalStateException {
 
+    }
+
+    @Override
+    public ConstructorSymbol instantiate(String newType) {
+        List<ParameterSymbol> params = parameters.stream().map(param -> param.instantiate(newType)).collect(Collectors.toList());
+        return new ConstructorSymbol(classReference, params);
     }
 }
