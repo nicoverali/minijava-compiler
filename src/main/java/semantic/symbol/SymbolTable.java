@@ -2,6 +2,7 @@ package semantic.symbol;
 
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.SymbolTreeValidator;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.predefined.PredefinedClass;
@@ -100,31 +101,31 @@ public class SymbolTable {
     }
 
     /**
-     * @param name the name of the {@link ClassSymbol} to look for
-     * @return an {@link Optional} wrapping a {@link ClassSymbol} from this table that has the name given as argument
+     * @param reference a reference of the {@link ClassSymbol} to look for
+     * @return an {@link Optional} wrapping a {@link ClassSymbol} from this table which was pointed by the given reference
      */
-    public Optional<ClassSymbol> getClass(String name){
-        ClassSymbol userClass = classes.get(name);
+    public Optional<ClassSymbol> getClass(ReferenceType reference){
+        ClassSymbol userClass = classes.get(reference.getValue());
         if(userClass != null){
             return Optional.of(userClass);
         }
-        return Optional.ofNullable(predefineClasses.get(name));
+        return Optional.ofNullable(predefineClasses.get(reference.getValue()));
     }
 
     /**
-     * @param name the name of the {@link UserClassSymbol} to look for
-     * @return an {@link Optional} wrapping a {@link UserClassSymbol} from this table that has the name given as argument
+     * @param reference a reference of the {@link UserClassSymbol} to look for
+     * @return an {@link Optional} wrapping a {@link UserClassSymbol} from this table which was pointed by the given reference
      */
-    public Optional<UserClassSymbol> getUserClass(String name){
-        return Optional.ofNullable(classes.get(name));
+    public Optional<UserClassSymbol> getUserClass(ReferenceType reference){
+        return Optional.ofNullable(classes.get(reference.getValue()));
     }
 
     /**
-     * @param name the name of the {@link PredefinedClass} to look for
-     * @return an {@link Optional} wrapping a {@link PredefinedClass} from this table that has the name given as argument
+     * @param reference a reference of the {@link PredefinedClass} to look for
+     * @return an {@link Optional} wrapping a {@link PredefinedClass} from this table which was pointed by the given reference
      */
-    public Optional<PredefinedClass> getPredefinedClass(String name){
-        return Optional.ofNullable(predefineClasses.get(name));
+    public Optional<PredefinedClass> getPredefinedClass(ReferenceType reference){
+        return Optional.ofNullable(predefineClasses.get(reference.getValue()));
     }
 
     /**
@@ -135,18 +136,28 @@ public class SymbolTable {
     }
 
     /**
-     * @param name the name of the {@link InterfaceSymbol} to look for
-     * @return an {@link Optional} wrapping a {@link InterfaceSymbol} from this table that has the name given as argument
+     * @param reference a reference of the {@link InterfaceSymbol} to look for
+     * @return an {@link Optional} wrapping a {@link InterfaceSymbol} from this table which was pointed by the given reference
      */
-    public Optional<InterfaceSymbol> getInterface(String name){
-        return Optional.ofNullable(interfaces.get(name));
+    public Optional<InterfaceSymbol> getInterface(ReferenceType reference){
+        return Optional.ofNullable(interfaces.get(reference.getValue()));
     }
 
     /**
-     * Searches through all the table looking for a {@link TopLevelSymbol} that has the name given as argument.
+     * Searches through all the table looking for a {@link TopLevelSymbol} which is pointed by the given reference
+     *
+     * @param reference a reference of the symbol to look for
+     * @return an {@link Optional} wrapping a {@link TopLevelSymbol} which was pointed by the given reference
+     */
+    public Optional<TopLevelSymbol> getTopLevelSymbol(ReferenceType reference){
+        return getTopLevelSymbol(reference.getValue());
+    }
+
+    /**
+     * Searches through all the table looking for a {@link TopLevelSymbol} that has the same name as the one given
      *
      * @param name the name of the symbol to look for
-     * @return an {@link Optional} wrapping a {@link TopLevelSymbol} that has the name given as argument
+     * @return an {@link Optional} wrapping a {@link TopLevelSymbol} that has the same name as the one given
      */
     public Optional<TopLevelSymbol> getTopLevelSymbol(String name){
         return Stream.of(classes, interfaces, predefineClasses)
@@ -161,22 +172,22 @@ public class SymbolTable {
      * <br>
      * This search will also include any {@link PredefinedClass} present in this table.
      *
-     * @param name the name of the {@link UserClassSymbol} to look for
+     * @param reference the name of the {@link UserClassSymbol} to look for
      * @return true if the given name is of one of the {@link UserClassSymbol} in this table, false otherwise
      */
-    public boolean isAClass(String name) {
-        return classes.get(name) != null || predefineClasses.get(name) != null;
+    public boolean isAClass(ReferenceType reference) {
+        return classes.get(reference.getValue()) != null || predefineClasses.get(reference.getValue()) != null;
     }
 
     /**
      * Checks whether the given name is the name of one of the {@link InterfaceSymbol} in this table.
      * If no {@link InterfaceSymbol} matches the given name then it will also return false.
      *
-     * @param name the name of the {@link InterfaceSymbol} to look for
+     * @param reference the name of the {@link InterfaceSymbol} to look for
      * @return true if the given name is of one of the {@link InterfaceSymbol} in this table, false otherwise
      */
-    public boolean isAnInterface(String name) {
-        return interfaces.get(name) != null;
+    public boolean isAnInterface(ReferenceType reference) {
+        return interfaces.get(reference.getValue()) != null;
     }
 
     /**

@@ -16,7 +16,6 @@ public class InheritHelper {
     public static Map<String, MethodSymbol> inheritMethods(TopLevelSymbol symbol){
         Map<String, MethodSymbol> methods = new HashMap<>();
         List<TopLevelSymbol> parents = symbol.getParents().stream()
-                .map(ReferenceType::getValue)
                 .map(SymbolTable.getInstance()::getTopLevelSymbol)
                 .filter(Optional::isPresent)
                 .map(Optional::get).collect(Collectors.toList());
@@ -39,8 +38,7 @@ public class InheritHelper {
         return an empty map
      */
     public static Map<String, AttributeSymbol> inheritAttributes(ClassSymbol symbol){
-        return symbol.getParent()
-                .map(ReferenceType::getValue)
+        return symbol.getParentClass()
                 .flatMap(SymbolTable.getInstance()::getUserClass)
                 .map(UserClassSymbol::inheritAttributes)
                 .orElse(Collections.emptyMap());

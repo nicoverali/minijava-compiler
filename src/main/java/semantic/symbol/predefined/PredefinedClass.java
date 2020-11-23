@@ -85,8 +85,13 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
-    public Optional<ReferenceType> getParent() {
+    public Optional<ReferenceType> getParentClass() {
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<ReferenceType> getInterfaces() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -99,7 +104,7 @@ public class PredefinedClass implements ClassSymbol {
         Map<String, MethodSymbol> resultMap;
         ClassSymbol parentSym = null;
         if (parent != null){
-            parentSym = SymbolTable.getInstance().getPredefinedClass(parent.getValue())
+            parentSym = SymbolTable.getInstance().getPredefinedClass(parent)
             .orElseThrow(() -> new IllegalStateException("The predefined class has a parent that does not exists"));
         }
         resultMap = parentSym != null ? new HashMap<>(parentSym.inheritMethods()) : new HashMap<>();

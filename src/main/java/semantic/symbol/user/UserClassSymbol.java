@@ -170,13 +170,11 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     @Override
-    public Optional<ReferenceType> getParent() {
+    public Optional<ReferenceType> getParentClass() {
         return Optional.ofNullable(parent);
     }
 
-    /**
-     * @return a collection of {@link ReferenceType} pointing to all the interfaces implemented by this class
-     */
+    @Override
     public Collection<ReferenceType> getInterfaces() {
         return interfaces;
     }
@@ -200,7 +198,7 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     private void obtainInheritedAttributesAndMethods(){
-        ClassSymbol parentSym = ST.getClass(parent.getValue())
+        ClassSymbol parentSym = ST.getClass(parent)
                 .orElseThrow(() -> new SemanticException("No se pudo encontrar el simbolo", parent));
         inheritedAttributes = parentSym.inheritAttributes();
         inheritedMethods = parentSym.inheritMethods();
@@ -218,7 +216,7 @@ public class UserClassSymbol implements ClassSymbol {
 
     private void checkParent() {
         parent.validate(ST, this);
-        if (!ST.isAClass(parent.getValue())){
+        if (!ST.isAClass(parent)){
             throw new SemanticException("Una clase solo puede extender otra clase", parent);
         }
 
@@ -227,7 +225,7 @@ public class UserClassSymbol implements ClassSymbol {
     private void checkInterfaces() {
         for (ReferenceType i : interfaces) {
             i.validate(ST, this);
-            if (!ST.isAnInterface(i.getValue())){
+            if (!ST.isAnInterface(i)){
                 throw new SemanticException("Una clase solo puede implementar interfaces", i);
             }
         }
@@ -259,7 +257,7 @@ public class UserClassSymbol implements ClassSymbol {
     private void checkInterfacesAreActuallyImplemented() {
         Map<String, MethodSymbol> toImplement = new HashMap<>();
         List<InterfaceSymbol> parents = interfaces.stream()
-                .map(ref -> ST.getInterface(ref.getValue()))
+                .map(ST::getInterface)
                 .filter(Optional::isPresent)
                 .map(Optional::get).collect(Collectors.toList());
 

@@ -27,7 +27,6 @@ public class CircularInheritanceValidator {
 
         visited.add(symbol);
         symbol.getParents().stream()
-                .map(ReferenceType::getValue)
                 .map(SymbolTable.getInstance()::getTopLevelSymbol)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

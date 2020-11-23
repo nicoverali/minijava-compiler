@@ -109,4 +109,12 @@ public class ReferenceType extends Type{
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        if (generic != null){
+            return (name+generic.getValue()).hashCode();
+        }
+        return name.hashCode();
+    }
 }

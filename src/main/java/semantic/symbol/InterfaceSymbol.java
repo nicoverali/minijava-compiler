@@ -139,7 +139,7 @@ public class InterfaceSymbol implements TopLevelSymbol {
     private void checkExtensions() {
         for (ReferenceType ref : extend) {
             ref.validate(ST, this);
-            if (!ST.isAnInterface(ref.getValue())){
+            if (!ST.isAnInterface(ref)){
                 throw new SemanticException("Una interfaz solo puede extender interfaces", ref);
             }
         }
