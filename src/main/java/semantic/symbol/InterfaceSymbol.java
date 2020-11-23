@@ -6,7 +6,6 @@ import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.user.InheritHelper;
-import semantic.symbol.validators.CircularInheritanceValidator;
 
 import java.util.*;
 
@@ -133,7 +132,6 @@ public class InterfaceSymbol implements TopLevelSymbol {
     public void checkDeclaration() throws SemanticException, IllegalStateException {
         methods.values().forEach(MethodSymbol::checkDeclaration);
         checkExtensions();
-        CircularInheritanceValidator.validate(this);
     }
 
     private void checkExtensions() {

@@ -6,7 +6,6 @@ import semantic.symbol.*;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
-import semantic.symbol.validators.CircularInheritanceValidator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -211,7 +210,6 @@ public class UserClassSymbol implements ClassSymbol {
         methods.values().forEach(MethodSymbol::checkDeclaration);
         checkParent();
         checkInterfaces();
-        CircularInheritanceValidator.validate(this);
     }
 
     private void checkParent() {

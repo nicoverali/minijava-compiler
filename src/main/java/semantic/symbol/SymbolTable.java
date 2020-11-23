@@ -2,7 +2,6 @@ package semantic.symbol;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.SymbolTreeValidator;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.predefined.PredefinedClass;
@@ -199,6 +198,8 @@ public class SymbolTable {
     public void consolidate() throws SemanticException {
         interfaces.values().forEach(InterfaceSymbol::checkDeclaration);
         classes.values().forEach(ClassSymbol::checkDeclaration);
+        SymbolTreeValidator.validate(interfaces);
+        SymbolTreeValidator.validate(classes);
         interfaces.values().forEach(InterfaceSymbol::consolidate);
         classes.values().forEach(ClassSymbol::consolidate);
     }
