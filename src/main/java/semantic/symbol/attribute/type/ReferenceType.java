@@ -90,10 +90,16 @@ public class ReferenceType extends Type{
     }
 
     private boolean checkInTopLevelGenericity(TopLevelSymbol container){
-        return container.getGeneric()
+        boolean isRefToContainerGen = container.getGeneric()
                 .map(GenericityAttribute::getValue)
                 .map(gen -> gen.equals(this.name))
                 .orElse(false);
+
+        if (isRefToContainerGen && generic != null){
+            throw new SemanticException("El tipo "+name+" no es parametrizado", this);
+        }
+
+        return isRefToContainerGen;
     }
 
     @Override
