@@ -1,5 +1,6 @@
 package semantic.symbol.predefined;
 
+import lexical.Token;
 import semantic.SemanticException;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
@@ -56,6 +57,11 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
+    public Token getNameToken() {
+        return name.getToken();
+    }
+
+    @Override
     public Collection<AttributeSymbol> getAttributes() {
         return Collections.emptyList();
     }
@@ -66,13 +72,26 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
+    public Collection<ReferenceType> getParents() {
+        if (parent != null){
+            return Collections.singleton(parent);
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
     public Collection<MethodSymbol> getMethods(){
         return Collections.unmodifiableList(methods);
     }
 
     @Override
-    public Optional<ReferenceType> getParent() {
+    public Optional<ReferenceType> getParentClass() {
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<ReferenceType> getInterfaces() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -85,7 +104,7 @@ public class PredefinedClass implements ClassSymbol {
         Map<String, MethodSymbol> resultMap;
         ClassSymbol parentSym = null;
         if (parent != null){
-            parentSym = SymbolTable.getInstance().getPredefinedClass(parent.getValue())
+            parentSym = SymbolTable.getInstance().getPredefinedClass(parent)
             .orElseThrow(() -> new IllegalStateException("The predefined class has a parent that does not exists"));
         }
         resultMap = parentSym != null ? new HashMap<>(parentSym.inheritMethods()) : new HashMap<>();
@@ -106,6 +125,11 @@ public class PredefinedClass implements ClassSymbol {
         return methods.stream()
                 .filter(method -> name.equals(method.getName()))
                 .findFirst();
+    }
+
+    @Override
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        // Do nothing
     }
 
     @Override

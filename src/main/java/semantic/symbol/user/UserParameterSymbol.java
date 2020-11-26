@@ -5,14 +5,13 @@ import semantic.symbol.ParameterSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 public class UserParameterSymbol implements ParameterSymbol {
 
     private final NameAttribute name;
     private final Type type;
-
-    private TopLevelSymbol topSymbol;
 
     public UserParameterSymbol(Type type, NameAttribute name) {
         this.name = name;
@@ -21,6 +20,11 @@ public class UserParameterSymbol implements ParameterSymbol {
 
     @Override public NameAttribute getNameAttribute() {
         return name;
+    }
+
+    @Override
+    public String getName() {
+        return name.getValue();
     }
 
     @Override public Type getType() {
@@ -38,13 +42,20 @@ public class UserParameterSymbol implements ParameterSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
-        if (topSymbol == null) throw new IllegalStateException("El parametro no forma parte de ningun simbolo de nivel superior.");
-        this.type.validate(SymbolTable.getInstance(), topSymbol);
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        this.type.validate(SymbolTable.getInstance(), container);
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+
+    }
+
+    @Override
+    public ParameterSymbol instantiate(TopLevelSymbol container, String newType) {
+        if (type instanceof ReferenceType){
+            return new UserParameterSymbol(((ReferenceType) type).instantiate(container, newType), name);
+        }
+        return this;
     }
 }

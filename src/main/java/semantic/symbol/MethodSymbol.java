@@ -6,7 +6,7 @@ import semantic.symbol.attribute.type.Type;
 
 import java.util.List;
 
-public interface MethodSymbol extends InnerLevelSymbol {
+public interface MethodSymbol extends InstantiableSymbol<MethodSymbol> {
     /**
      * @return the {@link IsStaticAttribute} of this method which determines if the methodn is static or not
      */
@@ -16,16 +16,6 @@ public interface MethodSymbol extends InnerLevelSymbol {
      * @return the {@link Type} returned by this method
      */
     Type getReturnType();
-
-    /**
-     * @return the name of this method as a {@link String}
-     */
-    String getName();
-
-    /**
-     * @return the {@link NameAttribute} of this method which contains the name of it
-     */
-    NameAttribute getNameAttribute();
 
     /**
      * @return a list of all the {@link ParameterSymbol} of this method

@@ -6,13 +6,12 @@ import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class ConstructorSymbol implements InnerLevelSymbol {
+public class ConstructorSymbol implements InstantiableSymbol<ConstructorSymbol> {
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
-
-    private TopLevelSymbol topSymbol;
 
     public ConstructorSymbol(ReferenceType classReference, List<ParameterSymbol> parameters) {
         checkForDuplicates(parameters);
@@ -47,22 +46,35 @@ public class ConstructorSymbol implements InnerLevelSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
-        parameters.forEach(ParameterSymbol::consolidate);
-
-        if (topSymbol == null)
-            throw new IllegalStateException("El constructor no esta contenido dentro de ninguna clase");
-        if (!constructorNameMatchesClass())
-            throw new SemanticException("El nombre del constructor no es el de la clase que lo contiene", getClassReference());
-    }
-
-    private boolean constructorNameMatchesClass() {
-        return topSymbol.getName().equals(this.classReference.getValue());
+    public String getName() {
+        return "";
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
-        parameters.forEach(param -> param.setTopLevelSymbol(symbol));
+    public NameAttribute getNameAttribute() {
+        return NameAttribute.predefined("");
+    }
+
+    @Override
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        parameters.forEach(param -> param.checkDeclaration(container));
+
+        if (!constructorNameMatchesClass(container))
+            throw new SemanticException("El nombre del constructor no es el de la clase que lo contiene", getClassReference());
+    }
+
+    private boolean constructorNameMatchesClass(TopLevelSymbol container) {
+        return container.getName().equals(this.classReference.getValue());
+    }
+
+    @Override
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+
+    }
+
+    @Override
+    public ConstructorSymbol instantiate(TopLevelSymbol container, String newType) {
+        List<ParameterSymbol> params = parameters.stream().map(param -> param.instantiate(container, newType)).collect(Collectors.toList());
+        return new ConstructorSymbol(classReference, params);
     }
 }

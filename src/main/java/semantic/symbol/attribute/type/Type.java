@@ -59,4 +59,9 @@ public abstract class Type implements SymbolAttribute<String> {
     public boolean equals(Type type) {
         return this.name.equals(type.name);
     }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

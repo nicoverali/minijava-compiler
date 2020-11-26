@@ -216,7 +216,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode<AutomataToken> charInitialNode =
             new TokenizerNodeBuilder("Tries to match a valid character value")
                 .ifEquals('\\').storeInLexeme().thenMoveTo(charSpecialCharacterOpen)
-                .ifAnyExcept('\\', '\n').storeInLexeme().thenMoveTo(charClosingNode)
+                .ifAnyExcept('\\', '\n', '\'').storeInLexeme().thenMoveTo(charClosingNode)
                 .ifEquals('\n').thenThrow("El caracter de salto de linea no es un literal char valido")
                 .orElseThrow("Literal char no válido.");
 
@@ -240,7 +240,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode<Boolean> multiLineCommentInitialNode =
             new OmitterNodeBuilder("Skips all characters except '*' that may mark the end of comment")
                 .ifEquals('*').thenTry(multiLineCommentClosingNode,2)
-                .ifAnyExcept('*').thenRepeat()
+                .ifAny().thenRepeat()
                 .orElseThrow("Comentario multi-linea no cerrado.");
 
     private static final LexicalNode<Boolean> commentsInitialNode =

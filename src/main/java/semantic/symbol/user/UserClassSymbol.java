@@ -1,7 +1,6 @@
 package semantic.symbol.user;
 
 import lexical.Token;
-import semantic.CircularInheritanceException;
 import semantic.SemanticException;
 import semantic.symbol.*;
 import semantic.symbol.attribute.GenericityAttribute;
@@ -9,7 +8,6 @@ import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserClassSymbol implements ClassSymbol {
 
@@ -27,7 +25,6 @@ public class UserClassSymbol implements ClassSymbol {
 
     private Map<String, AttributeSymbol> inheritedAttributes;
     private Map<String, MethodSymbol> inheritedMethods;
-    private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public UserClassSymbol(NameAttribute name){
         this.name = name;
@@ -56,6 +53,9 @@ public class UserClassSymbol implements ClassSymbol {
      * @param interfaceReference a {@link ReferenceType} pointing to an interface implemented by this class
      */
     public void addImplements(ReferenceType interfaceReference){
+        if (interfaces.contains(interfaceReference)) {
+            throw new SemanticException("No se pude implementar multiples veces la misma interfaz", interfaceReference);
+        }
         interfaces.add(interfaceReference);
     }
 
@@ -83,7 +83,6 @@ public class UserClassSymbol implements ClassSymbol {
     public void add(ConstructorSymbol constructor) throws SemanticException{
         if (this.constructor != null)
             throw new SemanticException("Las clases solo pueden tener un unico constructor", constructor.getClassReference());
-        constructor.setTopLevelSymbol(this);
         this.constructor = constructor;
     }
 
@@ -95,11 +94,9 @@ public class UserClassSymbol implements ClassSymbol {
      * @throws SemanticException if the class already had a {@link MethodSymbol} with the same name
      */
     public void add(MethodSymbol method) throws SemanticException{
-        NameAttribute methodName = method.getNameAttribute();
-        if (methods.containsKey(methodName.getValue()))
-            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", methodName);
-        method.setTopLevelSymbol(this);
-        methods.put(methodName.getValue(), method);
+        if (methods.containsKey(method.getName()))
+            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", method);
+        methods.put(method.getName(), method);
     }
 
     /**
@@ -109,11 +106,9 @@ public class UserClassSymbol implements ClassSymbol {
      * @param attribute a {@link AttributeSymbol} which will be added as a memeber of this class
      */
     public void add(AttributeSymbol attribute) throws SemanticException{
-        NameAttribute attributeName = attribute.getNameAttribute();
-        if (attributes.containsKey(attributeName.getValue()))
-            throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attributeName);
-        attribute.setTopLevelSymbol(this);
-        attributes.put(attributeName.getValue(), attribute);
+        if (attributes.containsKey(attribute.getName()))
+            throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attribute);
+        attributes.put(attribute.getName(), attribute);
     }
 
     @Override
@@ -126,12 +121,22 @@ public class UserClassSymbol implements ClassSymbol {
         return name.getValue();
     }
 
+    @Override
+    public Token getNameToken() {
+        return name.getToken();
+    }
+
     /**
      * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this class
      * which describes the genericity of it
      */
     public Optional<GenericityAttribute> getGeneric() {
         return Optional.ofNullable(generic);
+    }
+
+    @Override
+    public Collection<ReferenceType> getParents() {
+        return Collections.singleton(parent);
     }
 
     /**
@@ -160,20 +165,18 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     @Override
-    public Optional<ReferenceType> getParent() {
+    public Optional<ReferenceType> getParentClass() {
         return Optional.ofNullable(parent);
     }
 
-    /**
-     * @return a collection of {@link ReferenceType} pointing to all the interfaces implemented by this class
-     */
+    @Override
     public Collection<ReferenceType> getInterfaces() {
         return interfaces;
     }
 
     @Override
     public Map<String, AttributeSymbol> inheritAttributes() throws SemanticException {
-        if (inheritedAttributes == null) this.obtainInheritedAttributesAndMethods();
+        if (inheritedAttributes == null) this.inheritMembers();
 
         Map<String, AttributeSymbol> resultMap = new HashMap<>(inheritedAttributes);
         attributes.forEach(resultMap::put);
@@ -182,102 +185,50 @@ public class UserClassSymbol implements ClassSymbol {
 
     @Override
     public Map<String, MethodSymbol> inheritMethods() throws SemanticException {
-        if (inheritedMethods == null)  this.obtainInheritedAttributesAndMethods();
+        if (inheritedMethods == null)  this.inheritMembers();
 
         Map<String, MethodSymbol> resultMap = new HashMap<>(inheritedMethods);
         methods.forEach(resultMap::put);
         return Collections.unmodifiableMap(resultMap);
     }
 
-    private void obtainInheritedAttributesAndMethods(){
-        ClassSymbol parentSym = ST.getClass(parent.getValue())
-                .orElseThrow(() -> new SemanticException("No se pudo encontrar el simbolo", parent));
-        inheritedAttributes = parentSym.inheritAttributes();
-        inheritedMethods = parentSym.inheritMethods();
-    }
 
     @Override
-    public void consolidate() throws SemanticException {
-        consolidateInheritance();
-        checkForCircularInheritance(new ArrayList<>());
-        obtainInheritedAttributesAndMethods();
-        checkForOverwrittenMethods();
-        checkInterfacesAreActuallyImplemented();
-        consolidateMembers();
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        if (constructor != null) constructor.checkDeclaration(this);
+        attributes.values().forEach(attr -> attr.checkDeclaration(this));
+        methods.values().forEach(method -> method.checkDeclaration(this));
+        checkParent();
+        checkInterfaces();
     }
 
-    private void consolidateInheritance() {
+    private void checkParent() {
         parent.validate(ST, this);
-        if (!ST.isAClass(parent.getValue())) {
+        if (!ST.isAClass(parent)){
             throw new SemanticException("Una clase solo puede extender otra clase", parent);
         }
 
+    }
+
+    private void checkInterfaces() {
         for (ReferenceType i : interfaces) {
             i.validate(ST, this);
-            if (!ST.isAnInterface(i.getValue())){
+            if (!ST.isAnInterface(i)){
                 throw new SemanticException("Una clase solo puede implementar interfaces", i);
             }
         }
     }
 
-    private void checkForCircularInheritance(List<UserClassSymbol> visited) {
-        if (circularInheritanceCheck){
-            return;
-        } else if (visited.contains(this)){
-            List<Token> involved = visited.stream().map(i -> i.name.getToken()).collect(Collectors.toList());
-            throw new CircularInheritanceException("La clase "+name.getValue()+ " sufre de herencia circular", involved);
-        }
-
-        visited.add(this);
-        ST.getUserClass(parent.getValue())
-            .ifPresent(c -> c.checkForCircularInheritance(visited));
-        circularInheritanceCheck = true;
+    @Override
+    public void consolidate() throws SemanticException {
+        inheritMembers();
+        OverwrittenValidator.validateMethods(inheritedMethods, methods);
+        OverwrittenValidator.validateImplementation(interfaces, methods, name);
     }
 
-    private void checkForOverwrittenMethods(){
-        List<String> overwritten = methods.values().stream()
-                                            .map(MethodSymbol::getName)
-                                            .filter(inheritedMethods::containsKey)
-                                            .collect(Collectors.toList());
-        for (String methodName : overwritten) {
-            MethodSymbol ours = methods.get(methodName);
-            MethodSymbol theirs = inheritedMethods.get(methodName);
-            if (!ours.equals(theirs)){
-                throw new SemanticException("Se sobreescribe un metodo pero no se respeta el encabezado original", ours.getNameAttribute());
-            }
-        }
+    private void inheritMembers(){
+        inheritedAttributes = InheritHelper.inheritAttributes(this);
+        inheritedMethods = InheritHelper.inheritMethods(this);
     }
 
-    private void consolidateMembers() {
-        if (constructor != null) constructor.consolidate();
-        attributes.values().forEach(AttributeSymbol::consolidate);
-        methods.values().forEach(MethodSymbol::consolidate);
-    }
-
-    private void checkInterfacesAreActuallyImplemented() {
-        Map<String, MethodSymbol> toImplement = new HashMap<>();
-        List<InterfaceSymbol> parents = interfaces.stream()
-                .map(ref -> ST.getInterface(ref.getValue()))
-                .filter(Optional::isPresent)
-                .map(Optional::get).collect(Collectors.toList());
-
-        for (InterfaceSymbol parent : parents){
-            for (Map.Entry<String, MethodSymbol> entry : parent.inheritMethods().entrySet()){
-                MethodSymbol overwritten = toImplement.get(entry.getKey());
-                if (overwritten != null && !overwritten.equals(entry.getValue())){
-                    throw new SemanticException("La clase extiende dos interfaces cuyos metodos colisionan", this.name);
-                }
-                toImplement.put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        for (Map.Entry<String, MethodSymbol> entry : toImplement.entrySet()){
-            MethodSymbol ours = methods.get(entry.getKey());
-            if (ours == null){
-                throw new SemanticException("La clase no implementa el metodo "+entry.getValue().getName(), this.name);
-            } else if (!ours.equals(entry.getValue())){
-                throw new SemanticException("Se implementa el metodo pero no se respeta el encabezado", ours.getNameAttribute());
-            }
-        }
-    }
 }

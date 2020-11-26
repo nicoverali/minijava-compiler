@@ -9,13 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface ClassSymbol extends TopLevelSymbol {
-    /**
-     * @return the {@link NameAttribute} of this class which contains the name of it
-     */
-    NameAttribute getNameAttribute();
-
-    @Override
-    String getName();
 
     /**
      * @return a collection of all the {@link AttributeSymbol} of this class
@@ -30,7 +23,13 @@ public interface ClassSymbol extends TopLevelSymbol {
     /**
      * @return an {@link Optional} wrapping a {@link ReferenceType} pointing to the class from which this class extends
      */
-    Optional<ReferenceType> getParent();
+    Optional<ReferenceType> getParentClass();
+
+    /**
+     * @return a {@link Collection} of {@link ReferenceType} that point to all the {@link InterfaceSymbol}
+     * that are implemented by this class
+     */
+    Collection<ReferenceType> getInterfaces();
 
     /**
      * Returns a map containing all of the ancestors {@link AttributeSymbol},

@@ -1,16 +1,18 @@
 package semantic.symbol;
 
 import semantic.SemanticException;
+import semantic.symbol.attribute.NameAttribute;
 
 public interface Symbol {
 
     /**
-     * Verifies that the symbol declaration is valid. This method should be execute once the {@link SymbolTable}
-     * is complete, otherwise it may not work correctly.
-     *
-     * @throws SemanticException if a semantic error is detected during consolidation
-     * @throws IllegalStateException if the symbol is not even ready to try consolidating
+     * @return the name of this symbol as a {@link String}
      */
-    void consolidate() throws SemanticException, IllegalStateException;
+    String getName();
+
+    /**
+     * @return the {@link NameAttribute} of this symbol
+     */
+    NameAttribute getNameAttribute();
 
 }

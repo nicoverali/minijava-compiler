@@ -4,16 +4,15 @@ import semantic.SemanticException;
 import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
-public class AttributeSymbol implements InnerLevelSymbol {
+public class AttributeSymbol implements InstantiableSymbol<AttributeSymbol> {
 
     private IsPublicAttribute isPublic = IsPublicAttribute.defaultAttribute();
     private IsStaticAttribute isStatic = IsStaticAttribute.defaultAttribute();
     private final Type type;
     private final NameAttribute name;
-
-    private TopLevelSymbol topSymbol;
 
     public AttributeSymbol(Type type, NameAttribute name) {
         this.type = type;
@@ -54,21 +53,31 @@ public class AttributeSymbol implements InnerLevelSymbol {
         return type;
     }
 
-    /**
-     * @return the {@link NameAttribute} of this attribute, which contains the name of it
-     */
+    @Override
     public NameAttribute getNameAttribute() {
         return name;
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
-        if (topSymbol == null) throw new IllegalStateException("El atributo no esta contenido dentro de ninguna clase");
-        type.validate(SymbolTable.getInstance(), topSymbol);
+    public String getName() {
+        return name.getValue();
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        type.validate(SymbolTable.getInstance(), container);
+    }
+
+    @Override
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+
+    }
+
+    @Override
+    public AttributeSymbol instantiate(TopLevelSymbol container, String newType) {
+        if (type instanceof ReferenceType){
+            return new AttributeSymbol(isPublic, isStatic, ((ReferenceType) type).instantiate(container, newType), name);
+        }
+        return this;
     }
 }

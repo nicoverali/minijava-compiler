@@ -1,6 +1,7 @@
 package semantic;
 
 import lexical.Token;
+import semantic.symbol.Symbol;
 import semantic.symbol.attribute.SymbolAttribute;
 
 public class SemanticException extends RuntimeException{
@@ -10,6 +11,14 @@ public class SemanticException extends RuntimeException{
     public SemanticException(String message, SymbolAttribute<?> attribute) {
         super(message);
         this.exceptionToken = attribute.getToken();
+        if (exceptionToken == null){
+            throw new IllegalArgumentException("Attributes provided to SemanticException must have an associated Token");
+        }
+    }
+
+    public SemanticException(String message, Symbol symbol) {
+        super(message);
+        this.exceptionToken = symbol.getNameAttribute().getToken();
         if (exceptionToken == null){
             throw new IllegalArgumentException("Attributes provided to SemanticException must have an associated Token");
         }

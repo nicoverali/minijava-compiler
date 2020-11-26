@@ -1,14 +1,14 @@
 package semantic.symbol;
 
 import lexical.Token;
-import semantic.CircularInheritanceException;
 import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import semantic.symbol.user.InheritHelper;
+import semantic.symbol.user.OverwrittenValidator;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class InterfaceSymbol implements TopLevelSymbol {
 
@@ -21,7 +21,6 @@ public class InterfaceSymbol implements TopLevelSymbol {
     private List<ReferenceType> extend = new ArrayList<>();
 
     private Map<String, MethodSymbol> superMethods;
-    private boolean circularInheritanceCheck = false; // This is use when checking for circular inheritance
 
     public InterfaceSymbol(NameAttribute name){
         this.name = name;
@@ -34,6 +33,9 @@ public class InterfaceSymbol implements TopLevelSymbol {
      *                         which is extended by this interface
      */
     public void addExtends(ReferenceType extendsReference){
+        if (extend.contains(extendsReference)){
+            throw new SemanticException("No se puede extender multiples veces de la misma interfaz", extendsReference);
+        }
         if (extendsReference.getValue().equals(this.name.getValue())){
             throw new SemanticException("Una interfaz no puede extenderse a si misma", extendsReference);
         }
@@ -61,16 +63,12 @@ public class InterfaceSymbol implements TopLevelSymbol {
      * @throws SemanticException if the interface already had a method with the same name
      */
     public void add(MethodSymbol method) throws SemanticException{
-        NameAttribute methodName = method.getNameAttribute();
-        if (methods.containsKey(methodName.getValue()))
-            throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", methodName);
-        method.setTopLevelSymbol(this);
-        methods.put(methodName.getValue(), method);
+        if (methods.containsKey(method.getName()))
+            throw new SemanticException("Una interfaz no puede tener mas de un metodo con el mismo nombre", method);
+        methods.put(method.getName(), method);
     }
 
-    /**
-     * @return the {@link NameAttribute} of this interface which contains the name of it
-     */
+    @Override
     public NameAttribute getNameAttribute() {
         return name;
     }
@@ -80,12 +78,22 @@ public class InterfaceSymbol implements TopLevelSymbol {
         return name.getValue();
     }
 
+    @Override
+    public Token getNameToken() {
+        return name.getToken();
+    }
+
     /**
      * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this interface
      * which describes the genericity of it
      */
     public Optional<GenericityAttribute> getGeneric() {
         return Optional.ofNullable(generic);
+    }
+
+    @Override
+    public Collection<ReferenceType> getParents() {
+        return extend;
     }
 
     /**
@@ -102,92 +110,36 @@ public class InterfaceSymbol implements TopLevelSymbol {
         return methods.values();
     }
 
-    /**
-     * @return a collection of all the {@link InterfaceSymbol} extended by this interface
-     */
-    public Collection<ReferenceType> getExtend() {
-        return extend;
-    }
-
+    @Override
     public Map<String, MethodSymbol> inheritMethods(){
-        if (superMethods == null) this.obtainSuperMethods();
+        superMethods = superMethods == null
+                ? InheritHelper.inheritMethods(this)
+                : superMethods;
 
         Map<String, MethodSymbol> resultMap = new HashMap<>(superMethods);
-        for (Map.Entry<String, MethodSymbol> entry : methods.entrySet()){
-            MethodSymbol overwritten = resultMap.get(entry.getKey());
-            if (overwritten != null && !overwritten.equals(entry.getValue())){
-                throw new SemanticException("Se sobreescribe el metodo pero no se respeta el encabezado", entry.getValue().getNameAttribute());
-            }
-            resultMap.put(entry.getKey(), entry.getValue());
-        }
-
+        methods.forEach(resultMap::put);
         return Collections.unmodifiableMap(resultMap);
     }
 
-    private void obtainSuperMethods(){
-        superMethods = new HashMap<>();
-        List<InterfaceSymbol> parents = extend.stream()
-                                            .map(ref -> ST.getInterface(ref.getValue()))
-                                            .filter(Optional::isPresent)
-                                            .map(Optional::get).collect(Collectors.toList());
+    @Override
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
+        methods.values().forEach(method -> method.checkDeclaration(this));
+        checkExtensions();
+    }
 
-        for (InterfaceSymbol parent : parents){
-            for (Map.Entry<String, MethodSymbol> entry : parent.inheritMethods().entrySet()){
-                MethodSymbol overwritten = superMethods.get(entry.getKey());
-                if (overwritten != null && !overwritten.equals(entry.getValue())){
-                    throw new SemanticException("La interfaz extiende dos interfaces cuyos metodos colisionan", this.name);
-                }
-                superMethods.put(entry.getKey(), entry.getValue());
+    private void checkExtensions() {
+        for (ReferenceType ref : extend) {
+            ref.validate(ST, this);
+            if (!ST.isAnInterface(ref)){
+                throw new SemanticException("Una interfaz solo puede extender interfaces", ref);
             }
         }
     }
 
     @Override
     public void consolidate() throws SemanticException {
-        consolidateInheritance();
-        consolidateMembers();
-        checkForCircularInheritance(new ArrayList<>());
-        obtainSuperMethods();
-        checkForOverwrittenMethods();
+        superMethods = InheritHelper.inheritMethods(this);
+        OverwrittenValidator.validateMethods(superMethods, methods);
     }
 
-    private void consolidateInheritance() {
-        extend.forEach(extend -> extend.validate(ST, this));
-        for (ReferenceType ref : extend) {
-            if (!ST.isAnInterface(ref.getValue())){
-                throw new SemanticException("Una interfaz solo puede extender interfaces", ref);
-            }
-        }
-    }
-
-    private void consolidateMembers() {
-        methods.values().forEach(MethodSymbol::consolidate);
-    }
-
-    private void checkForCircularInheritance(List<InterfaceSymbol> visited){
-        if (circularInheritanceCheck){
-            return;
-        } else if (visited.contains(this)){
-            List<Token> involved = visited.stream().map(i -> i.name.getToken()).collect(Collectors.toList());
-            throw new CircularInheritanceException("La interfaz "+name.getValue()+ " sufre de herencia circular", involved);
-        }
-
-        visited.add(this);
-        extend.stream()
-                .map(ReferenceType::getValue)
-                .map(ST::getInterface)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(i -> i.checkForCircularInheritance(new ArrayList<>(visited)));
-        circularInheritanceCheck = true;
-    }
-
-    private void checkForOverwrittenMethods() {
-        for (Map.Entry<String, MethodSymbol> entry : methods.entrySet()){
-            MethodSymbol overwritten = superMethods.get(entry.getKey());
-            if (overwritten != null && !overwritten.equals(entry.getValue())){
-                throw new SemanticException("Se sobreescribe el metodo pero no se respeta el encabezado", entry.getValue().getNameAttribute());
-            }
-        }
-    }
 }

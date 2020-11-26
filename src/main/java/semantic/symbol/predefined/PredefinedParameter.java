@@ -40,20 +40,23 @@ public class PredefinedParameter implements ParameterSymbol {
         return this.type.equals(parameter.getType());
     }
 
-    /**
-     * @return the name of the predefined parameter as a {@link String}
-     */
+    @Override
     public String getName() {
         return name.getValue();
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        // Unnecessary
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        // Do nothing
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
         // Do nothing
+    }
+
+    @Override
+    public ParameterSymbol instantiate(TopLevelSymbol container, String newType) {
+        return this;
     }
 }

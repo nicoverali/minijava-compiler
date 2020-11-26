@@ -7,17 +7,17 @@ import semantic.symbol.SymbolTable;
 import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserMethodSymbol implements MethodSymbol {
 
     private final IsStaticAttribute isStatic;
     private final Type returnType;
     private final NameAttribute name;
-
-    private TopLevelSymbol topSymbol;
 
     private final LinkedHashMap<String, ParameterSymbol> parameters = new LinkedHashMap<>(); // This type of map maintains order
 
@@ -55,7 +55,6 @@ public class UserMethodSymbol implements MethodSymbol {
         if (parameters.containsKey(paramName.getValue())){
             throw new SemanticException("Un metodo no puede tener dos parametros con el mismo nombre", paramName);
         }
-        parameter.setTopLevelSymbol(topSymbol);
         parameters.put(paramName.getValue(), parameter);
     }
 
@@ -105,15 +104,23 @@ public class UserMethodSymbol implements MethodSymbol {
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
-        if (topSymbol == null) throw new IllegalStateException("El metodo no esta contenido dentro de ningun simbolo de nivel superior");
-        returnType.validate(SymbolTable.getInstance(), topSymbol);
-        parameters.values().forEach(ParameterSymbol::consolidate);
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        returnType.validate(SymbolTable.getInstance(), container);
+        parameters.values().forEach(param -> param.checkDeclaration(container));
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
-        parameters.values().forEach(param -> param.setTopLevelSymbol(symbol));
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+
+    }
+
+    @Override
+    public MethodSymbol instantiate(TopLevelSymbol container, String newType) {
+        List<ParameterSymbol> params = parameters.values().stream()
+                .map(param -> param.instantiate(container, newType)).collect(Collectors.toList());
+        if (returnType instanceof ReferenceType){
+            return new UserMethodSymbol(isStatic, ((ReferenceType) returnType).instantiate(container, newType), name, params);
+        }
+        return new UserMethodSymbol(isStatic, returnType, name, params);
     }
 }
