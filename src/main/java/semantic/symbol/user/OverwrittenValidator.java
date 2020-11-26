@@ -30,7 +30,7 @@ public class OverwrittenValidator {
         for (ReferenceType ref : interfaces){
             InterfaceSymbol inter = ST.getInterface(ref).get();
             for (MethodSymbol inherit : inter.inheritMethods().values()){
-                inherit = ref.getGeneric().map(GenericityAttribute::getValue).map(inherit::instantiate).orElse(inherit);
+                inherit = InheritHelper.instatiateMember(inherit, ref, inter);
                 MethodSymbol overwritten = toImplement.get(inherit.getName());
                 if (overwritten != null && !overwritten.equals(inherit)){
                     throw new SemanticException("La clase extiende dos interfaces cuyos metodos colisionan", className);

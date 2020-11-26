@@ -83,7 +83,6 @@ public class UserClassSymbol implements ClassSymbol {
     public void add(ConstructorSymbol constructor) throws SemanticException{
         if (this.constructor != null)
             throw new SemanticException("Las clases solo pueden tener un unico constructor", constructor.getClassReference());
-        constructor.setTopLevelSymbol(this);
         this.constructor = constructor;
     }
 
@@ -97,7 +96,6 @@ public class UserClassSymbol implements ClassSymbol {
     public void add(MethodSymbol method) throws SemanticException{
         if (methods.containsKey(method.getName()))
             throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", method);
-        method.setTopLevelSymbol(this);
         methods.put(method.getName(), method);
     }
 
@@ -110,7 +108,6 @@ public class UserClassSymbol implements ClassSymbol {
     public void add(AttributeSymbol attribute) throws SemanticException{
         if (attributes.containsKey(attribute.getName()))
             throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attribute);
-        attribute.setTopLevelSymbol(this);
         attributes.put(attribute.getName(), attribute);
     }
 
@@ -198,9 +195,9 @@ public class UserClassSymbol implements ClassSymbol {
 
     @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {
-        if (constructor != null) constructor.checkDeclaration();
-        attributes.values().forEach(AttributeSymbol::checkDeclaration);
-        methods.values().forEach(MethodSymbol::checkDeclaration);
+        if (constructor != null) constructor.checkDeclaration(this);
+        attributes.values().forEach(attr -> attr.checkDeclaration(this));
+        methods.values().forEach(method -> method.checkDeclaration(this));
         checkParent();
         checkInterfaces();
     }

@@ -17,11 +17,11 @@ public class InheritHelper {
     public static Map<String, MethodSymbol> inheritMethods(TopLevelSymbol symbol){
         SymbolTable ST = SymbolTable.getInstance();
         Map<String, MethodSymbol> methods = new HashMap<>();
-        for (ReferenceType parent : symbol.getParents()){
+        for (ReferenceType parentRef : symbol.getParents()){
+            TopLevelSymbol parentSymbol = ST.getTopLevelSymbol(parentRef).get();
 
-            TopLevelSymbol parentSymbol = ST.getTopLevelSymbol(parent).get();
             for (MethodSymbol inherit : parentSymbol.inheritMethods().values()){
-                inherit = parent.getGeneric().map(GenericityAttribute::getValue).map(inherit::instantiate).orElse(inherit);
+                inherit = instatiateMember(inherit, parentRef, parentSymbol);
                 MethodSymbol overwritten = methods.get(inherit.getName());
                 if (overwritten != null && !overwritten.equals(inherit)){
                     throw new SemanticException("Se extiende dos interfaces cuyos metodos colisionan", symbol.getNameToken());
@@ -34,6 +34,7 @@ public class InheritHelper {
         return methods;
     }
 
+
     /*
         This method won't check if the given class does actually have a parent or not, if does not this will simply
         return an empty map
@@ -42,16 +43,24 @@ public class InheritHelper {
         Map<String, AttributeSymbol> attributes = new HashMap<>();
 
         if (symbol.getParentClass().isPresent()){
-            Optional<String> parentGen = symbol.getParentClass().flatMap(ReferenceType::getGeneric).map(GenericityAttribute::getValue);
-            ClassSymbol parent = SymbolTable.getInstance().getClass(symbol.getParentClass().get()).get();
+            ReferenceType parentRef = symbol.getParentClass().get();
+            ClassSymbol parent = SymbolTable.getInstance().getClass(parentRef).get();
 
             for (AttributeSymbol inherit : parent.inheritAttributes().values()){
-                inherit = parentGen.map(inherit::instantiate).orElse(inherit);
+                inherit = instatiateMember(inherit, parentRef, parent);
                 attributes.put(inherit.getName(), inherit);
             }
         }
 
         return attributes;
+    }
+
+    public static <T extends InstantiableSymbol<T>> T instatiateMember(T inherit, ReferenceType parentInstance, TopLevelSymbol parent) {
+        Optional<GenericityAttribute> instanceGen = parentInstance.getGeneric();
+        if (instanceGen.isPresent()){
+            return inherit.instantiate(parent, instanceGen.get().getValue());
+        }
+        return inherit;
     }
 
 }

@@ -13,8 +13,6 @@ public class UserParameterSymbol implements ParameterSymbol {
     private final NameAttribute name;
     private final Type type;
 
-    private TopLevelSymbol topSymbol;
-
     public UserParameterSymbol(Type type, NameAttribute name) {
         this.name = name;
         this.type = type;
@@ -44,25 +42,19 @@ public class UserParameterSymbol implements ParameterSymbol {
     }
 
     @Override
-    public void checkDeclaration() throws SemanticException, IllegalStateException {
-        if (topSymbol == null) throw new IllegalStateException("El parametro no forma parte de ningun simbolo de nivel superior.");
-        this.type.validate(SymbolTable.getInstance(), topSymbol);
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        this.type.validate(SymbolTable.getInstance(), container);
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
 
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
-    }
-
-    @Override
-    public ParameterSymbol instantiate(String newType) {
+    public ParameterSymbol instantiate(TopLevelSymbol container, String newType) {
         if (type instanceof ReferenceType){
-            return new UserParameterSymbol(((ReferenceType) type).instantiate(topSymbol, newType), name);
+            return new UserParameterSymbol(((ReferenceType) type).instantiate(container, newType), name);
         }
         return this;
     }

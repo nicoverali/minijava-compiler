@@ -87,24 +87,18 @@ public class PredefinedMethod implements MethodSymbol {
         return true;
     }
 
-
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        // Unnecessary
-    }
-
-    @Override
-    public void checkDeclaration() throws SemanticException, IllegalStateException {
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
         // Do nothing
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
         // Do nothing
     }
 
     @Override
-    public MethodSymbol instantiate(String newType) {
+    public MethodSymbol instantiate(TopLevelSymbol container, String newType) {
         return this;
     }
 }

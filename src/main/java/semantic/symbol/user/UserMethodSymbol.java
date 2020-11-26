@@ -19,8 +19,6 @@ public class UserMethodSymbol implements MethodSymbol {
     private final Type returnType;
     private final NameAttribute name;
 
-    private TopLevelSymbol topSymbol;
-
     private final LinkedHashMap<String, ParameterSymbol> parameters = new LinkedHashMap<>(); // This type of map maintains order
 
     public UserMethodSymbol(IsStaticAttribute isStatic, Type returnType, NameAttribute name, List<ParameterSymbol> parameters) {
@@ -57,7 +55,6 @@ public class UserMethodSymbol implements MethodSymbol {
         if (parameters.containsKey(paramName.getValue())){
             throw new SemanticException("Un metodo no puede tener dos parametros con el mismo nombre", paramName);
         }
-        parameter.setTopLevelSymbol(topSymbol);
         parameters.put(paramName.getValue(), parameter);
     }
 
@@ -107,29 +104,22 @@ public class UserMethodSymbol implements MethodSymbol {
     }
 
     @Override
-    public void checkDeclaration() throws SemanticException, IllegalStateException {
-        if (topSymbol == null) throw new IllegalStateException("El metodo no esta contenido dentro de ningun simbolo de nivel superior");
-        returnType.validate(SymbolTable.getInstance(), topSymbol);
-        parameters.values().forEach(ParameterSymbol::checkDeclaration);
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        returnType.validate(SymbolTable.getInstance(), container);
+        parameters.values().forEach(param -> param.checkDeclaration(container));
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
 
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
-        parameters.values().forEach(param -> param.setTopLevelSymbol(symbol));
-    }
-
-    @Override
-    public MethodSymbol instantiate(String newType) {
+    public MethodSymbol instantiate(TopLevelSymbol container, String newType) {
         List<ParameterSymbol> params = parameters.values().stream()
-                .map(param -> param.instantiate(newType)).collect(Collectors.toList());
+                .map(param -> param.instantiate(container, newType)).collect(Collectors.toList());
         if (returnType instanceof ReferenceType){
-            return new UserMethodSymbol(isStatic, ((ReferenceType) returnType).instantiate(topSymbol, newType), name, params);
+            return new UserMethodSymbol(isStatic, ((ReferenceType) returnType).instantiate(container, newType), name, params);
         }
         return new UserMethodSymbol(isStatic, returnType, name, params);
     }

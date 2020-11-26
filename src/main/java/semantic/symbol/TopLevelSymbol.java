@@ -1,6 +1,7 @@
 package semantic.symbol;
 
 import lexical.Token;
+import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
@@ -34,5 +35,23 @@ public interface TopLevelSymbol extends Symbol {
      * @return a {@link Map} of all the {@link MethodSymbol} inherit by a sub-class of this symbol
      */
     Map<String, MethodSymbol> inheritMethods();
+
+    /**
+     * Verifies that the symbol declaration is valid. This method should be execute once the {@link SymbolTable}
+     * is complete, otherwise it may not work correctly.
+     *
+     * @throws SemanticException if a semantic error is detected during consolidation
+     * @throws IllegalStateException if the symbol or the {@link SymbolTable} is not ready to make this validation
+     */
+    void checkDeclaration() throws SemanticException, IllegalStateException;
+
+    /**
+     * Makes the symbol fulfill its information related to other symbols, like inherit methods, generics
+     * instantiation, etc.
+     *
+     * @throws SemanticException if a semantic error is detected during consolidation
+     * @throws IllegalStateException if the symbol or the {@link SymbolTable} is not ready to make this consolidation
+     */
+    void consolidate() throws SemanticException, IllegalStateException;
 
 }

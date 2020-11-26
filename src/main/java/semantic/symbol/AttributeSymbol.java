@@ -14,8 +14,6 @@ public class AttributeSymbol implements InstantiableSymbol<AttributeSymbol> {
     private final Type type;
     private final NameAttribute name;
 
-    private TopLevelSymbol topSymbol;
-
     public AttributeSymbol(Type type, NameAttribute name) {
         this.type = type;
         this.name = name;
@@ -66,25 +64,19 @@ public class AttributeSymbol implements InstantiableSymbol<AttributeSymbol> {
     }
 
     @Override
-    public void checkDeclaration() throws SemanticException, IllegalStateException {
-        if (topSymbol == null) throw new IllegalStateException("El atributo no esta contenido dentro de ninguna clase");
-        type.validate(SymbolTable.getInstance(), topSymbol);
+    public void checkDeclaration(TopLevelSymbol container) throws SemanticException, IllegalStateException {
+        type.validate(SymbolTable.getInstance(), container);
     }
 
     @Override
-    public void consolidate() throws SemanticException, IllegalStateException {
+    public void consolidate(TopLevelSymbol container) throws SemanticException, IllegalStateException {
 
     }
 
     @Override
-    public void setTopLevelSymbol(TopLevelSymbol symbol) {
-        topSymbol = symbol;
-    }
-
-    @Override
-    public AttributeSymbol instantiate(String newType) {
+    public AttributeSymbol instantiate(TopLevelSymbol container, String newType) {
         if (type instanceof ReferenceType){
-            return new AttributeSymbol(isPublic, isStatic, ((ReferenceType) type).instantiate(topSymbol, newType), name);
+            return new AttributeSymbol(isPublic, isStatic, ((ReferenceType) type).instantiate(container, newType), name);
         }
         return this;
     }
