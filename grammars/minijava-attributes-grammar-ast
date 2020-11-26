@@ -1,0 +1,132 @@
+<Inicial> ::= <ListaClasesInterfaces>
+<ListaClasesInterfaces> ::= <Clase> <OtrasClasesInterfaces>
+<ListaClasesInterfaces> ::= <Interfaz> <OtrasClasesInterfaces>
+<OtrasClasesInterfaces> ::= <ListaClasesInterfaces> | EOF
+<Clase> ::= class idClase  <GenExplicitaOVacio>  <HerenciaClase> { <ListaMiembrosClase> }
+<HerenciaClase> ::= <ExtendsOVacio> <ImplementsOVacio>
+<ExtendsOVacio> ::= extends idClase  <GenExplicitaOVacio>  | EOF
+<ImplementsOVacio> ::= implements idClase  <GenExplicitaOVacio>  <OtrosImplements> | EOF
+<OtrosImplements> ::= , idClase  <GenExplicitaOVacio>  <OtrosImplements> | EOF
+<ListaMiembrosClase> ::= <MiembroClase> <ListaMiembrosClase> | EOF
+<Interfaz> ::= interface idClase  <GenExplicitaOVacio>  <HerenciaInterfaz> { <ListaMiembrosInterfaz> }
+<HerenciaInterfaz> ::= extends idClase  <GenExplicitaOVacio>  <OtrosHerenciaInterfaz> | EOF
+<OtrosHerenciaInterfaz> ::= , idClase  <GenExplicitaOVacio>  <OtrosHerenciaInterfaz> | EOF
+<ListaMiembrosInterfaz> ::= <MetodoInterfaz> <ListaMiembrosInterfaz> | EOF
+<MetodoInterfaz> ::= <FormaMetodo>  <TipoMetodo>  idMetVar  <ArgsFormales>  ; 
+<FormaMetodo> ::= static  | dynamic 
+<TipoMetodo> ::= <Tipo> | void
+
+
+
+<MiembroClase> ::= <Visibilidad>  <StaticOVacio>   <Atributo>
+<MiembroClase> ::= dynamic  <Metodo>
+<MiembroClase> ::= static  <AtributoOMetodo>
+<MiembroClase> ::=  idClase  <AtributoOConstructor>
+<MiembroClase> ::=  <TipoPrimitivo>   <ListaDecAtrs> ;
+<Visibilidad> ::= public  | private 
+<StaticOVacio> ::= static  | EOF 
+<AtributoOMetodo> ::= <Tipo>  idMetVar  <RestoDecAtrsORestoMetodo>
+<AtributoOMetodo> ::= void idMetVar  <RestoMetodo>
+<RestoDecAtrsORestoMetodo> ::=   <RestoDecAtrs> |  <RestoMetodo>
+<RestoDecAtrs> ::= <AsignacionOVacio>  <OtrosDecAtrs> ;
+<RestoMetodo> ::=  <ArgsFormales>  <Bloque>
+<Atributo> ::= <Tipo>   <ListaDecAtrs> ;
+<Metodo> ::=  <TipoMetodo>  idMetVar  <ArgsFormales>  <Bloque>
+<AtributoOConstructor> ::=  <GenExplicitaOVacio>   <ListaDecAtrs> ;
+<AtributoOConstructor> ::= <Constructor>
+<Constructor> ::= <ArgsFormales>  <Bloque>
+<Tipo> ::= <TipoPrimitivo>  | <TipoClaseGen> 
+<TipoPrimitivo> ::= boolean | char | int | String
+<TipoClaseGen> ::= idClase <GenExplicitaOVacio>
+
+
+<GenExplicitaOVacio> ::= < idClase > | EOF
+<GenericidadOVacio> ::= < <RestoGenericidad> | EOF
+<RestoGenericidad> ::= <GenRestoExplicito> | <GenRestoImplicito>
+<GenRestoExplicito> ::= idClase >
+<GenRestoImplicito> ::= >
+
+
+
+<ListaDecAtrs> ::=  idMetVar  <AsignacionOVacio>  <OtrosDecAtrs>
+<OtrosDecAtrs> ::= ,  <ListaDecAtrs> | EOF
+<ArgsFormales> ::= ( <ListaArgsFormalesOVacio> )
+<ListaArgsFormalesOVacio> ::= <ListaArgsFormales> | EOF
+<ListaArgsFormales> ::= <ArgFormal> <OtrosArgsFormales>
+<OtrosArgsFormales> ::= , <ListaArgsFormales> | EOF
+<ArgFormal> ::= <Tipo>  idMetVar 
+<Bloque> ::= { <ListaSentencias> } $Retorna un BlockNode$
+<ListaSentencias> ::= <Sentencia> <ListaSentencias> | EOF $Retorna una lista de SentenceNode$
+<Sentencia> ::= ; $Retorna un EmptySentenceNode$
+<Sentencia> ::= <Acceso> <AsignacionOVacio> ; $Retornar CallNode o AssignmentNode$
+<Sentencia> ::= <TipoPrimitivo> <ListaDecVars> ; $Retorna lista de DeclarationSentenceNode$
+<Sentencia> ::= idClase <AccesoEstaticoOVarClase> $Retorna DeclarationNode o CallNode o AssignmentNode (en realidad retorna lo que retorne <AccesoEstaticoOVarClase>)$
+<Sentencia> ::= if ( <Expresion> ) <Sentencia> <ElseOVacio> $Retorna IfSentenceNode o IfElseSentenceNode$
+<ElseOVacio> ::= else <Sentencia> | EOF $Retorna ElseNode$
+<Sentencia> ::= while ( <Expresion> ) <Sentencia> $Retorna WhileSentenceNode$
+<Sentencia> ::= <Bloque> $Retorna BlockSentenceNode$
+<Sentencia> ::= return <ExpresionOVacio> ; $Retorna ReturnSentenceNode$
+<AccesoEstaticoOVarClase> ::= . <AccesoVarOMetodo> <Encadenado> <AsignacionOVacio> ; €Recibe idClase€ $Retorna CallNode o AssignmentNode$
+<AccesoEstaticoOVarClase> ::= <GenExplicitaOVacio> <ListaDecVars> ; €Recibe idClase€ $Retorna lista de DeclarationSentenceNode$
+<AsignacionOVacio> ::= <TipoDeAsignacion> <Expresion> | EOF €Recibe AccessNode€ $Retorna Optional<AssignmentNode>$
+<TipoDeAsignacion> ::= = | += | -= $Retorna AssignmentType$
+<ListaDecVars> ::= idMetVar <AsignacionOVacio> <OtrosDecVars> €Recibe Type€ $Retorna lista de DeclarationSentenceNode$
+<OtrosDecVars> ::= , <ListaDecVars> | EOF €Recibe Type€ $Retorna lista de DeclarationSentenceNode$
+<ExpresionOVacio> ::= <Expresion> | EOF $Retorna Optional<ExpressionNode>$
+<Expresion> ::= <ExpNivel1>
+
+<Literal> ::= null | true | false | intLiteral | charLiteral | stringLiteral $Retorna LiteralNode$
+<Acceso> ::= <Primario> <Encadenado> $Retorna AccessNode$
+<Primario> ::= <AccesoThis> $Retorna ThisAccessNode$
+<Primario> ::= <AccesoVarOMetodo> $Retorna $ //TODO
+<Primario> ::= <AccesoEstatico> $Retorna StaticMethodAccessNode o StaticVarAccessNode$
+<Primario> ::= <AccesoConstructor> $Retorna ConstructorAccessNode$
+<Primario> ::= ( <Expresion> ) // TODO $Retorna ExpressionAccessNode$
+<AccesoThis> ::= this $Retorna ThisAccessNode$
+<AccesoVar> ::= idMetVar $Retorna VarAccessNode$
+<AccesoEstatico> ::= static idClase . <AccesoVarOMetodoEstatico> $Retorna StaticMethodAccessNode o StaticVarAccessNode$
+<AccesoConstructor> ::= new idClase <GenericidadOVacio> <ArgsActuales> $Retorna ConstructorAccessNode$
+<AccesoMetodo> ::= idMetVar <ArgsActuales>
+// TODO Estos dos estaban en uno solo, debemos cambiar el analizador sintactico
+<AccesoVarOMetodoEstatico> ::= idMetVar <ArgsActualesOVacio> $Retorna StaticMethodAccessNode o StaticVarAccesNode$
+<AccesoVarOMetodo> ::= idMetVar <ArgsActualesOVacio> $Retorna MethodAccessNode o VarAccessNode$
+<ArgsActualesOVacio> ::= <ArgsActuales> | EOF
+<ArgsActuales> ::= ( <ListaExpsOVacio> )
+<ListaExpsOVacio> ::= <ListaExps> | EOF $Retorna lista de Expresiones (puede ser vacia)$
+<ListaExps> ::= <Expresion> <OtrosExps> $Retorna lista de Expresiones$
+<OtrosExps> ::= , <ListaExps> | EOF $Retorna lista de Expresiones (puede ser vacia)$
+<Encadenado> ::= <VarOMetodoEncadenado> <Encadenado> | EOF $Retorna ChainNode (MethodChainNode o VarChainNode)$
+<VarOMetodoEncadenado> ::= . idMetVar <ArgsActualesOVacio> $Retorna MethodChainNode o VarChainNode$
+
+// TODO Ver en implementación, la posibilidad de que los "restos" reciban el lado izquierda, y lo retornen junto
+// con una op. binaria, o lo retornen tal cual se lo pasamos, pero tomamos la decision ahi y no en el nivel superior.
+
+<ExpNivel1> ::= <ExpNivel2> <ExpNivel1Resto> $Retorna ExpressionNode$
+<ExpNivel1Resto> ::= <OpNivel1> <ExpNivel2> <ExpNivel1Resto> | EOF $Retorna Optional<BinaryExpressionNode>$
+<OpNivel1> ::= == | !=
+
+<ExpNivel2> ::= <ExpNivel3> <ExpNivel2Resto> $Retorna ExpressionNode$
+<ExpNivel2Resto> ::= <OpNivel2> <ExpNivel3> <ExpNivel2Resto> | EOF $Retorna Optional<BinaryExpressionNode>$
+<OpNivel2> ::= &&
+
+<ExpNivel3> ::= <ExpNivel4> <ExpNivel3Resto> $Retorna ExpressionNode$
+<ExpNivel3Resto> ::= <OpNivel3> <ExpNivel4> <ExpNivel3Resto> | EOF $Retorna Optional<BinaryExpressionNode>$
+<OpNivel3> ::= ||
+
+<ExpNivel4> ::= <ExpNivel5> <ExpNivel4Resto> $Retorna ExpressionNode$
+<ExpNivel4Resto> ::= <OpNivel4> <ExpNivel5> <ExpNivel4Resto> | EOF $Retorna Optional<BinaryExpressionNode>$
+<OpNivel4> ::= < | > | <= | >=
+
+<ExpNivel5> ::= <ExpNivel6> <ExpNivel5Resto> $Retorna ExpressionNode$
+<ExpNivel5Resto> ::= <OpNivel5> <ExpNivel6> <ExpNivel5Resto> | EOF $Retorna Optional<BinaryExpressionNode>$
+<OpNivel5> ::= + | -
+
+<ExpNivel6> ::= <ExpresionUnaria> <ExpNivel6Resto> $Retorna ExpressionNode (UnaryExpressionNode o BinaryExpressionNode)$
+<ExpNivel6Resto> ::= <OpNivel6> <ExpresionUnaria> <ExpNivel6Resto> | EOF $Retorna Optional<BinaryExpressionNode>$
+<OpNivel6> ::= * | / | % //TODO $Retorna BinaryOperator$
+
+<ExpresionUnaria> ::= <OperadorUnario> <Operando> $Retorna UnaryExpressionNode$
+<ExpresionUnaria> ::= <Operando> $Retorna UnaryExpressionNode$  // TODO Operando va a ser una interfaz implementada por los literales y Acceso
+<OperadorUnario> ::= + | - | ! $Retorna UnaryOperator$
+<Operando> ::= <Literal> $Retorna LiteralNode$
+<Operando> ::= <Acceso> $Retorna AccessNode$
