@@ -1,12 +1,16 @@
 I2
 // Should detect extending from an generic interface without expliciting generic type
-interface Persona<T> extends I1<Life>, I2{
+interface Persona<T> extends I1<Base>, I2{
 
-    static Life<T> getLife(I1<Persona> a);
+    static Life<T> getLife(I1<Base> a);
 
-    dynamic Life<I1> getOtherLife(I2<T> b);
+    dynamic Life<Base> getOtherLife(I2<T> b);
 
     static void doSomething(T param);
+
+}
+
+class Base {
 
 }
 
