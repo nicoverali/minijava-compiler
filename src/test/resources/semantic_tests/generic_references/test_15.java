@@ -5,23 +5,27 @@ class Persona<T> extends Life<T> implements I1<Life>, I2<T>{
     T a = 4;
     Life<T> b;
     I1<T> c;
-    I2<Life> d;
+    I2<Base> d;
 
     Persona(Life<T> a){
 
     }
 
-    static Life<Animal> getLife(I1<Persona> a){
+    static Life<Animal> getLife(I1<Base> a){
 
     }
 
-    dynamic Life<I1> getOtherLife(I2<T> b){
+    dynamic Life<Base> getOtherLife(I2<T> b){
 
     }
 
     static void doSomething(T param){
 
     }
+
+}
+
+class Base {
 
 }
 

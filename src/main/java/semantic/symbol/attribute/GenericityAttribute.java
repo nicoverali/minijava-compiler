@@ -5,6 +5,8 @@ import semantic.SemanticException;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.TopLevelSymbol;
 
+import java.util.Optional;
+
 /**
  * This attribute determines the genericity of a Symbol
  */
@@ -50,7 +52,11 @@ public class GenericityAttribute implements SymbolAttribute<String> {
     }
 
     private boolean isATopLevelSymbol(SymbolTable st){
-        return st.getTopLevelSymbol(this.name).isPresent();
+        Optional<TopLevelSymbol> symbol = st.getTopLevelSymbol(this.name);
+        if (symbol.isPresent() && symbol.get().getGeneric().isPresent()){
+            throw new SemanticException("Un tipo generico no se puede instanciar con un simbolo generico. Genericidad recursiva", this);
+        }
+        return symbol.isPresent();
     }
 
     private boolean isGenericTypeOfContainer(TopLevelSymbol container){

@@ -5,9 +5,9 @@ class Persona<T> extends Life<I2> implements I1<Life>, I2<Persona>{
     T a = 4;
     Life<T> b;
     I1<T> c;
-    I2<Life> d;
+    I2<Base> d;
 
-    Persona(Life<I2> a){
+    Persona(Life<Base> a){
 
     }
 
@@ -15,13 +15,17 @@ class Persona<T> extends Life<I2> implements I1<Life>, I2<Persona>{
 
     }
 
-    dynamic Life<I1> getOtherLife(I2<T> b){
+    dynamic Life<Base> getOtherLife(I2<T> b){
 
     }
 
     static void doSomething(T param){
 
     }
+
+}
+
+class Base {
 
 }
 
