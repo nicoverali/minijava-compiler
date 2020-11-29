@@ -15,6 +15,8 @@ public class GenericityAttribute implements SymbolAttribute<String> {
     private Token token;
     private String name;
 
+    private boolean hasBeenValidated = false;
+
     public GenericityAttribute(Token token){
         this.token = token;
         name = token.getLexeme().toString();
@@ -39,6 +41,15 @@ public class GenericityAttribute implements SymbolAttribute<String> {
     }
 
     /**
+     * Checks whether this genericity attribute references a generic type of a {@link TopLevelSymbol} or not
+     * @return true if this attribute is a reference to a generic type of a {@link TopLevelSymbol}, false otherwise
+     */
+    public boolean isGeneric(TopLevelSymbol container){
+        if (!hasBeenValidated) throw new IllegalStateException("This attribute must be validated before checking for genericity");
+        return container.getGeneric().map(GenericityAttribute::getValue).equals(Optional.of(name));
+    }
+
+    /**
      * Verifies that this generic attribute is valid.
      *
      * @throws SemanticException if a semantic error is detected
@@ -49,6 +60,7 @@ public class GenericityAttribute implements SymbolAttribute<String> {
         if (!isValid){
             throw new SemanticException("No es un tipo generico valido", this.token);
         }
+        hasBeenValidated = true;
     }
 
     private boolean isATopLevelSymbol(SymbolTable st){

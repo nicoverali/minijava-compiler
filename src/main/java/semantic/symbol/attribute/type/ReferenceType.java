@@ -15,6 +15,7 @@ import java.util.Optional;
 public class ReferenceType extends Type{
 
     private GenericityAttribute generic;
+    private boolean hasBeenValidated = false;
 
     public ReferenceType(String name, String generic){
         super(null, name);
@@ -56,6 +57,18 @@ public class ReferenceType extends Type{
     }
 
     /**
+     * Checks whether this reference type is generic, either because itself its a generic reference or because
+     * a generic type is inside the genericity attribute of this reference
+     *
+     * @return true if this type has un-instantiated generic type in it, false otherwise
+     */
+    public boolean isGeneric(TopLevelSymbol container) {
+        if (!hasBeenValidated) throw new IllegalStateException("The reference type must be validated before checking generics");
+        return container.getGeneric().map(GenericityAttribute::getValue).equals(Optional.of(name))
+                || (hasGeneric() && generic.isGeneric(container));
+    }
+
+    /**
      * @see #hasGeneric() 
      * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this reference type,
      * which determines the genericity of it
@@ -91,6 +104,7 @@ public class ReferenceType extends Type{
         if (!referenceExists){
             throw new SemanticException("El simbolo al que se hace referencia no pudo ser encontrado.", this.token);
         }
+        hasBeenValidated = true;
     }
 
     private boolean checkInSymbolTable(SymbolTable st, TopLevelSymbol container){
@@ -123,7 +137,6 @@ public class ReferenceType extends Type{
         if (isRefToContainerGen && generic != null){
             throw new SemanticException("El tipo "+name+" no es parametrizado", this);
         }
-
         return isRefToContainerGen;
     }
 
