@@ -44,11 +44,13 @@ public class IsPublicAttribute implements SymbolAttribute<Boolean> {
     }
 
     /**
-     * @return if the given object is a {@link IsPublicAttribute} and has the same value as this one
+     * @return if the given object is a {@link IsPublicAttribute} and has the same value as this one or if it is
+     * a {@link Boolean} value and matches this one
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof IsPublicAttribute && equals((IsPublicAttribute) obj);
+        return (obj instanceof IsPublicAttribute && equals((IsPublicAttribute) obj))
+                || (obj instanceof Boolean && obj.equals(this.isPublic));
     }
 
     public boolean equals(IsPublicAttribute attribute){

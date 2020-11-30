@@ -114,16 +114,45 @@ public class PredefinedClass implements ClassSymbol {
         return Collections.unmodifiableMap(resultMap);
     }
 
-    /**
-     * Returns a {@link PredefinedMethod} which belongs to this predefined class and has the
-     * same name as the one given as argument.
-     *
-     * @param name the name of the returned method
-     * @return an {@link Optional} wrapping the matched {@link PredefinedMethod}
-     */
-    public Optional<PredefinedMethod> getMethod(String name){
+    @Override
+    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, NameAttribute name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<AttributeSymbol> getAttribute(NameAttribute name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<AttributeSymbol> getAttribute(String name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(NameAttribute name) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(String name){
         return methods.stream()
                 .filter(method -> name.equals(method.getName()))
+                .map(method -> (MethodSymbol) method)
+                .findFirst();
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(boolean isStatic, NameAttribute name) {
+        return methods.stream()
+                .filter(method -> name.getValue().equals(method.getName()))
+                .filter(method -> method.isStatic().equals(isStatic))
+                .map(method -> (MethodSymbol) method)
                 .findFirst();
     }
 

@@ -122,6 +122,29 @@ public class InterfaceSymbol implements TopLevelSymbol {
     }
 
     @Override
+    public Optional<MethodSymbol> getMethod(NameAttribute name) {
+        return getMethod(name.getValue());
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(String name) {
+        MethodSymbol method = methods.get(name);
+        if (methods != null){
+            return Optional.of(method);
+        }
+        return Optional.ofNullable(superMethods.get(name));
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(boolean isStatic, NameAttribute name) {
+        MethodSymbol method = methods.get(name.getValue());
+        if (methods != null && method.isStatic().equals(isStatic)){
+            return Optional.of(method);
+        }
+        return Optional.ofNullable(superMethods.get(name.getValue()));
+    }
+
+    @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {
         methods.values().forEach(method -> method.checkDeclaration(this));
         checkExtensions();

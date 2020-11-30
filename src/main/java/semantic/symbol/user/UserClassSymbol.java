@@ -192,6 +192,57 @@ public class UserClassSymbol implements ClassSymbol {
         return Collections.unmodifiableMap(resultMap);
     }
 
+    @Override
+    public Optional<AttributeSymbol> getAttribute(NameAttribute name) {
+        return getAttribute(name.getValue());
+    }
+
+    @Override
+    public Optional<AttributeSymbol> getAttribute(String name) {
+        AttributeSymbol attr = attributes.get(name);
+        if (attr != null){
+            return Optional.of(attr);
+        }
+        return Optional.ofNullable(inheritedAttributes.get(name));
+    }
+
+    @Override
+    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, NameAttribute name) {
+        return getAttribute(isPublic, isStatic, name.getValue());
+    }
+
+    @Override
+    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, String name) {
+        AttributeSymbol attr = attributes.get(name);
+        if (attr != null && attr.isPublic().equals(isPublic) && attr.isStatic().equals(isStatic)){
+            return Optional.of(attr);
+        }
+        return Optional.ofNullable(inheritedAttributes.get(name));
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(NameAttribute name) {
+        return getMethod(name.getValue());
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(String name) {
+        MethodSymbol method = methods.get(name);
+        if (method != null){
+            return Optional.of(method);
+        }
+        return Optional.ofNullable(inheritedMethods.get(name));
+    }
+
+    @Override
+    public Optional<MethodSymbol> getMethod(boolean isStatic, NameAttribute name) {
+        MethodSymbol method = methods.get(name.getValue());
+        if (method != null && method.isStatic().equals(isStatic)){
+            return Optional.of(method);
+        }
+        return Optional.ofNullable(inheritedMethods.get(name.getValue()));
+    }
+
 
     @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {

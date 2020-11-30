@@ -49,11 +49,13 @@ public class IsStaticAttribute implements SymbolAttribute<Boolean>{
     }
 
     /**
-     * @return true if the given object is a {@link IsStaticAttribute} and has the same value as this one
+     * @return true if the given object is a {@link IsStaticAttribute} and has the same value as this one or if it is
+     * a {@link Boolean} value and matches this one
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof IsStaticAttribute && equals((IsStaticAttribute) obj);
+        return (obj instanceof IsStaticAttribute && equals((IsStaticAttribute) obj))
+                || (obj instanceof Boolean && obj.equals(this.isStatic));
     }
 
     /**

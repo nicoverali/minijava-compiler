@@ -37,6 +37,32 @@ public interface TopLevelSymbol extends Symbol {
     Map<String, MethodSymbol> inheritMethods();
 
     /**
+     * Searches for the given method within this symbol. The method may be owned by the symbol, or inherited
+     *
+     * @param name the name of the method to look for
+     * @return an {@link Optional} wrapping the {@link MethodSymbol}
+     */
+    Optional<MethodSymbol> getMethod(NameAttribute name);
+
+    /**
+     * Searches for the given method within this symbol. The method may be owned by the symbol, or inherited
+     *
+     * @param name the name of the method to look for
+     * @return an {@link Optional} wrapping the {@link MethodSymbol}
+     */
+    Optional<MethodSymbol> getMethod(String name);
+
+    /**
+     * Searches for a method within this symbol that matches the <code>isStatic</code> condition. The method may
+     * be owned by this symbol, or inherited
+     *
+     * @param isStatic true if the method must be static, false if not
+     * @param name the name of the {@link MethodSymbol}
+     * @return an {@link Optional} wrapping the {@link MethodSymbol}
+     */
+    Optional<MethodSymbol> getMethod(boolean isStatic, NameAttribute name);
+
+    /**
      * Verifies that the symbol declaration is valid. This method should be execute once the {@link SymbolTable}
      * is complete, otherwise it may not work correctly.
      *
