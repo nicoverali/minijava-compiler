@@ -1,6 +1,7 @@
 package semantic.ast.access;
 
 import semantic.ast.expression.OperandNode;
+import semantic.symbol.TopLevelSymbol;
 
 public interface AccessNode extends OperandNode {
 
@@ -12,6 +13,16 @@ public interface AccessNode extends OperandNode {
      *
      * @return the last {@link AccessNode} in the chain of accesses of this node
      */
-    AccessNode getLastAccess();
+    AccessNode getChainEnd();
+
+    /**
+     * Checks whether this particular access has another access chained to the right.
+     *
+     * @return true if this access has a chained access, false otherwise
+     */
+    boolean hasChainedAccess();
+
+    @Override
+    AccessNode instantiate(TopLevelSymbol container, String newType);
 
 }

@@ -6,7 +6,7 @@ import semantic.symbol.attribute.type.Type;
 
 import java.util.List;
 
-public interface MethodSymbol extends InstantiableSymbol<MethodSymbol> {
+public interface MethodSymbol extends InstantiableSymbol<MethodSymbol>, ParametrizedSymbol {
     /**
      * @return the {@link IsStaticAttribute} of this method which determines if the methodn is static or not
      */
