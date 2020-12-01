@@ -1,8 +1,9 @@
-package semantic.ast.access;
+package semantic.ast.access.chain;
 
 import lexical.Token;
 import semantic.SemanticException;
 import semantic.ast.Scope;
+import semantic.ast.access.BaseAccessNode;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 

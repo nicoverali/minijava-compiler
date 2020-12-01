@@ -11,6 +11,15 @@ import java.util.Optional;
 public interface ClassSymbol extends TopLevelSymbol {
 
     /**
+     * Returns the {@link ConstructorSymbol} of this class. If the class does not have a constructor, then
+     * this method will return an empty {@link Optional} and should be assume that a default empty constructor
+     * is assigned to this class
+     *
+     * @return an {@link Optional} wrapping the {@link ConstructorSymbol} of this class
+     */
+    Optional<ConstructorSymbol> getConstructor();
+
+    /**
      * @return a collection of all the {@link AttributeSymbol} of this class
      */
     Collection<AttributeSymbol> getAttributes();

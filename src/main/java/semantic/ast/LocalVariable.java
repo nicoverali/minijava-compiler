@@ -34,14 +34,14 @@ public class LocalVariable implements ASTNode, Variable {
 
     @Override
     public LocalVariable instantiate(TopLevelSymbol container, String newType){
-        if (type instanceof ReferenceType && ((ReferenceType) type).hasGeneric()){
+        if (type instanceof ReferenceType && ((ReferenceType) type).isGeneric(container)){
             return new LocalVariable(((ReferenceType) type).instantiate(container, newType), name);
         }
         return this;
     }
 
     @Override
-    public boolean hasGenerics() {
+    public boolean hasGenerics(TopLevelSymbol container) {
         return type instanceof ReferenceType && ((ReferenceType) type).hasGeneric();
     }
 

@@ -147,11 +147,9 @@ public class UserClassSymbol implements ClassSymbol {
         return generic != null;
     }
 
-    /**
-     * @return the {@link ConstructorSymbol} of this class
-     */
-    public ConstructorSymbol getConstructor() {
-        return constructor;
+    @Override
+    public Optional<ConstructorSymbol> getConstructor() {
+        return Optional.ofNullable(constructor);
     }
 
     @Override

@@ -3,6 +3,7 @@ package semantic.ast.access;
 import semantic.SemanticException;
 import semantic.Variable;
 import semantic.ast.Scope;
+import semantic.ast.access.chain.ChainNode;
 import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
@@ -24,7 +25,7 @@ public class VarAccessNode extends BaseAccessNode {
 
     @Override
     public AccessNode instantiate(TopLevelSymbol container, String newType) {
-        if (hasGenerics()){
+        if (hasGenerics(container)){
             return new VarAccessNode(name, chain.instantiate(container, newType));
         }
         return this;

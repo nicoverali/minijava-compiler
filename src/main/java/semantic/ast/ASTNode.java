@@ -10,7 +10,7 @@ public interface ASTNode {
      * Every implementation of {@link ASTNode} may have methods that need this specific method to run before
      * calling them.
      *
-     * @param scope a list of {@link LocalVariable} that conform the local scope of this sentence
+     * @param scope the current scope
      */
     void validate(Scope scope);
 
@@ -37,8 +37,9 @@ public interface ASTNode {
      * be able to detect its generic types
      *
      * @see #validate(Scope)
+     * @param container the {@link TopLevelSymbol} that containes this AST
      * @return true if this node or any of its child have at least one generic type, false otherwise
      */
-    boolean hasGenerics();
+    boolean hasGenerics(TopLevelSymbol container);
 
 }

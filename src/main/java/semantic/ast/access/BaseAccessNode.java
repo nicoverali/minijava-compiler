@@ -1,5 +1,8 @@
 package semantic.ast.access;
 
+import semantic.ast.access.chain.ChainNode;
+import semantic.symbol.TopLevelSymbol;
+
 public abstract class BaseAccessNode implements AccessNode {
 
     protected ChainNode chain;
@@ -25,7 +28,7 @@ public abstract class BaseAccessNode implements AccessNode {
     }
 
     @Override
-    public boolean hasGenerics() {
-        return hasChainedAccess() && chain.hasGenerics();
+    public boolean hasGenerics(TopLevelSymbol container) {
+        return hasChainedAccess() && chain.hasGenerics(container);
     }
 }

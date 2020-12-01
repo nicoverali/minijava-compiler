@@ -1,4 +1,4 @@
-package semantic.ast.access;
+package semantic.ast.access.chain;
 
 import lexical.Token;
 import semantic.SemanticException;
@@ -47,7 +47,7 @@ public class ChainedVarNode extends BaseChainNode{
 
     @Override
     public ChainNode instantiate(TopLevelSymbol container, String newType) {
-        if (hasGenerics()){
+        if (hasGenerics(container)){
             return new ChainedVarNode(chain.instantiate(container, newType), dotToken, name);
         }
         return this;

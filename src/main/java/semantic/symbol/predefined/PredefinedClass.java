@@ -2,10 +2,7 @@ package semantic.symbol.predefined;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.symbol.AttributeSymbol;
-import semantic.symbol.ClassSymbol;
-import semantic.symbol.MethodSymbol;
-import semantic.symbol.SymbolTable;
+import semantic.symbol.*;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
@@ -59,6 +56,11 @@ public class PredefinedClass implements ClassSymbol {
     @Override
     public Token getNameToken() {
         return name.getToken();
+    }
+
+    @Override
+    public Optional<ConstructorSymbol> getConstructor() {
+        return Optional.empty();
     }
 
     @Override

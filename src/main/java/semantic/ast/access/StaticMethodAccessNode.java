@@ -2,6 +2,7 @@ package semantic.ast.access;
 
 import semantic.SemanticException;
 import semantic.ast.Scope;
+import semantic.ast.access.chain.ChainNode;
 import semantic.ast.expression.ExpressionNode;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.SymbolTable;
@@ -36,10 +37,10 @@ public class StaticMethodAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public boolean hasGenerics() {
-        Optional<Boolean> expGen = params.stream().map(ExpressionNode::hasGenerics)
+    public boolean hasGenerics(TopLevelSymbol container) {
+        Optional<Boolean> expGen = params.stream().map(expressionNode -> expressionNode.hasGenerics(container))
                 .filter(Boolean::booleanValue).findFirst();
-        return super.hasGenerics() || expGen.isPresent();
+        return super.hasGenerics(container) || expGen.isPresent();
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent") // We'll assume that this has already been validated
@@ -69,7 +70,7 @@ public class StaticMethodAccessNode extends BaseAccessNode {
 
     @Override
     public AccessNode instantiate(TopLevelSymbol container, String newType) {
-        if (hasGenerics()){
+        if (hasGenerics(container)){
             List<ExpressionNode> params = this.params.stream().map(exp -> exp.instantiate(container, newType)).collect(Collectors.toList());
             if (hasChainedAccess()){
                 return new StaticMethodAccessNode(chain.instantiate(container, newType), containerRef, name, params);

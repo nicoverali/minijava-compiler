@@ -1,5 +1,6 @@
-package semantic.ast.access;
+package semantic.ast.access.chain;
 
+import semantic.ast.access.AccessNode;
 import semantic.symbol.TopLevelSymbol;
 
 public interface ChainNode extends AccessNode {
