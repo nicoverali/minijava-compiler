@@ -29,7 +29,7 @@ public class LocalVariable implements ASTNode, Variable {
 
     @Override
     public void validate(Scope scope) {
-        type.validate(SymbolTable.getInstance(), scope.getTopContainer());
+        type.validate(SymbolTable.getInstance(), scope.getClassContainer());
     }
 
     @Override

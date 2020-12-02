@@ -24,6 +24,11 @@ public class VarAccessNode extends BaseAccessNode {
     }
 
     @Override
+    public NameAttribute getName() {
+        return name;
+    }
+
+    @Override
     public AccessNode instantiate(TopLevelSymbol container, String newType) {
         if (hasGenerics(container)){
             return new VarAccessNode(name, chain.instantiate(container, newType));

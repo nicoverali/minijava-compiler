@@ -1,6 +1,7 @@
 package semantic.ast.sentence.visitor;
 
 import semantic.ast.sentence.*;
+import semantic.ast.sentence.assignment.AssignmentSentenceNode;
 
 public interface SentenceVisitor {
 

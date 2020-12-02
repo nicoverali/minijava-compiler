@@ -31,7 +31,9 @@ public class ChainedVarNode extends BaseChainNode{
     @Override
     protected Type getTypeFrom(ReferenceType leftChainType, Scope scope) {
         ClassSymbol symbol = ST.getClass(leftChainType).get();
-        return symbol.getAttribute(true, false, name).get().getType();
+        return symbol.getAttributes()
+                .find(true, false, name).get()
+                .getType();
     }
 
     @Override
@@ -40,9 +42,14 @@ public class ChainedVarNode extends BaseChainNode{
         if (!symbol.isPresent()) {
             throw new SemanticException("Una interfaz no tiene atributos", name);
         }
-        if (!symbol.get().getAttribute(true, false, name).isPresent()){
+        if (!symbol.get().getAttributes().find(true, false, name).isPresent()){
             throw new SemanticException("No se pudo encontrar el atributo", name);
         }
+    }
+
+    @Override
+    public NameAttribute getName() {
+        return name;
     }
 
     @Override

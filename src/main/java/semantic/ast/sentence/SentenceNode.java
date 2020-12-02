@@ -2,8 +2,7 @@ package semantic.ast.sentence;
 
 import semantic.ast.ASTNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
-
-import java.util.List;
+import semantic.symbol.TopLevelSymbol;
 
 public interface SentenceNode extends ASTNode {
 
@@ -14,4 +13,6 @@ public interface SentenceNode extends ASTNode {
      */
     void accept(SentenceVisitor visitor);
 
+    @Override
+    SentenceNode instantiate(TopLevelSymbol container, String newType);
 }

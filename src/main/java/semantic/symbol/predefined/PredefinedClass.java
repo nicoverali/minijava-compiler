@@ -17,7 +17,7 @@ import java.util.*;
 public class PredefinedClass implements ClassSymbol {
 
     private final NameAttribute name;
-    private final List<PredefinedMethod> methods = new ArrayList<>();
+    private final Map<String, MethodSymbol> methods = new HashMap<>();
 
     private ReferenceType parent;
 
@@ -31,7 +31,7 @@ public class PredefinedClass implements ClassSymbol {
      * @param method a {@link PredefinedMethod} which will be added to this predefined class
      */
     public void add(PredefinedMethod method){
-        methods.add(method);
+        methods.put(method.getName(), method);
     }
 
     /**
@@ -64,8 +64,8 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
-    public Collection<AttributeSymbol> getAttributes() {
-        return Collections.emptyList();
+    public AttributeContainer getAttributes() {
+        return new AttributeContainer(Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override
@@ -82,8 +82,8 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
-    public Collection<MethodSymbol> getMethods(){
-        return Collections.unmodifiableList(methods);
+    public MethodContainer getMethods(){
+        return new MethodContainer(methods, Collections.emptyMap());
     }
 
     @Override
@@ -110,53 +110,12 @@ public class PredefinedClass implements ClassSymbol {
             .orElseThrow(() -> new IllegalStateException("The predefined class has a parent that does not exists"));
         }
         resultMap = parentSym != null ? new HashMap<>(parentSym.inheritMethods()) : new HashMap<>();
-        for (PredefinedMethod method : methods) {
+        for (MethodSymbol method : methods.values()) {
             resultMap.put(method.getName(), method);
         }
         return Collections.unmodifiableMap(resultMap);
     }
 
-    @Override
-    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, NameAttribute name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<AttributeSymbol> getAttribute(NameAttribute name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<AttributeSymbol> getAttribute(String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(NameAttribute name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(String name){
-        return methods.stream()
-                .filter(method -> name.equals(method.getName()))
-                .map(method -> (MethodSymbol) method)
-                .findFirst();
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(boolean isStatic, NameAttribute name) {
-        return methods.stream()
-                .filter(method -> name.getValue().equals(method.getName()))
-                .filter(method -> method.isStatic().equals(isStatic))
-                .map(method -> (MethodSymbol) method)
-                .findFirst();
-    }
 
     @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {

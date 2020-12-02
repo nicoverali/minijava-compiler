@@ -42,6 +42,11 @@ public class MethodAccessNode extends BaseAccessNode {
     }
 
     @Override
+    public NameAttribute getName() {
+        return name;
+    }
+
+    @Override
     public AccessNode instantiate(TopLevelSymbol container, String newType) {
         if (hasGenerics(container)){
             List<ExpressionNode> params = this.params.stream().map(exp -> exp.instantiate(container, newType)).collect(Collectors.toList());

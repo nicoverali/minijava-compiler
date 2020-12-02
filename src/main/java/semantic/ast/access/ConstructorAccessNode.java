@@ -8,6 +8,7 @@ import semantic.symbol.ClassSymbol;
 import semantic.symbol.ConstructorSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.TopLevelSymbol;
+import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
@@ -51,7 +52,7 @@ public class ConstructorAccessNode extends BaseAccessNode{
 
     @Override
     public void validate(Scope scope) {
-        classRef.validate(ST, scope.getTopContainer());
+        classRef.validate(ST, scope.getClassContainer());
         Optional<ClassSymbol> symbol = ST.getClass(classRef);
         if (!symbol.isPresent()){
             throw new SemanticException("Solo se puede crear un objeto de tipo Clase", classRef);
@@ -67,6 +68,11 @@ public class ConstructorAccessNode extends BaseAccessNode{
             scope.setLeftChainType(classRef);
             chain.validate(scope);
         }
+    }
+
+    @Override
+    public NameAttribute getName() {
+        return NameAttribute.of(classRef.getToken());
     }
 
     @Override

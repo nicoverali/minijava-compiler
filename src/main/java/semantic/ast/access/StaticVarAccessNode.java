@@ -33,7 +33,10 @@ public class StaticVarAccessNode extends BaseAccessNode {
     @SuppressWarnings("OptionalGetWithoutIsPresent") // We'll assume that this has already been validated
     @Override
     public Type getType(Scope scope) {
-        Type thisType = ST.getClass(containerRef).get().getAttribute(true, true, attrName).get().getType();
+        Type thisType = ST.getClass(containerRef).get()
+                .getAttributes().find(true, true, attrName).get()
+                .getType();
+
         if (hasChainedAccess()){
             scope.setLeftChainType(thisType);
             return chain.getType(scope);
@@ -47,9 +50,14 @@ public class StaticVarAccessNode extends BaseAccessNode {
         if (!symbol.isPresent()){
             throw new SemanticException("Una interfaz no tiene atributos", attrName);
         }
-        if(!symbol.get().getAttribute(true, true, attrName).isPresent()){
+        if(!symbol.get().getAttributes().find(true, true, attrName).isPresent()){
             throw new SemanticException("No se pudo encontrar el atributo", attrName);
         }
+    }
+
+    @Override
+    public NameAttribute getName() {
+        return attrName;
     }
 
     @Override

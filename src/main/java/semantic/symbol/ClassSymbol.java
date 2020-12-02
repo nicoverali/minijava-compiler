@@ -20,14 +20,9 @@ public interface ClassSymbol extends TopLevelSymbol {
     Optional<ConstructorSymbol> getConstructor();
 
     /**
-     * @return a collection of all the {@link AttributeSymbol} of this class
+     * @return a {@link AttributeContainer} with all the {@link AttributeSymbol} of this class
      */
-    Collection<AttributeSymbol> getAttributes();
-
-    /**
-     * @return a collection of all the {@link MethodSymbol} of this class
-     */
-    Collection<MethodSymbol> getMethods();
+    AttributeContainer getAttributes();
 
     /**
      * @return an {@link Optional} wrapping a {@link ReferenceType} pointing to the class from which this class extends
@@ -39,50 +34,6 @@ public interface ClassSymbol extends TopLevelSymbol {
      * that are implemented by this class
      */
     Collection<ReferenceType> getInterfaces();
-
-    /**
-     * Searches for the given attribute within this symbol. The attribute may be owned by the symbol, or inherited.
-     * The attribute must be a public attribute, if a private attribute is found, then the it won't be returned.
-     *
-     *
-     * @param isPublic true if the attribute must be public, false if not
-     * @param isStatic true if the attribute must be static, false if not
-     * @param name the name of the attribute to look for
-     * @return an {@link Optional} wrapping the {@link AttributeSymbol}
-     */
-    Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, NameAttribute name);
-
-    /**
-     * Searches for the given attribute within this symbol. The attribute may be owned by the symbol, or inherited.
-     * The attribute must be a public attribute, if a private attribute is found, then the it won't be returned.
-     *
-     *
-     * @param isPublic true if the attribute must be public, false if not
-     * @param isStatic true if the attribute must be static, false if not
-     * @param name the name of the attribute to look for
-     * @return an {@link Optional} wrapping the {@link AttributeSymbol}
-     */
-    Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, String name);
-
-    /**
-     * Searches for the given attribute within this symbol. The attribute may be owned by the symbol, or inherited.
-     * This method won't care about the visibility nor staticness of the attribute, so the returned attribute
-     * may be public or private
-     *
-     * @param name the name of the attribute to look for
-     * @return an {@link Optional} wrapping the {@link AttributeSymbol}
-     */
-    Optional<AttributeSymbol> getAttribute(NameAttribute name);
-
-    /**
-     * Searches for the given attribute within this symbol. The attribute may be owned by the symbol, or inherited.
-     * This method won't care about the visibility nor staticness of the attribute, so the returned attribute
-     * may be public or private
-     *
-     * @param name the name of the attribute to look for
-     * @return an {@link Optional} wrapping the {@link AttributeSymbol}
-     */
-    Optional<AttributeSymbol> getAttribute(String name);
 
     /**
      * Returns a map containing all of the ancestors {@link AttributeSymbol},

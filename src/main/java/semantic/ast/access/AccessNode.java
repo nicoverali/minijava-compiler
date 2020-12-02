@@ -2,6 +2,7 @@ package semantic.ast.access;
 
 import semantic.ast.expression.OperandNode;
 import semantic.symbol.TopLevelSymbol;
+import semantic.symbol.attribute.NameAttribute;
 
 public interface AccessNode extends OperandNode {
 
@@ -21,6 +22,11 @@ public interface AccessNode extends OperandNode {
      * @return true if this access has a chained access, false otherwise
      */
     boolean hasChainedAccess();
+
+    /**
+     * @return the main {@link NameAttribute} of this access
+     */
+    NameAttribute getName();
 
     @Override
     AccessNode instantiate(TopLevelSymbol container, String newType);

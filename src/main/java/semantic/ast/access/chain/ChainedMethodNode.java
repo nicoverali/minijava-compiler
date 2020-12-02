@@ -46,7 +46,7 @@ public class ChainedMethodNode extends BaseChainNode {
     @Override
     protected void validate(ReferenceType leftType, Scope scope) {
         TopLevelSymbol symbol = ST.getTopLevelSymbol(leftType).get();
-        Optional<MethodSymbol> method = symbol.getMethod(false, name);
+        Optional<MethodSymbol> method = symbol.getMethods().find(false, name);
         if (!method.isPresent()){
             throw new SemanticException("No se pudo encontrar el metodo", name);
         }
@@ -56,7 +56,14 @@ public class ChainedMethodNode extends BaseChainNode {
     @SuppressWarnings("OptionalGetWithoutIsPresent") // We'll assume that this has already been validated
     @Override
     protected Type getTypeFrom(ReferenceType leftChainType, Scope scope) {
-        return ST.getTopLevelSymbol(leftChainType).get().getMethod(false, name).get().getReturnType();
+        return ST.getTopLevelSymbol(leftChainType).get()
+                .getMethods().find(false, name).get()
+                .getReturnType();
+    }
+
+    @Override
+    public NameAttribute getName() {
+        return name;
     }
 
     @Override

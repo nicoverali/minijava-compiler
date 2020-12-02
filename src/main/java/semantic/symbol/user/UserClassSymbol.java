@@ -153,13 +153,13 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     @Override
-    public Collection<AttributeSymbol> getAttributes() {
-        return attributes.values();
+    public AttributeContainer getAttributes() {
+        return new AttributeContainer(attributes, inheritedAttributes);
     }
 
     @Override
-    public Collection<MethodSymbol> getMethods() {
-        return methods.values();
+    public MethodContainer getMethods() {
+        return new MethodContainer(methods, inheritedMethods);
     }
 
     @Override
@@ -189,58 +189,6 @@ public class UserClassSymbol implements ClassSymbol {
         methods.forEach(resultMap::put);
         return Collections.unmodifiableMap(resultMap);
     }
-
-    @Override
-    public Optional<AttributeSymbol> getAttribute(NameAttribute name) {
-        return getAttribute(name.getValue());
-    }
-
-    @Override
-    public Optional<AttributeSymbol> getAttribute(String name) {
-        AttributeSymbol attr = attributes.get(name);
-        if (attr != null){
-            return Optional.of(attr);
-        }
-        return Optional.ofNullable(inheritedAttributes.get(name));
-    }
-
-    @Override
-    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, NameAttribute name) {
-        return getAttribute(isPublic, isStatic, name.getValue());
-    }
-
-    @Override
-    public Optional<AttributeSymbol> getAttribute(boolean isPublic, boolean isStatic, String name) {
-        AttributeSymbol attr = attributes.get(name);
-        if (attr != null && attr.isPublic().equals(isPublic) && attr.isStatic().equals(isStatic)){
-            return Optional.of(attr);
-        }
-        return Optional.ofNullable(inheritedAttributes.get(name));
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(NameAttribute name) {
-        return getMethod(name.getValue());
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(String name) {
-        MethodSymbol method = methods.get(name);
-        if (method != null){
-            return Optional.of(method);
-        }
-        return Optional.ofNullable(inheritedMethods.get(name));
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(boolean isStatic, NameAttribute name) {
-        MethodSymbol method = methods.get(name.getValue());
-        if (method != null && method.isStatic().equals(isStatic)){
-            return Optional.of(method);
-        }
-        return Optional.ofNullable(inheritedMethods.get(name.getValue()));
-    }
-
 
     @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {

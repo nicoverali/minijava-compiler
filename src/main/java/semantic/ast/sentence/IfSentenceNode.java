@@ -2,19 +2,19 @@ package semantic.ast.sentence;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.ast.LocalScope;
+import semantic.ast.Scope;
 import semantic.ast.expression.ExpressionNode;
-import semantic.ast.LocalVariable;
 import semantic.ast.sentence.visitor.SentenceVisitor;
+import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.type.PrimitiveType;
-
-import java.util.List;
 
 public class IfSentenceNode implements SentenceNode {
 
-    private final Token ifToken;
-    private final ExpressionNode ifCondition;
-    private final SentenceNode ifSentence;
+    protected final Token ifToken;
+    protected final ExpressionNode ifCondition;
+    protected final SentenceNode ifSentence;
+
+    private boolean hasGeneric;
 
     public IfSentenceNode(Token ifToken, ExpressionNode ifCondition, SentenceNode ifSentence) {
         this.ifToken = ifToken;
@@ -23,13 +23,28 @@ public class IfSentenceNode implements SentenceNode {
     }
 
     @Override
-    public void validate(LocalScope scope) {
+    public void validate(Scope scope) {
         ifCondition.validate(scope);
         ifSentence.validate(scope);
+        hasGeneric = ifCondition.hasGenerics(scope) || ifSentence.hasGenerics(scope);
 
-        if (!PrimitiveType.BOOLEAN().equals(ifCondition.getType())){
+        if (!PrimitiveType.BOOLEAN().equals(ifCondition.getType(scope))){
             throw new SemanticException("La condicion del IF debe ser booleana", ifToken);
         }
+    }
+
+    @Override
+    public IfSentenceNode instantiate(TopLevelSymbol container, String newType) {
+        if (hasGeneric){
+            return new IfSentenceNode(ifToken, ifCondition.instantiate(container, newType)
+                    , ifSentence.instantiate(container, newType));
+        }
+        return this;
+    }
+
+    @Override
+    public boolean hasGenerics(TopLevelSymbol container) {
+        return hasGeneric;
     }
 
     @Override

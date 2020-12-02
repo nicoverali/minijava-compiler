@@ -103,11 +103,9 @@ public class InterfaceSymbol implements TopLevelSymbol {
         return generic != null;
     }
 
-    /**
-     * @return a collection of all the {@link MethodSymbol} of this interface
-     */
-    public Collection<MethodSymbol> getMethods() {
-        return methods.values();
+    @Override
+    public MethodContainer getMethods() {
+        return new MethodContainer(methods, superMethods);
     }
 
     @Override
@@ -119,29 +117,6 @@ public class InterfaceSymbol implements TopLevelSymbol {
         Map<String, MethodSymbol> resultMap = new HashMap<>(superMethods);
         methods.forEach(resultMap::put);
         return Collections.unmodifiableMap(resultMap);
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(NameAttribute name) {
-        return getMethod(name.getValue());
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(String name) {
-        MethodSymbol method = methods.get(name);
-        if (methods != null){
-            return Optional.of(method);
-        }
-        return Optional.ofNullable(superMethods.get(name));
-    }
-
-    @Override
-    public Optional<MethodSymbol> getMethod(boolean isStatic, NameAttribute name) {
-        MethodSymbol method = methods.get(name.getValue());
-        if (methods != null && method.isStatic().equals(isStatic)){
-            return Optional.of(method);
-        }
-        return Optional.ofNullable(superMethods.get(name.getValue()));
     }
 
     @Override

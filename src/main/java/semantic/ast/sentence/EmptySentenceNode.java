@@ -1,16 +1,24 @@
 package semantic.ast.sentence;
 
-import semantic.ast.LocalScope;
-import semantic.ast.LocalVariable;
+import semantic.ast.Scope;
 import semantic.ast.sentence.visitor.SentenceVisitor;
-
-import java.util.List;
+import semantic.symbol.TopLevelSymbol;
 
 public class EmptySentenceNode implements SentenceNode {
 
     @Override
-    public void validate(LocalScope scope) {
+    public void validate(Scope scope) {
         // Empty sentences are always valid
+    }
+
+    @Override
+    public EmptySentenceNode instantiate(TopLevelSymbol container, String newType) {
+        return this; // Empty sentences never have generics
+    }
+
+    @Override
+    public boolean hasGenerics(TopLevelSymbol container) {
+        return false; // Empty sentences never have generics
     }
 
     @Override

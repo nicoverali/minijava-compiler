@@ -42,4 +42,19 @@ public interface ASTNode {
      */
     boolean hasGenerics(TopLevelSymbol container);
 
+    /**
+     * Checks whether this node has a generic type in it or not. Note that the node itself may not contain
+     * any generic type, but it may have child that does have one.
+     * <br><br>
+     * This method should always be called after {@link #validate(Scope)}, otherwise the node won't
+     * be able to detect its generic types
+     *
+     * @see #validate(Scope)
+     * @param scope the current scope
+     * @return true if this node or any of its child have at least one generic type, false otherwise
+     */
+    default boolean hasGenerics(Scope scope){
+        return hasGenerics(scope.getClassContainer());
+    }
+
 }

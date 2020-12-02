@@ -51,8 +51,8 @@ public class MiniJavaSemanticAnalyzerTest {
 
 
     private static Stream<Arguments> semanticTestFiles() {
-        Arguments[] arguments = paths.stream().flatMap(pair -> IntStream.range(1, pair.second+1)
-                .mapToObj(fileNumber -> load(pair.first, fileNumber))
+        Arguments[] arguments = paths.stream().flatMap(pair -> IntStream.range(1, pair.right+1)
+                .mapToObj(fileNumber -> load(pair.left, fileNumber))
         ).toArray(Arguments[]::new);
 
         return Stream.of(arguments);

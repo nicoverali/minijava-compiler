@@ -1,6 +1,7 @@
 package semantic.ast;
 
 import semantic.Variable;
+import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.TopLevelSymbol;
 import semantic.symbol.attribute.NameAttribute;
@@ -8,7 +9,21 @@ import semantic.symbol.attribute.type.Type;
 
 import java.util.Optional;
 
+/**
+ * Represents the current scope of a AST Node. This class knows the ClassSymbol container and the method or
+ * constructor link to an AST Tree.
+ * <br>
+ * Note that an {@link semantic.symbol.InterfaceSymbol} cannot have blocks, thus doesn't make sense for a Scope to
+ * have an interface as a container.
+ */
 public interface Scope {
+
+    /**
+     * Adds a new {@link LocalVariable} to this scope.
+     *
+     * @param variable a {@link LocalVariable}
+     */
+    void addLocalVariable(LocalVariable variable);
 
     /**
      * @return true if the current context is static, false if not
@@ -64,7 +79,15 @@ public interface Scope {
      */
     Type getLeftChainType();
 
+    /**
+     * Sets the {@link Type} of the last left {@link semantic.ast.access.AccessNode}
+     *
+     * @param leftChainType left type
+     */
     void setLeftChainType(Type leftChainType);
 
-    TopLevelSymbol getTopContainer();
+    /**
+     * @return the {@link ClassSymbol} that contains this scope
+     */
+    ClassSymbol getClassContainer();
 }

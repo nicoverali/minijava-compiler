@@ -46,7 +46,10 @@ public class StaticMethodAccessNode extends BaseAccessNode {
     @SuppressWarnings("OptionalGetWithoutIsPresent") // We'll assume that this has already been validated
     @Override
     public Type getType(Scope scope) {
-        Type thisType = ST.getTopLevelSymbol(containerRef).get().getMethod(true, name).get().getReturnType();
+        Type thisType = ST.getTopLevelSymbol(containerRef).get()
+                .getMethods().find(true, name).get()
+                .getReturnType();
+
         if (hasChainedAccess()){
             scope.setLeftChainType(thisType);
             return chain.getType(scope);
@@ -56,8 +59,8 @@ public class StaticMethodAccessNode extends BaseAccessNode {
 
     @Override
     public void validate(Scope scope) {
-        containerRef.validate(ST, scope.getTopContainer()); // Validate reference
-        Optional<MethodSymbol> method = ST.getTopLevelSymbol(containerRef).flatMap(sym -> sym.getMethod(true, name));
+        containerRef.validate(ST, scope.getClassContainer()); // Validate reference
+        Optional<MethodSymbol> method = ST.getTopLevelSymbol(containerRef).flatMap(sym -> sym.getMethods().find(true, name));
         if (!method.isPresent()){
             throw new SemanticException("No se pudo encontrar el metodo", name);
         }
@@ -66,6 +69,11 @@ public class StaticMethodAccessNode extends BaseAccessNode {
             scope.setLeftChainType(method.get().getReturnType());
             chain.validate(scope);
         }
+    }
+
+    @Override
+    public NameAttribute getName() {
+        return name;
     }
 
     @Override
