@@ -2,7 +2,6 @@ package io.code.reader;
 
 import io.code.CodeLine;
 import io.code.CodeLineFactory;
-import sequence.Sequence;
 
 import java.io.BufferedReader;
 import java.io.IOException;

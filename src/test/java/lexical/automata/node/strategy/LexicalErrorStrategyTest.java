@@ -1,12 +1,6 @@
 package lexical.automata.node.strategy;
 
-import io.code.CodeCharacter;
-import io.code.CodeLine;
 import org.junit.jupiter.api.Test;
-import sequence.MarkableAppendableSequenceTest;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 // TODO We should first define what we expect from exceptions, do them have to contain the character that produces the error ?
 class LexicalErrorStrategyTest {

@@ -22,9 +22,6 @@ public class AnyCharacterExceptFilter implements LexicalFilter{
 
     @Override
     public String toString() {
-//        List<String> exceptionsStr = Chars.asList(exceptions).stream()
-//                .map(Characters::explicitSpecialChars).collect(Collectors.toList());
-//        return "not ( " + Joiner.on(" | ").join(exceptionsStr) + ")";
         return "not ("+ Arrays.toString(exceptions)+")";
     }
 }

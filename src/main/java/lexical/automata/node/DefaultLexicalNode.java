@@ -48,7 +48,7 @@ public class DefaultLexicalNode<T> implements LexicalNode<T> {
     @Override
     public T process(SourceCodeReader reader) throws LexicalException {
         Optional<CodeCharacter> nextChar = reader.peek();
-        if (!nextChar.isPresent()){
+        if (nextChar.isEmpty()){
             return strategy.onEndOfFile(reader, reader.getCurrentLine().orElse(null));
         }
 

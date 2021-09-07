@@ -12,7 +12,7 @@ import lexical.automata.filter.LexicalFilter;
 public class ExceptionBranch<T> implements NodeBranch<T> {
 
     private LexicalFilter filter;
-    private String errorMsg;
+    private final String errorMsg;
 
     public ExceptionBranch(LexicalFilter filter, String errorMsg){
         this.filter = filter;

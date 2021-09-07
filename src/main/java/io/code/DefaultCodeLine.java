@@ -6,9 +6,9 @@ class DefaultCodeLine implements CodeLine {
 
     private static final char LINE_SEPARATOR = '\n';
 
-    private String lineWithoutSeparators;
-    private int lineNumber;
-    private List<CodeCharacter> characters;
+    private final String lineWithoutSeparators;
+    private final int lineNumber;
+    private final List<CodeCharacter> characters;
 
     private boolean hasLineSeparator;
 

@@ -4,10 +4,8 @@ import io.code.CodeCharacter;
 import io.code.reader.SourceCodeReader;
 import lexical.Lexeme;
 import lexical.LexicalException;
-import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.AutomataToken;
-import lexical.automata.filter.LexicalFilter;
 
 import java.util.Optional;
 

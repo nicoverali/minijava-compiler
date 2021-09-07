@@ -1,7 +1,5 @@
 package lexical.automata.filter;
 
-import util.Characters;
-
 public class DigitFilter implements LexicalFilter{
     @Override
     public boolean test(char value) {

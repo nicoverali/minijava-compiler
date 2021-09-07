@@ -8,8 +8,6 @@ import lexical.automata.branch.ExceptionBranch;
 import lexical.automata.branch.NodeBranchDecorator;
 import lexical.automata.branch.TryNodeBranch;
 import lexical.automata.filter.*;
-import lexical.automata.node.DefaultLexicalNode;
-import lexical.automata.node.strategy.LexicalErrorStrategy;
 
 /**
  * @param <T> type of branch builder

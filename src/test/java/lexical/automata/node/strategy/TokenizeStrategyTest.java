@@ -15,7 +15,6 @@ import org.mockito.quality.Strictness;
 import util.RoyOsheroveTestNameGenerator;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 import static org.mockito.Mockito.*;
 

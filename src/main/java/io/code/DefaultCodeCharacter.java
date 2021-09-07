@@ -3,9 +3,9 @@ package io.code;
 
 class DefaultCodeCharacter implements CodeCharacter {
 
-    private char character;
-    private int columnNumber;
-    private CodeLine line;
+    private final char character;
+    private final int columnNumber;
+    private final CodeLine line;
 
     /**
      * Creates a new <code>CodeCharacter</code> with the value given as argument.

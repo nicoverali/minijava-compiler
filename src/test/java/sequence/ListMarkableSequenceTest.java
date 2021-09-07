@@ -3,6 +3,7 @@ package sequence;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -200,21 +201,21 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void singleElement_shouldReturnElement_onGet() {
-        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(List.of(FIRST_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
     }
 
     @Override
 	@Test
     public void singleElement_shouldReturnElement_onPeek() {
-        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(List.of(FIRST_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.peek().get());
     }
 
     @Override
 	@Test
     public void singleElement_shouldReturnElement_onHasNext() {
-        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(List.of(FIRST_ELEMENT));
         assertTrue(testSubject.hasNext());
     }
 
@@ -272,7 +273,7 @@ class ListMarkableSequenceTest implements MarkableAppendableSequenceTest {
     @Override
 	@Test
     public void singleElement_peeking_shouldNotAffectGet() {
-        testSubject = new ListMarkableSequence<>(Arrays.asList(FIRST_ELEMENT));
+        testSubject = new ListMarkableSequence<>(List.of(FIRST_ELEMENT));
         assertEquals(FIRST_ELEMENT, testSubject.peek().get());
         assertEquals(FIRST_ELEMENT, testSubject.next().get());
     }
