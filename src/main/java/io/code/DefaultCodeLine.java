@@ -4,13 +4,9 @@ import java.util.*;
 
 class DefaultCodeLine implements CodeLine {
 
-    private static final char LINE_SEPARATOR = '\n';
-
-    private final String lineWithoutSeparators;
-    private final int lineNumber;
+    private String line = "";
     private final List<CodeCharacter> characters;
-
-    private boolean hasLineSeparator;
+    private final int lineNumber;
 
     /**
      * Creates a new blank code line at the given line number.
@@ -28,52 +24,30 @@ class DefaultCodeLine implements CodeLine {
      * Creates a new code line with the characters from the given line, and at the given line number.
      * <br>
      * Line number should be a positive number.
-     * <br>
-     * The given String must not have any line separator, only common characters.
-     * To add a line separator use {@link #addLineSeparator()}
      *
      * @param lineNumber position of the new code line
      * @param line characters of the new code line
      * @throws IllegalArgumentException if the line number is negative
      */
     public DefaultCodeLine(int lineNumber, String line) throws IllegalArgumentException{
-        checkValidInput(lineNumber, line);
-        this.lineWithoutSeparators = line;
+        checkValidInput(lineNumber);
         this.lineNumber = lineNumber;
         this.characters = new ArrayList<>();
-        this.hasLineSeparator = false;
 
         for (int i = 0; i < line.length(); i++){
             this.append(line.charAt(i));
         }
     }
 
-    private void checkValidInput(int lineNumber, String line) throws IllegalArgumentException {
+    private void checkValidInput(int lineNumber) throws IllegalArgumentException {
         if (lineNumber < 0)
             throw new IllegalArgumentException("Line number can't be negative");
-        if (line.contains("\n") || line.contains("\r"))
-            throw new IllegalArgumentException("The given line should not have line separators");
     }
 
     private void append(char character){
         CodeCharacter ch = new DefaultCodeCharacter(character, characters.size(), this);
         characters.add(ch);
-    }
-
-    @Override
-    public void addLineSeparator() {
-        if (!hasLineSeparator){
-            this.append(LINE_SEPARATOR);
-            hasLineSeparator = true;
-        }
-    }
-
-    @Override
-    public void removeLineSeparator() {
-        if (hasLineSeparator){
-            characters.remove(characters.size()-1);
-            hasLineSeparator = false;
-        }
+        line += character;
     }
 
     @Override
@@ -111,9 +85,6 @@ class DefaultCodeLine implements CodeLine {
 
     @Override
     public String toString() {
-        if (hasLineSeparator){
-            return lineWithoutSeparators+LINE_SEPARATOR;
-        }
-        return lineWithoutSeparators;
+        return line;
     }
 }

@@ -5,7 +5,7 @@ import java.util.ListIterator;
 import java.util.Optional;
 
 /**
- * A <code>CodeLine</code> is consider to be a numbered sequence of {@link CodeCharacter}s. This sequence may be empty and
+ * A <code>CodeLine</code> is considered to be a numbered sequence of {@link CodeCharacter}s. This sequence may be empty and
  * may or may not have a line separator (e.g. '\n') at the end. However, a <code>CodeLine</code> can't have a line
  * separator between two common characters.
  * <br><br>
@@ -15,17 +15,6 @@ import java.util.Optional;
  */
 public interface CodeLine extends Iterable<CodeCharacter> {
 
-    /**
-     * Adds a line separator at the end. If a line separator was already at the end, then calling this method
-     * won't produce any effect.
-     */
-    void addLineSeparator();
-
-    /**
-     * Removes any line separator from the end of this lines. If there was no line separator at the end,
-     * then calling this method won't produce any effect.
-     */
-    void removeLineSeparator();
 
     /**
      * Returns the position (row) of this line inside a file. Line numbers are zero-based indexed.

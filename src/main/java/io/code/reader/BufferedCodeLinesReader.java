@@ -57,11 +57,12 @@ public class BufferedCodeLinesReader implements CodeLinesReader {
                 currentLine = null;
                 return;
             }
-            currentLine = lineFactory.create(nextLine, currentLineNumber++);
+            String toCreateLine = nextLine;
             nextLine = buffReader.readLine();
             if (nextLine != null){
-                currentLine.addLineSeparator();
+                toCreateLine += "\n";
             }
+            currentLine = lineFactory.create(toCreateLine, currentLineNumber++);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

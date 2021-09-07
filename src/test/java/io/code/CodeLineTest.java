@@ -1,5 +1,7 @@
 package io.code;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,51 +20,13 @@ interface CodeLineTest<T extends CodeLine> {
      */
     T createCodeLine(String line, int lineNumber);
 
-    @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")
-    @MethodSource("lineTestCases")
-    default void shouldNotHaveLineSeparatorByDefault(String lineTestCase, int lineNumber){
-        CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
+    @DisplayName("Should allow line separators")
+    @Test
+    default void shouldAllowLineSeparators(){
+        CodeLine testSubject = createCodeLine("test\n", 0);
 
         CodeCharacter lastCharacter = Iterables.getLast(testSubject.getAllCharacters(), null);
-        assertTrue(lastCharacter == null || lastCharacter.getValue() != '\n' || lastCharacter.getValue() != '\r');
-    }
-
-    @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")
-    @MethodSource("lineTestCases")
-    default void shouldAddLineSeparatorOnlyOnce(String lineTestCase, int lineNumber) {
-        CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
-
-        // Verify size increases only by one
-        int currentSize = testSubject.getSize();
-        testSubject.addLineSeparator();
-        assertEquals(currentSize+1, testSubject.getSize());
-        testSubject.addLineSeparator();
-        assertEquals(currentSize+1, testSubject.getSize());
-
-        // Verify last character is actually a line separator
-        CodeCharacter lastCharacter = Iterables.getLast(testSubject.getAllCharacters(), null);
-        assertNotNull(lastCharacter);
-        assertTrue(lastCharacter.getValue() == '\n'|| lastCharacter.getValue() ==  '\r');
-    }
-
-    @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")
-    @MethodSource("lineTestCases")
-    default void shouldRemoveLineSeparator(String lineTestCase, int lineNumber) {
-        CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
-
-        testSubject.addLineSeparator();
-        int currentSize = testSubject.getSize();
-
-        // Verify size decreases only by one
-        testSubject.removeLineSeparator();
-        assertEquals(currentSize-1, testSubject.getSize());
-        testSubject.removeLineSeparator();
-        assertEquals(currentSize-1, testSubject.getSize());
-
-        // Verify that now last character is not a line terminator
-        CodeCharacter lastCharacter = Iterables.getLast(testSubject.getAllCharacters(), null);
-        assertTrue(lastCharacter == null || lastCharacter.getValue() != '\n'|| lastCharacter.getValue() !=  '\r');
-
+        assertEquals('\n', lastCharacter.getValue());
     }
 
     @ParameterizedTest(name = "[{index}] At line {1}")
@@ -133,42 +97,6 @@ interface CodeLineTest<T extends CodeLine> {
 
         assertEquals(currentIdx, lineTestCase.length()); // Last index should be at the end of line test case
 
-    }
-
-    @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")
-    @MethodSource("lineTestCases")
-    default void shouldGiveLineAsStringWithSeparator(String lineTestCase, int lineNumber) {
-        CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
-        testSubject.addLineSeparator();
-
-        String lineAsString = testSubject.toString();
-        assertTrue(lineAsString.equals(lineTestCase + '\n') || lineAsString.equals(lineTestCase + '\r'));
-    }
-
-    @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")
-    @MethodSource("lineTestCases")
-    default void shouldReturnLineSeparatorCharacter(String lineTestCase, int lineNumber) {
-        CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
-        testSubject.addLineSeparator();
-
-        CodeCharacter lastCharacter = testSubject.getCharacterAt(testSubject.getSize()-1);
-        assertNotNull(lastCharacter);
-        assertTrue(lastCharacter.getValue() == '\n' || lastCharacter.getValue() == '\r');
-    }
-
-    @ParameterizedTest(name = "[{index}] With \" {0} \" at line {1}")
-    @MethodSource("lineTestCases")
-    default void shouldReturnLineSeparatorCharacterOnIteration(String lineTestCase, int lineNumber) {
-        CodeLine testSubject = createCodeLine(lineTestCase, lineNumber);
-        testSubject.addLineSeparator();
-        CodeCharacter lastCharacter = null;
-
-        for (CodeCharacter ch : testSubject){
-            lastCharacter = ch;
-        }
-
-        assertNotNull(lastCharacter);
-        assertTrue(lastCharacter.getValue() == '\n' || lastCharacter.getValue() == '\r');
     }
 
     @ParameterizedTest(name = "[{index}] With \" {0} \"")

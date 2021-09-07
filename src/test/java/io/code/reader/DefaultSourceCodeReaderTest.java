@@ -30,12 +30,11 @@ class DefaultSourceCodeReaderTest implements SourceCodeReaderTest<DefaultSourceC
         public CodeLineReaderMock(String... lines) {
             CodeLineFactory lineFactory = new DefaultCodeLineFactory();
             for (int i = 0; i < lines.length; i++){
-                CodeLine line = lineFactory.create(lines[i], i);
-                line.addLineSeparator();
+                String lineString = i+1 == lines.length
+                        ? lines[i]
+                        : lines[i]+'\n';
+                CodeLine line = lineFactory.create(lineString, i);
                 this.lines.add(line);
-            }
-            if (!this.lines.isEmpty()){
-                Iterables.getLast(this.lines).removeLineSeparator();
             }
         }
 
