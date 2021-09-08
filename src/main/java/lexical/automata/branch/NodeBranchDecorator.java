@@ -1,6 +1,6 @@
 package lexical.automata.branch;
 
-import io.code.reader.SourceCodeReader;
+import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;

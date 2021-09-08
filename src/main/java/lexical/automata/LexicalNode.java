@@ -1,6 +1,6 @@
 package lexical.automata;
 
-import io.code.reader.SourceCodeReader;
+import io.code.SourceCodeReader;
 import lexical.LexicalException;
 
 /**

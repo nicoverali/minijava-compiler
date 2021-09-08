@@ -9,18 +9,6 @@ class DefaultCodeLine implements CodeLine {
     private final int lineNumber;
 
     /**
-     * Creates a new blank code line at the given line number.
-     * <br>
-     * Line number should be a positive number.
-     *
-     * @param lineNumber position of the new code line
-     * @throws IllegalArgumentException if the line number is negative
-     */
-    public DefaultCodeLine(int lineNumber) throws IllegalArgumentException{
-        this(lineNumber, "");
-    }
-
-    /**
      * Creates a new code line with the characters from the given line, and at the given line number.
      * <br>
      * Line number should be a positive number.

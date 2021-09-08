@@ -3,7 +3,7 @@ package lexical.automata.node.strategy;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
-import io.code.reader.SourceCodeReader;
+import io.code.SourceCodeReader;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

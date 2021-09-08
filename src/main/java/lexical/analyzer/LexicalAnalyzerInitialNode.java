@@ -1,7 +1,7 @@
 package lexical.analyzer;
 
 import io.code.CodeCharacter;
-import io.code.reader.SourceCodeReader;
+import io.code.SourceCodeReader;
 import lexical.Token;
 import lexical.automata.AutomataToken;
 import lexical.automata.LexicalNode;

@@ -51,11 +51,7 @@ class DefaultCodeCharacter implements CodeCharacter {
 
     @Override
     public String toString() {
-        return "DefaultCodeCharacter{" +
-                "character=" + character +
-                ", line=" + line.getLineNumber() +
-                ", column=" + columnNumber +
-                '}';
+        return character + "";
     }
 }
 

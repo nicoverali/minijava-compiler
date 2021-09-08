@@ -4,6 +4,8 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 public class ListMarkableSequence<T> implements MarkableSequence<T>, AppendableSequence<T> {
@@ -75,6 +77,17 @@ public class ListMarkableSequence<T> implements MarkableSequence<T>, AppendableS
             return Optional.of(elements.get(cursor));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public String toString() {
+        String elementsString = IntStream.range(0, elements.size())
+                .mapToObj(idx -> idx == cursor
+                        ? "[" + elements.get(idx) + "]"
+                        : elements.get(idx) + "")
+                .collect(Collectors.joining(", "));
+
+        return "{ " + elementsString + " }";
     }
 
     private static class Marker {

@@ -2,7 +2,7 @@ package lexical.automata.node.strategy;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
-import io.code.reader.SourceCodeReader;
+import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
 import lexical.TokenType;

@@ -1,6 +1,7 @@
 package io.code.reader;
 
 import io.code.CodeCharacter;
+import io.code.SourceCodeReader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

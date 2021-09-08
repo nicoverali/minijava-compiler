@@ -1,6 +1,6 @@
 package lexical.automata.node.builder;
 
-import io.code.reader.SourceCodeReader;
+import io.code.SourceCodeReader;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.branch.DefaultNodeBranch;

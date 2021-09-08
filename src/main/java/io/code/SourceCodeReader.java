@@ -1,7 +1,5 @@
-package io.code.reader;
+package io.code;
 
-import io.code.CodeCharacter;
-import io.code.CodeLine;
 import sequence.MarkableSequence;
 
 import java.io.UncheckedIOException;

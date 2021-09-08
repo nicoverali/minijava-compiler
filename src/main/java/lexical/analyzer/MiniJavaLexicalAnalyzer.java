@@ -1,6 +1,6 @@
 package lexical.analyzer;
 
-import io.code.reader.SourceCodeReader;
+import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
 import lexical.automata.AutomataToken;
