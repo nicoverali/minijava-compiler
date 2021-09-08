@@ -5,7 +5,7 @@ import java.util.*;
 class DefaultCodeLine implements CodeLine {
 
     private String line = "";
-    private final List<CodeCharacter> characters;
+    private final List<CodeCharacter> characters = new ArrayList<>();
     private final int lineNumber;
 
     /**
@@ -18,18 +18,12 @@ class DefaultCodeLine implements CodeLine {
      * @throws IllegalArgumentException if the line number is negative
      */
     public DefaultCodeLine(int lineNumber, String line) throws IllegalArgumentException{
-        checkValidInput(lineNumber);
+        if (lineNumber < 0) throw new IllegalArgumentException("Line number can't be negative");
         this.lineNumber = lineNumber;
-        this.characters = new ArrayList<>();
 
-        for (int i = 0; i < line.length(); i++){
-            this.append(line.charAt(i));
+        for (char ch : line.toCharArray()){
+            this.append(ch);
         }
-    }
-
-    private void checkValidInput(int lineNumber) throws IllegalArgumentException {
-        if (lineNumber < 0)
-            throw new IllegalArgumentException("Line number can't be negative");
     }
 
     private void append(char character){
