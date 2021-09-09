@@ -12,7 +12,7 @@ import lexical.automata.filter.*;
 /**
  * @param <T> type of branch builder
  */
-abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<?,?,?>> {
+abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<?,?>> {
 
     abstract protected T createBranchBuilder(LexicalFilter filter);
 
@@ -69,23 +69,22 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
     }
 
     /**
-     * @param <S> type of element return by the next node
      * @param <U> type of node builder
      * @param <V> type of branch builder
      */
-    public abstract static class BaseNodeBranchBuilder<S, U extends BaseLexicalNodeBuilder<?>, V extends BaseNodeBranchBuilder<S,U,V>>{
+    public abstract static class BaseNodeBranchBuilder<U extends BaseLexicalNodeBuilder<?>, V extends BaseNodeBranchBuilder<U,V>>{
 
         protected final LexicalFilter filter;
         protected final U nodeBuilder;
-        protected NodeBranch<S> buildingBranch;
+        protected NodeBranch buildingBranch;
 
         protected abstract V getThis();
-        protected abstract LexicalNode<S> getBuildingNode();
+        protected abstract LexicalNode getBuildingNode();
 
         public BaseNodeBranchBuilder(LexicalFilter filter, U nodeBuilder){
             this.filter = filter;
             this.nodeBuilder = nodeBuilder;
-            buildingBranch = new DefaultNodeBranch<>(filter);
+            buildingBranch = new DefaultNodeBranch(filter);
         }
 
         /**
@@ -94,7 +93,7 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
          * @param nextNode next {@link LexicalNode} of the branch being built
          * @return a node builder to keep building the node
          */
-        public U thenMoveTo(LexicalNode<S> nextNode){
+        public U thenMoveTo(LexicalNode nextNode){
             buildingBranch.setNextNode(nextNode);
             getBuildingNode().addBranch(buildingBranch);
             return nodeBuilder;
@@ -110,9 +109,9 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
          * @param aheadLimit maximum numbers of characters that may be read before delegation gets rejected
          * @return a branch builder to keep building the branch
          */
-        public U thenTry(LexicalNode<S> nextNode, int aheadLimit){
+        public U thenTry(LexicalNode nextNode, int aheadLimit){
             buildingBranch.setNextNode(nextNode);
-            getBuildingNode().addBranch(new TryNodeBranch<>(buildingBranch, aheadLimit));
+            getBuildingNode().addBranch(new TryNodeBranch(buildingBranch, aheadLimit));
             return nodeBuilder;
         }
 
@@ -136,7 +135,7 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
          * @return a node builder to keep building the node
          */
         public U thenThrow(String errorMsg){
-            getBuildingNode().addBranch(new ExceptionBranch<>(filter, errorMsg));
+            getBuildingNode().addBranch(new ExceptionBranch(filter, errorMsg));
             return nodeBuilder;
         }
 
@@ -147,7 +146,7 @@ abstract class BaseLexicalNodeBuilder<T extends BaseLexicalNodeBuilder.BaseNodeB
          * @param decorator a {@link NodeBranchDecorator} to decorate the correct branch being buildt
          * @return a branch builder to keep building the branch
          */
-        public V decorate(NodeBranchDecorator<S> decorator){
+        public V decorate(NodeBranchDecorator decorator){
             decorator.setDecorated(buildingBranch);
             buildingBranch = decorator;
             return getThis();

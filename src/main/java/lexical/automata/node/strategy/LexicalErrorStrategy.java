@@ -4,16 +4,15 @@ import io.code.CodeCharacter;
 import io.code.CodeLine;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.AutomataLexeme;
 import lexical.automata.node.LexicalNodeStrategy;
 
 /**
  * With this {@link LexicalNodeStrategy}, if the node cannot delegate processing of characters, it detects
  * a lexical error and throws a {@link LexicalException}
- *
- * @param <T> type of element returned by the {@link lexical.automata.LexicalNode}
  */
-public class LexicalErrorStrategy<T> implements LexicalNodeStrategy<T> {
+public class LexicalErrorStrategy implements LexicalNodeStrategy {
 
     private final String errorMsg;
 
@@ -22,12 +21,12 @@ public class LexicalErrorStrategy<T> implements LexicalNodeStrategy<T> {
     }
 
     @Override
-    public T onNoBranchSelected(SourceCodeReader reader, CodeCharacter currentCharacter) throws LexicalException {
+    public Token onNoBranchSelected(SourceCodeReader reader, CodeCharacter currentCharacter) throws LexicalException {
         throw new LexicalException(errorMsg, AutomataLexeme.empty(currentCharacter.getCodeLine()), currentCharacter.getColumnNumber());
     }
 
     @Override
-    public T onEndOfFile(SourceCodeReader reader, CodeLine currentLine) throws LexicalException {
+    public Token onEndOfFile(SourceCodeReader reader, CodeLine currentLine) throws LexicalException {
         int columnNumber = currentLine != null ? currentLine.getSize() : 0;
         throw new LexicalException(errorMsg, AutomataLexeme.empty(currentLine), columnNumber);
     }

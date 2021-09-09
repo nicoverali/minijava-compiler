@@ -2,45 +2,55 @@ package lexical.automata;
 
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 
 /**
  * A LexicalNode represents a single node in a lexical automata.
  * <br>
- * The full automata is obtain by connecting multiple LexicalNodes together with {@link NodeBranch}.
+ * The full automata is obtained by connecting multiple LexicalNodes together with {@link NodeBranch}.
  * <br><br>
  * Every LexicalNode has a collection of {@link NodeBranch}, that connects it to other LexicalNodes, in order to
  * make some kind of processing of the characters of a source code.
- *
- * @param <T> type of element returned by this node
+ * <br>
+ * Each node can be an acceptor or non-acceptor. Acceptor nodes will return without errors, they may or may not
+ * return a not-null {@link Token}. Non-acceptor nodes will fail if there's no branch that can delegate
+ * the next character.
  */
-public interface LexicalNode<T>{
+public interface LexicalNode{
 
     /**
      * Takes a {@link SourceCodeReader} as input and process its next character in order
-     * to return an element of type <code>T</code>.
+     * to return a {@link Token}.
      * <br>
      * The node will use its associated {@link NodeBranch} to process the characters. Branches will be tested
-     * in LIFO order, the first added branch will be tested first, then the second one and so on.
+     * in FIFO order, the first added branch will be tested first, then the second one and so on.
      * <br><br>
-     * If the node can't process the next character, then it may simply return a <code>null</code> value, or
-     * may throw a {@link LexicalException}, meaning that it detects a lexical error.
+     * If the node is an acceptor then it will return a nullable {@link Token} in case no branch matches, else,
+     * if the node is non-acceptor it will throw a {@link LexicalException} representing a Lexical error
      *
      * @see #addBranch(NodeBranch)
      * @param reader a {@link SourceCodeReader} to take its next characters as input
-     * @return an element of type <code>T</code> as a result of processing the next characters of <code>reader</code>,
-     * or null if the node couldn't process the characters
+     * @return a nullable {@link Token}
      * @throws LexicalException if a lexical error is detected
      */
-    T process(SourceCodeReader reader) throws LexicalException;
+    Token process(SourceCodeReader reader) throws LexicalException;
+
+    /**
+     * Acceptor nodes will return a nullable {@link Token} if no branch matches.
+     * Non-acceptor nodes will throw a {@link LexicalException} representing a Lexical error
+     *
+     * @return whether the node is an acceptor node or not
+     */
+    boolean isAcceptor();
 
     /**
      * Adds a new {@link NodeBranch} to this node.
      * The order in which branches are added with this method will establish the order in which branches will
-     * be tested by the node, that is to say, branches will be tested in LIFO order.
+     * be tested by the node, that is to say, branches will be tested in FIFO order.
      *
      * @param branch a {@link NodeBranch} that connects this node with another one
      */
-    void addBranch(NodeBranch<T> branch);
+    void addBranch(NodeBranch branch);
 
     /**
      * Sets a name for this node.

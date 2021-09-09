@@ -2,6 +2,7 @@ package lexical.automata.branch;
 
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.NodeBranch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -22,22 +23,22 @@ import static org.mockito.Mockito.*;
 class TryNodeBranchTest {
 
     private static final int READ_AHEAD_LIMIT = 10;
-    private static final Integer RESULT = 4;
+    @Mock Token RESULT;
 
     @Mock SourceCodeReader readerMock;
 
-    @Mock NodeBranch<Integer> decoratedMock;
-    TryNodeBranch<Integer> testSubject;
+    @Mock NodeBranch decoratedMock;
+    TryNodeBranch testSubject;
 
     @BeforeEach
     void createTestSubject(){
-        testSubject = new TryNodeBranch<>(decoratedMock, READ_AHEAD_LIMIT);
+        testSubject = new TryNodeBranch(decoratedMock, READ_AHEAD_LIMIT);
     }
 
     @Test
     void delegate_decoratedReturnsValue_returnsDecoratedResult(){
         when(decoratedMock.delegate(readerMock)).thenReturn(RESULT);
-        Integer result = testSubject.delegate(readerMock);
+        Token result = testSubject.delegate(readerMock);
         assertEquals(RESULT, result);
     }
 

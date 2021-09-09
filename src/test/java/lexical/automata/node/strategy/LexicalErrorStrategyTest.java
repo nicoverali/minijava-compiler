@@ -7,7 +7,7 @@ class LexicalErrorStrategyTest {
 
     private static final String ERROR_MSG = "This is an error message";
 
-    LexicalErrorStrategy<Integer> testSubject = new LexicalErrorStrategy<>(ERROR_MSG);
+    LexicalErrorStrategy testSubject = new LexicalErrorStrategy(ERROR_MSG);
 
     @Test
     void onNoBranchSelected_always_returnsNull(){

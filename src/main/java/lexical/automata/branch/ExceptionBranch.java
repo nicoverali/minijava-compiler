@@ -4,12 +4,13 @@ import io.code.CodeCharacter;
 import io.code.CodeLine;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.AutomataLexeme;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
 
-public class ExceptionBranch<T> implements NodeBranch<T> {
+public class ExceptionBranch implements NodeBranch {
 
     private LexicalFilter filter;
     private final String errorMsg;
@@ -25,10 +26,15 @@ public class ExceptionBranch<T> implements NodeBranch<T> {
     }
 
     @Override
-    public void setNextNode(LexicalNode<T> nextNode) {}
+    public void setNextNode(LexicalNode nextNode) {}
 
     @Override
-    public T delegate(SourceCodeReader reader) throws LexicalException {
+    public boolean test(CodeCharacter character) {
+        return filter.test(character.getValue());
+    }
+
+    @Override
+    public Token delegate(SourceCodeReader reader) throws LexicalException {
         if (shouldDelegate(reader)){
             CodeLine line = reader.getCurrentLine().orElse(null);
             int column = getColumnNumber(reader);

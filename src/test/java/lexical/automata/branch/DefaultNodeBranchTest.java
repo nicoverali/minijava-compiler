@@ -4,6 +4,7 @@ package lexical.automata.branch;
 import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.LexicalNode;
 import lexical.automata.filter.LexicalFilter;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,15 +28,15 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DefaultNodeBranchTest {
 
-    private static final Integer RESULT = 4;
+    @Mock Token RESULT;
 
     @Mock SourceCodeReader readerMock;
 
     @Mock LexicalException exceptionMock;
 
     @Mock LexicalFilter filterMock;
-    @Mock LexicalNode<Integer> nextNodeMock;
-    @InjectMocks DefaultNodeBranch<Integer> testSubject;
+    @Mock LexicalNode nextNodeMock;
+    @InjectMocks DefaultNodeBranch testSubject;
 
     @BeforeEach
     void setNodeMockAsNextNode(){
@@ -80,7 +81,7 @@ class DefaultNodeBranchTest {
         when(filterMock.test(anyChar())).thenReturn(true);
         when(nextNodeMock.process(readerMock)).thenReturn(RESULT);
 
-        Integer result = testSubject.delegate(readerMock);
+        Token result = testSubject.delegate(readerMock);
         assertEquals(RESULT, result);
     }
 

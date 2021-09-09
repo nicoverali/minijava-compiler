@@ -5,12 +5,12 @@ import io.code.CodeLine;
 
 public class LexicalException extends RuntimeException {
 
-    private final PrependableLexeme lexeme;
+    private final Lexeme lexeme;
     private final String line;
     private final int lineNumber;
     private final int columnNumber;
 
-    public LexicalException(String message, PrependableLexeme lexeme, int columnNumber) {
+    public LexicalException(String message, Lexeme lexeme, int columnNumber) {
         super(message);
         this.lexeme = lexeme;
         this.line = lexeme.getFirstLine().map(CodeLine::toString).orElse("");
@@ -28,7 +28,7 @@ public class LexicalException extends RuntimeException {
     /**
      * Prepends the Lexeme of this exception with the given {@link CodeCharacter}.
      *
-     * @see PrependableLexeme#prepend(CodeCharacter)
+     * @see Lexeme#prepend(CodeCharacter)
      * @param character a {@link CodeCharacter} which will be prepend to this exception lexeme
      */
     public void prependLexeme(CodeCharacter character){

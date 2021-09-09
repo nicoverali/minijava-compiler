@@ -4,6 +4,7 @@ package lexical.automata.branch;
 import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.AutomataToken;
 import lexical.automata.NodeBranch;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -30,7 +31,7 @@ class CharacterTokenPrependBranchTest {
     @Mock CodeCharacter charMock;
 
     @Mock AutomataToken tokenMock;
-    @Mock NodeBranch<AutomataToken> decoratedMock;
+    @Mock NodeBranch decoratedMock;
     @InjectMocks CharacterTokenPrependBranch testSubject;
 
     @Test
@@ -38,7 +39,7 @@ class CharacterTokenPrependBranchTest {
         when(readerMock.peek()).thenReturn(Optional.of(charMock));
         when(decoratedMock.delegate(readerMock)).thenReturn(tokenMock);
 
-        AutomataToken result = testSubject.delegate(readerMock);
+        Token result = testSubject.delegate(readerMock);
         assertEquals(tokenMock, result);
         verify(tokenMock).prepend(charMock);
     }

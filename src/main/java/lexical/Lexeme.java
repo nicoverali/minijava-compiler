@@ -20,6 +20,13 @@ public interface Lexeme {
     boolean isEmpty();
 
     /**
+     * Adds the given {@link CodeCharacter} at the beginning of this Lexeme
+     *
+     * @param character a {@link CodeCharacter} which will be added to the beginning of this Lexeme
+     */
+    void prepend(CodeCharacter character);
+
+    /**
      * Returns the {@link CodeLine} where this Lexeme begins, or an empty {@link Optional} if the Lexeme is empty
      *
      * @return an {@link Optional} wrapping the {@link CodeLine} where this Lexeme begins

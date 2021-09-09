@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class NullStrategyTest {
 
-    NullStrategy<Integer> testSubject = new NullStrategy<>();
+    NullStrategy testSubject = new NullStrategy();
 
     @Test
     void onNoBranchSelected_always_returnsNull(){

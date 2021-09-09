@@ -2,11 +2,11 @@ package lexical.automata;
 
 import io.code.CodeCharacter;
 import io.code.CodeLine;
-import lexical.PrependableLexeme;
+import lexical.Lexeme;
 
 import java.util.Optional;
 
-public class AutomataLexeme implements PrependableLexeme {
+public class AutomataLexeme implements Lexeme {
 
     private final StringBuilder lexemeBuilder = new StringBuilder();
     private CodeLine firstLine;

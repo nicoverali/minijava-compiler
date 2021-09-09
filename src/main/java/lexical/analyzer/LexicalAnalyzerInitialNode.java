@@ -19,8 +19,8 @@ import static lexical.TokenType.EOF;
  */
 public class LexicalAnalyzerInitialNode {
 
-    private final LexicalNode<?> initialOmitterNode;
-    private final LexicalNode<AutomataToken> initialTokenizerNode;
+    private final LexicalNode initialOmitterNode;
+    private final LexicalNode initialTokenizerNode;
     private final SourceCodeReader reader;
 
     private boolean didReachEOF = false;
@@ -34,7 +34,7 @@ public class LexicalAnalyzerInitialNode {
      * @param initialOmitterNode a {@link LexicalNode} which skips unwanted characters
      * @param initialTokenizerNode a {@link LexicalNode} which generates {@link Token}
      */
-    public LexicalAnalyzerInitialNode(SourceCodeReader reader, LexicalNode<?> initialOmitterNode, LexicalNode<AutomataToken> initialTokenizerNode) {
+    public LexicalAnalyzerInitialNode(SourceCodeReader reader, LexicalNode initialOmitterNode, LexicalNode initialTokenizerNode) {
         this.reader = reader;
         this.initialOmitterNode = initialOmitterNode;
         this.initialTokenizerNode = initialTokenizerNode;

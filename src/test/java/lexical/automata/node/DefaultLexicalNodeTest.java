@@ -4,6 +4,7 @@ import io.code.CodeCharacter;
 import io.code.CodeLine;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.NodeBranch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -27,18 +28,18 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DefaultLexicalNodeTest {
 
-    private static final Integer RESULT = 4;
     private static final String NAME = "This is a test node";
 
+    @Mock Token RESULT;
     @Mock SourceCodeReader readerMock;
     @Mock CodeLine lineMock;
     @Mock CodeCharacter charMock;
 
     @Mock LexicalException exceptionMock;
 
-    @Mock NodeBranch<Integer> branchMock;
-    @Mock LexicalNodeStrategy<Integer> strategyMock;
-    DefaultLexicalNode<Integer> testSubject = new DefaultLexicalNode<>(NAME);
+    @Mock NodeBranch branchMock;
+    @Mock LexicalNodeStrategy strategyMock;
+    DefaultLexicalNode testSubject = new DefaultLexicalNode(NAME);
 
     @BeforeEach
     void addMockedStrategy(){
@@ -55,7 +56,7 @@ class DefaultLexicalNodeTest {
     void process_emptyFile_returnStrategyResult(){
         when(strategyMock.onEndOfFile(readerMock, null)).thenReturn(RESULT);
 
-        Integer result = testSubject.process(readerMock);
+        Token result = testSubject.process(readerMock);
         assertEquals(RESULT, result);
     }
 
@@ -84,7 +85,7 @@ class DefaultLexicalNodeTest {
         when(branchMock.delegate(readerMock)).thenReturn(RESULT);
         testSubject.addBranch(branchMock);
 
-        Integer result = testSubject.process(readerMock);
+        Token result = testSubject.process(readerMock);
         verify(branchMock).delegate(readerMock);
         assertEquals(RESULT, result);
     }
@@ -117,7 +118,7 @@ class DefaultLexicalNodeTest {
         when(branchMock.delegate(readerMock)).thenReturn(null);
         when(strategyMock.onNoBranchSelected(readerMock, charMock)).thenReturn(RESULT);
 
-        Integer result = testSubject.process(readerMock);
+        Token result = testSubject.process(readerMock);
         verify(strategyMock).onNoBranchSelected(readerMock, charMock);
         assertEquals(RESULT, result);
     }
@@ -146,7 +147,7 @@ class DefaultLexicalNodeTest {
         when(readerMock.getCurrentLine()).thenReturn(Optional.of(lineMock));
         when(strategyMock.onEndOfFile(eq(readerMock), any())).thenReturn(RESULT);
 
-        Integer result = testSubject.process(readerMock);
+        Token result = testSubject.process(readerMock);
         assertEquals(RESULT, result);
     }
 
@@ -161,9 +162,9 @@ class DefaultLexicalNodeTest {
 
     @Test
     void process_multipleBranches_delegateInOrder(){
-        NodeBranch<Integer> firstBranch = mock(NodeBranch.class);
-        NodeBranch<Integer> secondBranch = mock(NodeBranch.class);
-        NodeBranch<Integer> thirdBranch = mock(NodeBranch.class);
+        NodeBranch firstBranch = mock(NodeBranch.class);
+        NodeBranch secondBranch = mock(NodeBranch.class);
+        NodeBranch thirdBranch = mock(NodeBranch.class);
 
         testSubject.addBranch(firstBranch);
         testSubject.addBranch(secondBranch);
@@ -182,9 +183,9 @@ class DefaultLexicalNodeTest {
 
     @Test
     void process_multipleBranchesFirstDelegates_doesNotDelegateTheRest(){
-        NodeBranch<Integer> firstBranch = mock(NodeBranch.class);
-        NodeBranch<Integer> secondBranch = mock(NodeBranch.class);
-        NodeBranch<Integer> thirdBranch = mock(NodeBranch.class);
+        NodeBranch firstBranch = mock(NodeBranch.class);
+        NodeBranch secondBranch = mock(NodeBranch.class);
+        NodeBranch thirdBranch = mock(NodeBranch.class);
         when(firstBranch.delegate(readerMock)).thenReturn(RESULT);
 
         testSubject.addBranch(firstBranch);
@@ -194,7 +195,7 @@ class DefaultLexicalNodeTest {
         when(readerMock.peek()).thenReturn(Optional.of(charMock));
         when(readerMock.hasNext()).thenReturn(true);
 
-        Integer result = testSubject.process(readerMock);
+        Token result = testSubject.process(readerMock);
 
         assertEquals(RESULT, result);
         verify(firstBranch).delegate(readerMock);

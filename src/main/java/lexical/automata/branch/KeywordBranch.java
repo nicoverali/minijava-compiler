@@ -2,6 +2,7 @@ package lexical.automata.branch;
 
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.TokenType;
 import lexical.automata.AutomataToken;
 import lexical.automata.NodeBranch;
@@ -16,7 +17,7 @@ import static lexical.TokenType.*;
  * returns an {@link AutomataToken} os a result of delegation, it tries to map the token to a keyword token.
  * If the token cannot be mapped, then it simply returns the original token
  */
-public class KeywordBranch extends NodeBranchDecorator<AutomataToken> {
+public class KeywordBranch extends NodeBranchDecorator {
 
     private static final Map<String, TokenType> keywordMap = new HashMap<>();
     static {
@@ -45,11 +46,11 @@ public class KeywordBranch extends NodeBranchDecorator<AutomataToken> {
     }
 
     @Override
-    public AutomataToken delegate(SourceCodeReader reader) throws LexicalException {
+    public Token delegate(SourceCodeReader reader) throws LexicalException {
         return applyMap(decorated.delegate(reader));
     }
 
-    private AutomataToken applyMap(AutomataToken sourceToken){
+    private Token applyMap(Token sourceToken){
         if (sourceToken != null){
             TokenType keywordType = keywordMap.get(sourceToken.getLexeme().toString());
             if (keywordType != null){

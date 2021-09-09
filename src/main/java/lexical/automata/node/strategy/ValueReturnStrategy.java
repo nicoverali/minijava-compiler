@@ -4,28 +4,27 @@ import io.code.CodeCharacter;
 import io.code.CodeLine;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.node.LexicalNodeStrategy;
 
 /**
  * This strategy will always return a certain value if the node cannot delegate or the end of file has been reached.
- *
- * @param <T> type of value returned by this strategy
  */
-public class ValueReturnStrategy<T> implements LexicalNodeStrategy<T> {
+public class ValueReturnStrategy implements LexicalNodeStrategy {
 
-    private final T value;
+    private final Token value;
 
-    public ValueReturnStrategy(T value){
+    public ValueReturnStrategy(Token value){
         this.value = value;
     }
 
     @Override
-    public  T onNoBranchSelected(SourceCodeReader reader,  CodeCharacter currentCharacter) throws LexicalException {
+    public Token onNoBranchSelected(SourceCodeReader reader, CodeCharacter currentCharacter) throws LexicalException {
         return value;
     }
 
     @Override
-    public  T onEndOfFile(SourceCodeReader reader,  CodeLine currentLine) throws LexicalException {
+    public Token onEndOfFile(SourceCodeReader reader,  CodeLine currentLine) throws LexicalException {
         return value;
     }
 

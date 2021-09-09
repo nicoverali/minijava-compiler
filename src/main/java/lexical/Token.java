@@ -13,9 +13,29 @@ public interface Token {
     TokenType getType();
 
     /**
+     * Sets the type of this Token
+     *
+     * @param type a {@link TokenType} which will be the new type of this Token
+     */
+    void setType(TokenType type);
+
+    /**
+     * Adds the given {@link CodeCharacter} at the beginning of this Token.
+     *
+     * @param character a {@link CodeCharacter} that will be add at the beginning of this Token
+     */
+    void prepend(CodeCharacter character);
+
+    /**
      * @return the {@link Lexeme} that matches this Token pattern
      */
     Lexeme getLexeme();
+
+    /**
+     * Prepends the Lexeme of this Token with the given {@link CodeCharacter}.
+     * @param character a {@link CodeCharacter} which will be prepended to this Token's Lexeme
+     */
+    void prependLexeme(CodeCharacter character);
 
     /**
      * Returns the {@link CodeLine} where this Token begins.

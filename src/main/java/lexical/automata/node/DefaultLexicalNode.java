@@ -3,6 +3,7 @@ package lexical.automata.node;
 import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.node.strategy.NullStrategy;
@@ -16,50 +17,53 @@ import java.util.Optional;
  * node.
  * <br>
  * It has a {@link LexicalNodeStrategy} to determine what to do if the processing of characters cannot be delegated.
- *
- * @param <T> type of element return by the node
  */
-public class DefaultLexicalNode<T> implements LexicalNode<T> {
+public class DefaultLexicalNode implements LexicalNode {
 
-    private final Deque<NodeBranch<T>> branches = new ArrayDeque<>();
+    private final Deque<NodeBranch> branches = new ArrayDeque<>();
 
-    private LexicalNodeStrategy<T> strategy = new NullStrategy<>();
+    private LexicalNodeStrategy strategy = new NullStrategy();
     private String name;
 
     public DefaultLexicalNode(String name) {
         this.name = name;
     }
 
-    public DefaultLexicalNode(String name, LexicalNodeStrategy<T> strategy) {
+    public DefaultLexicalNode(String name, LexicalNodeStrategy strategy) {
         this.name = name;
         this.strategy = strategy;
     }
 
-    public void setStrategy(LexicalNodeStrategy<T> strategy){
+    public void setStrategy(LexicalNodeStrategy strategy){
         this.strategy = strategy;
     }
 
     @Override
-    public void addBranch(NodeBranch<T> branch) {
+    public void addBranch(NodeBranch branch) {
         branches.add(branch);
     }
 
 
     @Override
-    public T process(SourceCodeReader reader) throws LexicalException {
+    public Token process(SourceCodeReader reader) throws LexicalException {
         Optional<CodeCharacter> nextChar = reader.peek();
         if (nextChar.isEmpty()){
             return strategy.onEndOfFile(reader, reader.getCurrentLine().orElse(null));
         }
 
-        for (NodeBranch<T> branch : branches){
-            T result = branch.delegate(reader);
+        for (NodeBranch branch : branches){
+            Token result = branch.delegate(reader);
             if (result != null){
                 return result;
             }
         }
 
         return strategy.onNoBranchSelected(reader, nextChar.get());
+    }
+
+    @Override
+    public boolean isAcceptor() {
+        return false;
     }
 
     @Override

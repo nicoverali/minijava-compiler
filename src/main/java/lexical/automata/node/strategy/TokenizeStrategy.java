@@ -13,7 +13,7 @@ import lexical.automata.AutomataToken;
 /**
  * This {@link LexicalNodeStrategy} generates a new {@link Token} when the node cannot delegate.
  */
-public class TokenizeStrategy implements LexicalNodeStrategy<AutomataToken> {
+public class TokenizeStrategy implements LexicalNodeStrategy {
 
     private final TokenType type;
 

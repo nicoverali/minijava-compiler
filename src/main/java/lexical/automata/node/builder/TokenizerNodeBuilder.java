@@ -16,10 +16,10 @@ import lexical.automata.node.strategy.TokenizeStrategy;
 
 public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBuilder.TokenizerBranchBuilder>{
 
-    private final DefaultLexicalNode<AutomataToken> buildingNode;
+    private final DefaultLexicalNode buildingNode;
 
     public TokenizerNodeBuilder(String nodeName){
-        buildingNode = new DefaultLexicalNode<>(nodeName);
+        buildingNode = new DefaultLexicalNode(nodeName);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
      * @param strategy a {@link LexicalNodeStrategy} which will be assign to the node
      * @return the final built {@link LexicalNode}
      */
-    public LexicalNode<AutomataToken> orElse(LexicalNodeStrategy<AutomataToken> strategy){
+    public LexicalNode orElse(LexicalNodeStrategy strategy){
         buildingNode.setStrategy(strategy);
         return buildingNode;
     }
@@ -45,7 +45,7 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
      *
      * @return the final {@link LexicalNode}
      */
-    public LexicalNode<AutomataToken> orElseReject(){
+    public LexicalNode orElseReject(){
         return buildingNode;
     }
 
@@ -56,7 +56,7 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
      * @param type {@link TokenType} of tokens returned by the {@link LexicalNode} being built
      * @return the final built {@link LexicalNode}
      */
-    public LexicalNode<AutomataToken> orElseReturnToken(TokenType type){
+    public LexicalNode orElseReturnToken(TokenType type){
         buildingNode.setStrategy(new TokenizeStrategy(type));
         return buildingNode;
     }
@@ -68,12 +68,12 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
      * @param msg the message of all {@link lexical.LexicalException} thrown by the {@link LexicalNode} being built
      * @return the final built {@link LexicalNode}
      */
-    public LexicalNode<AutomataToken> orElseThrow(String msg){
-        buildingNode.setStrategy(new LexicalErrorStrategy<>(msg));
+    public LexicalNode orElseThrow(String msg){
+        buildingNode.setStrategy(new LexicalErrorStrategy(msg));
         return buildingNode;
     }
 
-    public class TokenizerBranchBuilder extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<AutomataToken, TokenizerNodeBuilder, TokenizerBranchBuilder> {
+    public class TokenizerBranchBuilder extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<TokenizerNodeBuilder, TokenizerBranchBuilder> {
 
 
         public TokenizerBranchBuilder(LexicalFilter filter, TokenizerNodeBuilder nodeBuilder) {
@@ -87,7 +87,7 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
         }
 
         @Override
-        protected LexicalNode<AutomataToken> getBuildingNode() {
+        protected LexicalNode getBuildingNode() {
             return buildingNode;
         }
 
@@ -97,7 +97,7 @@ public class TokenizerNodeBuilder extends BaseLexicalNodeBuilder<TokenizerNodeBu
          *
          * @return this branch builder to end the branch creation
          */
-        public BaseNodeBranchBuilder<AutomataToken, TokenizerNodeBuilder, ?> storeInLexeme(){
+        public BaseNodeBranchBuilder<TokenizerNodeBuilder, ?> storeInLexeme(){
             buildingBranch = new CharacterLexemePrependBranch(buildingBranch);
             return this;
         }

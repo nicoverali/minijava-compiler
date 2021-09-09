@@ -1,15 +1,17 @@
 package lexical.automata.branch;
 
+import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
 
-public class DefaultNodeBranch<T> implements NodeBranch<T> {
+public class DefaultNodeBranch implements NodeBranch {
 
     private LexicalFilter filter;
-    private LexicalNode<T> nextNode;
+    private LexicalNode nextNode;
 
     public DefaultNodeBranch(LexicalFilter filter){
         this.filter = filter;
@@ -21,12 +23,17 @@ public class DefaultNodeBranch<T> implements NodeBranch<T> {
     }
 
     @Override
-    public void setNextNode(LexicalNode<T> nextNode) {
+    public void setNextNode(LexicalNode nextNode) {
         this.nextNode = nextNode;
     }
 
     @Override
-    public T delegate(SourceCodeReader reader) throws LexicalException {
+    public boolean test(CodeCharacter character) {
+        return filter.test(character.getValue());
+    }
+
+    @Override
+    public Token delegate(SourceCodeReader reader) throws LexicalException {
         if (nextNode != null && shouldDelegate(reader)){
             reader.next(); // Consume character
             return nextNode.process(reader);

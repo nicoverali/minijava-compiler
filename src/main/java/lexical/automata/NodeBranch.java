@@ -1,7 +1,9 @@
 package lexical.automata;
 
+import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
+import lexical.Token;
 import lexical.automata.filter.LexicalFilter;
 
 /**
@@ -9,10 +11,8 @@ import lexical.automata.filter.LexicalFilter;
  * It won't expose the next node directly, but provides a way of delegating to it.
  * <br>
  * All branches have an associated {@link LexicalFilter} to determine if a character can be delegated or not.
- *
- * @param <T> type of element return by the {@link LexicalNode} it connects
  */
-public interface NodeBranch<T> {
+public interface NodeBranch {
 
     /**
      * Sets the filter of this branch. Only the characters that passes the filter will be delegated.
@@ -27,25 +27,31 @@ public interface NodeBranch<T> {
      *
      * @param nextNode the next {@link LexicalNode} of this branch
      */
-    void setNextNode(LexicalNode<T> nextNode);
+    void setNextNode(LexicalNode nextNode);
 
     /**
-     * Test the next character of the {@link SourceCodeReader} and if it passes this branch {@link LexicalFilter}
-     * then it delegates the processing of characters to the next node of this branch.
-     * The branch will consume the next character only if it will actually delegate the processing, so that
-     * the next node process the one after it.
+     * Determines whether the given character passes this branch filter. If so, is safe to delegate
+     * the process of characters to the next node of this branch.
+     *
+     * @param character the character to be tested
+     * @return true if the given character passes this branch filter, false otherwise
+     */
+    boolean test(CodeCharacter character);
+
+    /**
+     * Delegates the processing of characters to the next node of this branch.
+     * The branch will consume the next character so that the next node process the one after it.
      * <br><br>
-     * The branch will return the resulting element of the next node processing, or null if the next node could not
-     * process the next characters. Likewise, if the next node detects a lexical error then this branch will
+     * The branch will return the resulting element of the next node processing.
+     * Likewise, if the next node detects a lexical error then this branch will
      * propagate the exception.
      *
      * @see #setFilter(LexicalFilter)
      * @param reader a {@link SourceCodeReader} to take its next characters as input
-     * @return an element of type <code>T</code> returned by the next node, or null if the next node couldn't process
-     * the next character
+     * @return a nullable {@link Token} returned by the next node
      * @throws LexicalException if a lexical error is detected
      */
-    T delegate(SourceCodeReader reader) throws LexicalException;
+    Token delegate(SourceCodeReader reader) throws LexicalException;
 
 
 }

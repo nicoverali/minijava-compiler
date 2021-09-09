@@ -14,7 +14,7 @@ import lexical.automata.node.LexicalNodeStrategy;
  * This strategy represents the strategy of the initial node of a tokenize automata.
  * It throws an exception if a character cannot be process, and returns the EOF token when the end of file gets reached.
  */
-public class TokenizeInitialStrategy implements LexicalNodeStrategy<AutomataToken> {
+public class TokenizeInitialStrategy implements LexicalNodeStrategy {
 
     private final String errorMsg;
 

@@ -1,5 +1,8 @@
 package lexical.automata.node.builder;
 
+import lexical.TokenType;
+import lexical.automata.AutomataLexeme;
+import lexical.automata.AutomataToken;
 import lexical.automata.LexicalNode;
 import lexical.automata.filter.LexicalFilter;
 import lexical.automata.node.DefaultLexicalNode;
@@ -8,10 +11,10 @@ import lexical.automata.node.strategy.ValueReturnStrategy;
 
 public class OmitterNodeBuilder extends BaseLexicalNodeBuilder<OmitterNodeBuilder.OmitterBranchBuilder>{
 
-    private final DefaultLexicalNode<Boolean> buildingNode;
+    private final DefaultLexicalNode buildingNode;
 
     public OmitterNodeBuilder(String nodeName){
-        buildingNode = new DefaultLexicalNode<>(nodeName);
+        buildingNode = new DefaultLexicalNode(nodeName);
     }
 
     @Override
@@ -25,8 +28,8 @@ public class OmitterNodeBuilder extends BaseLexicalNodeBuilder<OmitterNodeBuilde
      *
      * @return the final {@link LexicalNode}
      */
-    public LexicalNode<Boolean> orElseAccept(){
-        buildingNode.setStrategy(new ValueReturnStrategy<>(true));
+    public LexicalNode orElseAccept(){
+        buildingNode.setStrategy(new ValueReturnStrategy(new AutomataToken(null, AutomataLexeme.empty())));
         return buildingNode;
     }
 
@@ -36,7 +39,7 @@ public class OmitterNodeBuilder extends BaseLexicalNodeBuilder<OmitterNodeBuilde
      *
      * @return the final {@link LexicalNode}
      */
-    public LexicalNode<Boolean> orElseReject(){
+    public LexicalNode orElseReject(){
         return buildingNode;
     }
 
@@ -47,12 +50,12 @@ public class OmitterNodeBuilder extends BaseLexicalNodeBuilder<OmitterNodeBuilde
      * @param msg the message of all {@link lexical.LexicalException} thrown by the {@link LexicalNode} being built
      * @return a node builder to keep building the node
      */
-    public LexicalNode<Boolean> orElseThrow(String msg){
-        buildingNode.setStrategy(new LexicalErrorStrategy<>(msg));
+    public LexicalNode orElseThrow(String msg){
+        buildingNode.setStrategy(new LexicalErrorStrategy(msg));
         return buildingNode;
     }
 
-    public class OmitterBranchBuilder extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<Boolean, OmitterNodeBuilder, OmitterBranchBuilder>{
+    public class OmitterBranchBuilder extends BaseLexicalNodeBuilder.BaseNodeBranchBuilder<OmitterNodeBuilder, OmitterBranchBuilder>{
 
         public OmitterBranchBuilder(LexicalFilter filter, OmitterNodeBuilder nodeBuilder) {
             super(filter, nodeBuilder);
@@ -64,7 +67,7 @@ public class OmitterNodeBuilder extends BaseLexicalNodeBuilder<OmitterNodeBuilde
         }
 
         @Override
-        protected LexicalNode<Boolean> getBuildingNode() {
+        protected LexicalNode getBuildingNode() {
             return buildingNode;
         }
     }

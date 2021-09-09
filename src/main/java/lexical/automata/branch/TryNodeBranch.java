@@ -1,6 +1,7 @@
 package lexical.automata.branch;
 
 import io.code.SourceCodeReader;
+import lexical.Token;
 import lexical.automata.NodeBranch;
 
 
@@ -9,24 +10,24 @@ import lexical.automata.NodeBranch;
  * current character if the delegation does actually produce a result, or put another way, if the characters
  * are accepted by the following nodes
  */
-public class TryNodeBranch<T> extends NodeBranchDecorator<T> {
+public class TryNodeBranch extends NodeBranchDecorator {
 
     private final int readAheadLimit;
 
-    public TryNodeBranch(NodeBranch<T> decorated, int aheadLimit) {
+    public TryNodeBranch(NodeBranch decorated, int aheadLimit) {
         super(decorated);
         readAheadLimit = aheadLimit;
     }
 
     @Override
-    public T delegate(SourceCodeReader reader) {
+    public Token delegate(SourceCodeReader reader) {
         reader.mark(readAheadLimit);
-        T result = decorated.delegate(reader);
+        Token result = decorated.delegate(reader);
         if (rejects(result)) reader.reset();
         return result;
     }
 
-    private boolean rejects(T result){
+    private boolean rejects(Token result){
         return result == null;
     }
 

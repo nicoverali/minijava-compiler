@@ -21,8 +21,8 @@ public class TokenizerAcceptorBuilder {
     /**
      * Builds a new {@link LexicalNode} without any {@link lexical.automata.NodeBranch}.
      */
-    public LexicalNode<AutomataToken> build(){
-        DefaultLexicalNode<AutomataToken> node = new DefaultLexicalNode<>("Accepts a "+ type +" token");
+    public LexicalNode build(){
+        DefaultLexicalNode node = new DefaultLexicalNode("Accepts a "+ type +" token");
         node.setStrategy(new TokenizeStrategy(type));
         return node;
     }
