@@ -1,7 +1,6 @@
 package lexical.automata.node.builder;
 
-import lexical.TokenType;
-import lexical.automata.AutomataLexeme;
+import io.code.CodeCharacter;
 import lexical.automata.AutomataToken;
 import lexical.automata.LexicalNode;
 import lexical.automata.filter.LexicalFilter;
@@ -29,7 +28,7 @@ public class OmitterNodeBuilder extends BaseLexicalNodeBuilder<OmitterNodeBuilde
      * @return the final {@link LexicalNode}
      */
     public LexicalNode orElseAccept(){
-        buildingNode.setStrategy(new ValueReturnStrategy(new AutomataToken(null, AutomataLexeme.empty())));
+        buildingNode.setStrategy(new ValueReturnStrategy(new AutomataToken(null, "", (CodeCharacter) null)));
         return buildingNode;
     }
 

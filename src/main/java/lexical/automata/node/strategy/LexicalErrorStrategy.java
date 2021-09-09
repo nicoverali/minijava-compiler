@@ -5,7 +5,6 @@ import io.code.CodeLine;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
-import lexical.automata.AutomataLexeme;
 import lexical.automata.node.LexicalNodeStrategy;
 
 /**
@@ -22,12 +21,12 @@ public class LexicalErrorStrategy implements LexicalNodeStrategy {
 
     @Override
     public Token onNoBranchSelected(SourceCodeReader reader, CodeCharacter currentCharacter) throws LexicalException {
-        throw new LexicalException(errorMsg, AutomataLexeme.empty(currentCharacter.getCodeLine()), currentCharacter.getColumnNumber());
+        throw new LexicalException(errorMsg, currentCharacter.getCodeLine(), "", currentCharacter.getColumnNumber());
     }
 
     @Override
     public Token onEndOfFile(SourceCodeReader reader, CodeLine currentLine) throws LexicalException {
         int columnNumber = currentLine != null ? currentLine.getSize() : 0;
-        throw new LexicalException(errorMsg, AutomataLexeme.empty(currentLine), columnNumber);
+        throw new LexicalException(errorMsg, currentLine, "", columnNumber);
     }
 }

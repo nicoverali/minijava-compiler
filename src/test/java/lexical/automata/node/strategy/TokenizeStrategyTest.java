@@ -54,16 +54,17 @@ class TokenizeStrategyTest {
         when(lineMock.getLineNumber()).thenReturn(LINE_NUMBER);
 
         AutomataToken token = testSubject.onNoBranchSelected(readerMock, charMock);
-        assertEquals(LINE_NUMBER, token.getLexeme().getLineNumber());
+        assertEquals(LINE_NUMBER, token.getLineNumber());
     }
 
     @Test
     void onNoBranchSelected_always_returnsTokenWithLexemeAtEndColumnNumber(){
         when(charMock.getCodeLine()).thenReturn(lineMock);
+        when(charMock.getColumnNumber()).thenReturn(COLUMN_NUMBER);
         when(lineMock.getSize()).thenReturn(LINE_SIZE);
 
         AutomataToken token = testSubject.onNoBranchSelected(readerMock, charMock);
-        assertEquals(LINE_SIZE, token.getLexeme().getColumnNumber());
+        assertEquals(LINE_SIZE, token.getColumnNumber());
     }
 
     @Test
@@ -110,8 +111,8 @@ class TokenizeStrategyTest {
     @Test
     void onEndOfFile_lineIsNull_returnsTokenWithLexemeAtLineAndColumn0(){
         AutomataToken token = testSubject.onEndOfFile(readerMock, null);
-        assertEquals(0, token.getLexeme().getLineNumber());
-        assertEquals(0, token.getLexeme().getColumnNumber());
+        assertEquals(0, token.getLineNumber());
+        assertEquals(0, token.getColumnNumber());
     }
 
     @Test
@@ -145,8 +146,8 @@ class TokenizeStrategyTest {
         when(lineMock.getLineNumber()).thenReturn(LINE_NUMBER);
         when(lineMock.getSize()).thenReturn(LINE_SIZE);
         AutomataToken token = testSubject.onEndOfFile(readerMock, lineMock);
-        assertEquals(LINE_NUMBER, token.getLexeme().getLineNumber());
-        assertEquals(LINE_SIZE, token.getLexeme().getColumnNumber());
+        assertEquals(LINE_NUMBER, token.getLineNumber());
+        assertEquals(LINE_SIZE, token.getColumnNumber());
     }
 
     @Test

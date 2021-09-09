@@ -2,17 +2,15 @@ package lexical.automata.branch;
 
 import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
-import lexical.Lexeme;
 import lexical.LexicalException;
 import lexical.Token;
 import lexical.automata.NodeBranch;
-import lexical.automata.AutomataToken;
 
 import java.util.Optional;
 
 /**
  * This type of {@link NodeBranch} delegates processing of characters as usual, but when the node returns
- * a Token or throws a LexicalException, it prepends the {@link SourceCodeReader} current character to their {@link Lexeme}.
+ * a Token or throws a LexicalException, it prepends the {@link SourceCodeReader} current character to their lexeme.
  */
 public class CharacterLexemePrependBranch extends NodeBranchDecorator {
 

@@ -5,7 +5,6 @@ import io.code.CodeLine;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
-import lexical.automata.AutomataLexeme;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.filter.LexicalFilter;
@@ -38,7 +37,7 @@ public class ExceptionBranch implements NodeBranch {
         if (shouldDelegate(reader)){
             CodeLine line = reader.getCurrentLine().orElse(null);
             int column = getColumnNumber(reader);
-            throw new LexicalException(errorMsg, AutomataLexeme.empty(line), column);
+            throw new LexicalException(errorMsg, line, "", column);
         } else {
             return null;
         }

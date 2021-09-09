@@ -27,9 +27,9 @@ public interface Token {
     void prepend(CodeCharacter character);
 
     /**
-     * @return the {@link Lexeme} that matches this Token pattern
+     * @return the lexeme that matches this Token pattern
      */
-    Lexeme getLexeme();
+    String getLexeme();
 
     /**
      * Prepends the Lexeme of this Token with the given {@link CodeCharacter}.

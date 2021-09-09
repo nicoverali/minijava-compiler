@@ -4,7 +4,6 @@ import io.code.CodeCharacter;
 import io.code.CodeLine;
 import lexical.Token;
 import lexical.TokenType;
-import lexical.automata.AutomataLexeme;
 import lexical.automata.AutomataToken;
 
 public class AcceptorNode extends BaseLexicalNode{
@@ -30,9 +29,9 @@ public class AcceptorNode extends BaseLexicalNode{
         if (returnType == null) {
             return null;
         }
-        else if (currentLine != null){
-            return new AutomataToken(returnType ,AutomataLexeme.empty(currentLine));
+        else if (nextChar != null){
+            return new AutomataToken(returnType , "", nextChar);
         }
-        return new AutomataToken(returnType, AutomataLexeme.empty());
+        return new AutomataToken(returnType, "", (CodeCharacter) null);
     }
 }
