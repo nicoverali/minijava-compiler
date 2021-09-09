@@ -41,10 +41,15 @@ public class ScannerSourceCodeReader implements SourceCodeReader {
     }
 
     @Override
-    public Optional<CodeLine> getCurrentLine() {
+    public Optional<CodeLine> getLastLine() {
         return lastCharacter != null
                 ? Optional.of(lastCharacter.getCodeLine())
                 : Optional.empty();
+    }
+
+    @Override
+    public Optional<CodeCharacter> getLastCharacter() {
+        return Optional.ofNullable(lastCharacter);
     }
 
     @Override

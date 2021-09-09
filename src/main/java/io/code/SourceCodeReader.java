@@ -55,7 +55,15 @@ public interface SourceCodeReader extends MarkableSequence<CodeCharacter> {
      *
      * @return an {@link Optional} wrapping the line of the last character returned by this reader
      */
-    Optional<CodeLine> getCurrentLine();
+    Optional<CodeLine> getLastLine();
+
+    /**
+     * Returns the last character returned by {@link #next()}.
+     * If {@link #next()} has never been called or the last call reach EOF, then it will return an empty {@link Optional}
+     *
+     * @return an {@link Optional} wrapping the last character returned by this reader
+     */
+    Optional<CodeCharacter> getLastCharacter();
 
     /**
      * Returns the line number of the last character returned by {@link #next()}, or line 0 if the either the
