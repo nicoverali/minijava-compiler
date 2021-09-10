@@ -173,6 +173,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
             new LexicalNodeBuilder("Tries to match a valid character value")
                 .ifEquals('\\').thenMoveTo(charSpecialCharacterOpen)
                 .ifAnyExcept('\\', '\n', '\'').thenMoveTo(charClosingNode)
+                .ifEquals('\'').thenThrow("El caracter ' no es un caracter valido")
                 .ifEquals('\n').thenThrow("El caracter de salto de linea no es un literal char valido")
                 .orElseThrow("Literal char no válido.");
 
