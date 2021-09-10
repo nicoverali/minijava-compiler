@@ -46,7 +46,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
     @Test
     default void onEmptyFile_shouldNotHaveCurrentLine()  {
         SourceCodeReader testSubject = createSourceCodeReader();
-        assertFalse(testSubject.getCurrentLine().isPresent());
+        assertFalse(testSubject.getLastLine().isPresent());
     }
 
     @DisplayName("With empty file, should not have a next character.")
@@ -127,9 +127,9 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         assertEquals(testCharacter, testSubject.next().get().getValue());
         assertFalse(testSubject.next().isPresent());
 
-        assertEquals(0, testSubject.getCurrentLine().get().getLineNumber());
-        assertEquals(1, testSubject.getCurrentLine().get().getSize());
-        assertEquals(String.valueOf(testCharacter), testSubject.getCurrentLine().get().toString());
+        assertEquals(0, testSubject.getLastLine().get().getLineNumber());
+        assertEquals(1, testSubject.getLastLine().get().getSize());
+        assertEquals(String.valueOf(testCharacter), testSubject.getLastLine().get().toString());
     }
 
     @DisplayName("With single character, peeking should return empty optional after getting first character.")
@@ -243,7 +243,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         assertEquals('\n', testSubject.next().get().getValue());
         assertEquals(secondLine.charAt(0), testSubject.peek().get().getValue()); // Here we peek first from second line
 
-        assertEquals(firstLine+'\n', testSubject.getCurrentLine().get().toString());
+        assertEquals(firstLine+'\n', testSubject.getLastLine().get().toString());
     }
 
     @DisplayName("With two lines, after consuming new line, should have next character.")
@@ -272,7 +272,7 @@ public interface SourceCodeReaderTest<T extends SourceCodeReader> {
         assertEquals('\n', testSubject.next().get().getValue());
         assertEquals(secondLine.charAt(0), testSubject.next().get().getValue());
 
-        assertEquals(secondLine, testSubject.getCurrentLine().get().toString());
+        assertEquals(secondLine, testSubject.getLastLine().get().toString());
     }
 
     @DisplayName("With two lines, without consuming, current line number should be 0.")

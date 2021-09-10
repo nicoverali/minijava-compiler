@@ -30,18 +30,11 @@ public interface LexicalNode{
      *
      * @see #addBranch(NodeBranch)
      * @param reader a {@link SourceCodeReader} to take its next characters as input
+     * @param currentLexeme the current lexeme
      * @return a nullable {@link Token}
      * @throws LexicalException if a lexical error is detected
      */
-    Token process(SourceCodeReader reader) throws LexicalException;
-
-    /**
-     * Acceptor nodes will return a nullable {@link Token} if no branch matches.
-     * Non-acceptor nodes will throw a {@link LexicalException} representing a Lexical error
-     *
-     * @return whether the node is an acceptor node or not
-     */
-    boolean isAcceptor();
+    Token process(SourceCodeReader reader, Lexeme currentLexeme) throws LexicalException;
 
     /**
      * Adds a new {@link NodeBranch} to this node.

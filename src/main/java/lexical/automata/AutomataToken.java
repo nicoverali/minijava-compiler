@@ -5,30 +5,23 @@ import io.code.CodeLine;
 import lexical.Token;
 import lexical.TokenType;
 
+import javax.swing.text.html.Option;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AutomataToken implements Token {
 
-    private String lexeme;
+    private final Lexeme lexeme;
+    private final CodeLine firstLine;
+    private final CodeCharacter firstCharacter;
     private TokenType type;
-    private CodeCharacter firstCharacter;
-    private CodeLine firstLine;
 
-
-    public AutomataToken(TokenType type, String lexeme, CodeCharacter firstCharacter) {
-        this.type = type;
+    public AutomataToken(Lexeme lexeme, TokenType type, CodeLine firstLine, CodeCharacter firstCharacter) {
         this.lexeme = lexeme;
+        this.type = type;
+        this.firstLine = firstLine;
         this.firstCharacter = firstCharacter;
-        this.firstLine = firstCharacter != null
-            ? firstCharacter.getCodeLine()
-            : null;
-    }
-
-    public AutomataToken(TokenType type, String lexeme, CodeLine line) {
-        this.type = type;
-        this.lexeme = lexeme;
-        this.firstCharacter = null;
-        this.firstLine = line;
     }
 
     /**
@@ -40,24 +33,6 @@ public class AutomataToken implements Token {
         this.type = type;
     }
 
-    /**
-     * Adds the given {@link CodeCharacter} at the beginning of this Token.
-     *
-     * @param character a {@link CodeCharacter} that will be add at the beginning of this Token
-     */
-    public void prepend(CodeCharacter character){
-        firstCharacter = character;
-        firstLine = character.getCodeLine();
-    }
-
-    /**
-     * Prepends the Lexeme of this Token with the given {@link CodeCharacter}.
-     * @param character a {@link CodeCharacter} which will be prepended to this Token's Lexeme
-     */
-    public void prependLexeme(CodeCharacter character){
-        lexeme = character.getValue() + lexeme;
-    }
-
     @Override
     public TokenType getType() {
         return type;
@@ -66,7 +41,7 @@ public class AutomataToken implements Token {
 
     @Override
     public String getLexeme() {
-        return lexeme;
+        return lexeme.toString();
     }
 
 
@@ -82,19 +57,14 @@ public class AutomataToken implements Token {
 
     @Override
     public int getLineNumber() {
-        return firstLine != null
-                ? firstLine.getLineNumber()
-                : 0;
+        if (firstLine == null) return 0;
+        return firstLine.getLineNumber();
     }
 
     @Override
     public int getColumnNumber() {
-        if (firstCharacter != null){
-            return firstCharacter.getColumnNumber();
-        } else if (firstLine != null) {
-            return firstLine.getSize();
-        }
-        return 0;
+        if (firstCharacter == null) return 0;
+        return firstCharacter.getColumnNumber();
     }
 
     @Override

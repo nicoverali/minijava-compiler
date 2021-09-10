@@ -4,9 +4,10 @@ import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
+import lexical.automata.Lexeme;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
-import lexical.automata.filter.LexicalFilter;
+import lexical.automata.branch.filter.LexicalFilter;
 
 public class DefaultNodeBranch implements NodeBranch {
 
@@ -33,19 +34,9 @@ public class DefaultNodeBranch implements NodeBranch {
     }
 
     @Override
-    public Token delegate(SourceCodeReader reader) throws LexicalException {
-        if (nextNode != null && shouldDelegate(reader)){
-            reader.next(); // Consume character
-            return nextNode.process(reader);
-        } else {
-            return null;
-        }
-    }
-
-    private boolean shouldDelegate(SourceCodeReader reader){
-        return reader.peek()
-                .map(character -> filter.test(character.getValue()))
-                .orElse(false);
+    public Token delegate(SourceCodeReader reader, Lexeme currentLexeme) throws LexicalException {
+        if (nextNode == null) throw new IllegalStateException("Set the next node before delegating");
+        return nextNode.process(reader, currentLexeme);
     }
 
     @Override

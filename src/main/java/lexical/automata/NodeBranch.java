@@ -4,7 +4,7 @@ import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
-import lexical.automata.filter.LexicalFilter;
+import lexical.automata.branch.filter.LexicalFilter;
 
 /**
  * A branch that connects two {@link LexicalNode} together.
@@ -40,7 +40,8 @@ public interface NodeBranch {
 
     /**
      * Delegates the processing of characters to the next node of this branch.
-     * The branch will consume the next character so that the next node process the one after it.
+     * The branch will consume the next character and add it to the current lexeme.
+     * The next node will process the one after it.
      * <br><br>
      * The branch will return the resulting element of the next node processing.
      * Likewise, if the next node detects a lexical error then this branch will
@@ -48,10 +49,11 @@ public interface NodeBranch {
      *
      * @see #setFilter(LexicalFilter)
      * @param reader a {@link SourceCodeReader} to take its next characters as input
+     * @param currentLexeme the current lexeme
      * @return a nullable {@link Token} returned by the next node
      * @throws LexicalException if a lexical error is detected
      */
-    Token delegate(SourceCodeReader reader) throws LexicalException;
+    Token delegate(SourceCodeReader reader, Lexeme currentLexeme) throws LexicalException;
 
 
 }

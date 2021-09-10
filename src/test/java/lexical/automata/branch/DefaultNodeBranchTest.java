@@ -5,8 +5,9 @@ import io.code.CodeCharacter;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.Token;
+import lexical.automata.Lexeme;
 import lexical.automata.LexicalNode;
-import lexical.automata.filter.LexicalFilter;
+import lexical.automata.branch.filter.LexicalFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import util.RoyOsheroveTestNameGenerator;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,6 +33,7 @@ class DefaultNodeBranchTest {
 
     @Mock LexicalException exceptionMock;
 
+    @Mock CodeCharacter charMock;
     @Mock LexicalFilter filterMock;
     @Mock LexicalNode nextNodeMock;
     @InjectMocks DefaultNodeBranch testSubject;
@@ -44,82 +44,52 @@ class DefaultNodeBranchTest {
     }
 
     @Test
-    void delegate_nextCharacterDoesNotExist_doesNotDelegateToNextNode(){
-        testSubject.delegate(readerMock);
-        verify(nextNodeMock, never()).process(any());
-    }
-
-    @Test
-    void delegate_nextCharacterDoesNotExist_returnsNull(){
-        assertNull(testSubject.delegate(readerMock));
-    }
-
-    @Test
-    void delegate_existsNextCharacterAndPassesFilter_consumesCharacterOnlyOnce(){
-        when(readerMock.hasNext()).thenReturn(true);
-        when(readerMock.peek()).thenReturn(Optional.of(mock(CodeCharacter.class)));
+    void test_filterPass_returnsTrue(){
         when(filterMock.test(anyChar())).thenReturn(true);
-
-        testSubject.delegate(readerMock);
-        verify(readerMock, times(1)).next();
+        assertTrue(testSubject.test(charMock));
     }
 
     @Test
-    void delegate_existsNextCharacterAndPassesFilter_delegatesToNextNodeOnlyOnce(){
-        when(readerMock.hasNext()).thenReturn(true);
-        when(readerMock.peek()).thenReturn(Optional.of(mock(CodeCharacter.class)));
-        when(filterMock.test(anyChar())).thenReturn(true);
-
-        testSubject.delegate(readerMock);
-        verify(nextNodeMock, times(1)).process(readerMock);
+    void test_filterReject_returnsFalse(){
+        when(filterMock.test(anyChar())).thenReturn(false);
+        assertFalse(testSubject.test(charMock));
     }
 
     @Test
-    void delegate_existsNextCharacterAndPassesFilter_returnsDelegationResult(){
-        when(readerMock.hasNext()).thenReturn(true);
-        when(readerMock.peek()).thenReturn(Optional.of(mock(CodeCharacter.class)));
-        when(filterMock.test(anyChar())).thenReturn(true);
-        when(nextNodeMock.process(readerMock)).thenReturn(RESULT);
+    void delegate_doesNotHaveNextNode_throwsException(){
+        testSubject.setNextNode(null);
+        assertThrows(IllegalStateException.class, () -> testSubject.delegate(readerMock, Lexeme.empty()));
+    }
 
-        Token result = testSubject.delegate(readerMock);
+    @Test
+    void delegate_hasNextNode_delegates(){
+        testSubject.setNextNode(nextNodeMock);
+        testSubject.delegate(readerMock, Lexeme.empty());
+        verify(nextNodeMock).process(eq(readerMock), any());
+    }
+
+    @Test
+    void delegate_hasNextNode_passCurrentLexeme(){
+        Lexeme lexeme = Lexeme.empty();
+        testSubject.setNextNode(nextNodeMock);
+        testSubject.delegate(readerMock, lexeme);
+        verify(nextNodeMock).process(readerMock, lexeme);
+    }
+
+    @Test
+    void delegate_nextNodeReturnsResult_returnsDelegationResult(){
+        when(nextNodeMock.process(any(), any())).thenReturn(RESULT);
+        testSubject.setNextNode(nextNodeMock);
+        Token result = testSubject.delegate(readerMock, Lexeme.empty());
         assertEquals(RESULT, result);
     }
 
     @Test
-    void delegate_existsNextCharacterAndPassesFilter_propagatesDelegationException(){
-        when(readerMock.hasNext()).thenReturn(true);
-        when(readerMock.peek()).thenReturn(Optional.of(mock(CodeCharacter.class)));
-        when(filterMock.test(anyChar())).thenReturn(true);
-        when(nextNodeMock.process(readerMock)).thenThrow(exceptionMock);
-
-        LexicalException e = assertThrows(LexicalException.class, () -> testSubject.delegate(readerMock));
-        assertEquals(exceptionMock, e);
-    }
-
-    @Test
-    void delegate_existsNextCharacterButDoesNotPassFilter_doesNotDelegateToNextNode(){
-        when(readerMock.hasNext()).thenReturn(true);
-        when(readerMock.peek()).thenReturn(Optional.of(mock(CodeCharacter.class)));
-
-        testSubject.delegate(readerMock);
-        verify(nextNodeMock, never()).process(readerMock);
-    }
-
-    @Test
-    void delegate_existsNextCharacterButDoesNotPassFilter_returnsNull(){
-        when(readerMock.hasNext()).thenReturn(true);
-        when(readerMock.peek()).thenReturn(Optional.of(mock(CodeCharacter.class)));
-
-        assertNull(testSubject.delegate(readerMock));
-    }
-
-    @Test
-    void delegate_existsNextCharacterButDoesNotPassFilter_doesNotConsumeCharacter(){
-        when(readerMock.hasNext()).thenReturn(true);
-        when(readerMock.peek()).thenReturn(Optional.of(mock(CodeCharacter.class)));
-
-        testSubject.delegate(readerMock);
-        verify(readerMock, never()).next();
+    void delegate_nextNodeThrowsException_propagatesException(){
+        when(nextNodeMock.process(any(), any())).thenThrow(exceptionMock);
+        testSubject.setNextNode(nextNodeMock);
+        LexicalException exception = assertThrows(LexicalException.class, () -> testSubject.delegate(readerMock, Lexeme.empty()));
+        assertEquals(exceptionMock, exception);
     }
 
 }
