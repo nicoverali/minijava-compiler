@@ -46,7 +46,7 @@ public enum TokenType {
     K_PRIVATE("keyword_private"),
     K_IF("keyword_if"),
     K_ELSE("keyword_else"),
-    K_WHILE("keyword_while"),
+    K_FOR("keyword_for"),
     K_RETURN("keyword_return"),
     K_THIS("keyword_this"),
     K_NEW("keyword_new"),

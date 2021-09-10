@@ -29,15 +29,13 @@ public class KeywordDecorator implements LexicalNodeStrategy {
         keywordMap.put("private", K_PRIVATE);
         keywordMap.put("if", K_IF);
         keywordMap.put("else", K_ELSE);
-        keywordMap.put("while", K_WHILE);
+        keywordMap.put("for", K_FOR);
         keywordMap.put("return", K_RETURN);
         keywordMap.put("this", K_THIS);
         keywordMap.put("new", K_NEW);
         keywordMap.put("null", K_NULL);
         keywordMap.put("true", K_TRUE);
         keywordMap.put("false", K_FALSE);
-        keywordMap.put("interface", K_INTERFACE);
-        keywordMap.put("implements", K_IMPLEMENTS);
     }
 
     private final LexicalNodeStrategy decorated;
