@@ -123,6 +123,15 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
 
     // ------ Strings -------- //
 
+    private static final LexicalNode stringSingleLineEscape =
+            new LexicalNodeBuilder("Escapes any character and goes back")
+                .orElseThrow("Literal String no cerrado");
+
+    private static final LexicalNode stringMultiLineEscape =
+            new LexicalNodeBuilder("Escapes any character and goes back")
+                .orElseThrow("Literal String no cerrado");
+
+
     private static final LexicalNode stringMultilineClosingThirdQuote =
             new LexicalNodeBuilder("Tries to match the third closing double quote")
                 .ifEquals('"').thenMoveToNodeWith(new SubLexemeStrategy(STRING, 3))
@@ -136,6 +145,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode stringMultilineChars =
             new LexicalNodeBuilder("Stores every character but tries to close String on double quote character")
                 .ifEquals('"').thenMoveTo(stringMultilineClosingSecondQuote)
+                .ifEquals('\\').thenMoveTo(stringMultiLineEscape)
                 .ifAnyExcept('"').thenRepeat()
                 .orElseThrow("Literal String no cerrado");
 
@@ -147,6 +157,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode lineStringNode =
             new LexicalNodeBuilder("Assumes this is a line String, stores all characters except invalid ones")
                 .ifEquals('"').thenMoveToNodeWith(new SubLexemeStrategy(STRING, 1))
+                .ifEquals('\\').thenMoveTo(stringSingleLineEscape)
                 .ifAnyExcept('"', '\n').thenRepeat()
                 .ifEquals('\n').thenThrow("El caracter de salto de linea no es valido dentro de una String en linea")
                 .orElseThrow("Literal String no cerrado");
@@ -154,6 +165,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
     private static final LexicalNode stringInitialNode =
             new LexicalNodeBuilder("On a closing double quote will try to match multiline String, else, stores characters")
                 .ifEquals('"').thenMoveTo(emptyStringOrMultiline)
+                .ifEquals('\\').thenMoveTo(stringSingleLineEscape)
                 .ifAnyExcept('"', '\n').thenMoveTo(lineStringNode)
                 .ifEquals('\n').thenThrow("El caracter de salto de linea no es valido dentro de un literal String")
                 .orElseThrow("Literal String no cerrado");
@@ -257,6 +269,14 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
         NodeBranch backToCommentsChars = new DefaultNodeBranch(new AnyCharacterExceptFilter('/'));
         backToCommentsChars.setNextNode(multiLineCommentInitialNode);
         multiLineCommentClosingNode.addBranch(backToCommentsChars);
+
+        NodeBranch backToSingleLineString = new DefaultNodeBranch(new AnyCharacterFilter());
+        backToSingleLineString.setNextNode(lineStringNode);
+        stringSingleLineEscape.addBranch(backToSingleLineString);
+
+        NodeBranch backToMultiLineString = new DefaultNodeBranch(new AnyCharacterFilter());
+        backToMultiLineString.setNextNode(stringMultilineChars);
+        stringMultiLineEscape.addBranch(backToMultiLineString);
 
     }
 
