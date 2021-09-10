@@ -19,15 +19,21 @@ public class Main {
         LexicalAnalyzer analyzer = createLexicalAnalyzer(args[0]);
 
         boolean reachEOF = false;
+        boolean didFindError = false;
         do {
             try{
                 Optional<Token> token = analyzer.getNextToken();
                 token.ifPresent(System.out::println);
                 reachEOF = token.isEmpty();
             } catch (LexicalException e){
+                didFindError = true;
                 errorPrinter.printError(e);
             }
         } while (!reachEOF);
+
+        if (!didFindError){
+            System.out.println("[Sin errores]");
+        }
     }
 
     private static LexicalAnalyzer createLexicalAnalyzer(String filePath) throws IOException{
