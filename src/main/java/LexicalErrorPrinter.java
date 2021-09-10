@@ -1,4 +1,3 @@
-import com.google.common.base.Strings;
 import lexical.LexicalException;
 import util.Characters;
 
@@ -7,7 +6,7 @@ import java.io.PrintStream;
 public class LexicalErrorPrinter {
 
     private static final String DETAIL_PREFIX = "Detalle: ";
-    private static final String INITIAL_PADDING = Strings.padStart("", DETAIL_PREFIX.length(), ' ');
+    private static final String INITIAL_PADDING = padLeft("", DETAIL_PREFIX.length());
 
     private final PrintStream out;
 
@@ -23,8 +22,9 @@ public class LexicalErrorPrinter {
 
     private void printDescription(LexicalException exception){
         int line = exception.getLineNumber()+1;
+        int column = exception.getColumnNumber()+1;
         String errorMsg = exception.getMessage();
-        out.println("Error Léxico en linea "+line+": "+errorMsg);
+        out.println("Error Léxico en linea "+line+", columna "+ column +": "+errorMsg);
     }
 
     private void printDetail(LexicalException exception){
@@ -48,10 +48,13 @@ public class LexicalErrorPrinter {
 
     private void printErrorCode(LexicalException exception){
         int line = exception.getLineNumber()+1;
-        String lexeme = exception.getLexeme().toString();
+        String lexeme = exception.getLexeme();
         out.println("[Error:"+lexeme+"|"+line+"]");
     }
 
+    private static String padLeft(String s, int n) {
+        return String.format("%" + n + "s", s);
+    }
 
 
 }
