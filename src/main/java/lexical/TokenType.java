@@ -29,6 +29,8 @@ public enum TokenType {
     OP_AND("operator_and"),
     OP_OR("operator_or"),
     ASSIGN("assign"),
+    ASSIGN_INCR("assign_increment"),
+    ASSIGN_DECR("assign_decrement"),
     ASSIGN_PLUS("assign_plus"),
     ASSIGN_MINUS("assign_minus"),
     K_CLASS("keyword_class"),
