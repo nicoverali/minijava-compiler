@@ -19,6 +19,9 @@ public class InitialNodeStrategy implements LexicalNodeStrategy {
 
     @Override
     public AutomataToken onNoBranchSelected(SourceCodeReader reader, Lexeme currentLexeme, CodeCharacter nextCharacter) throws LexicalException {
+        reader.next(); // Consume character to move forward for next request
+        currentLexeme.add(nextCharacter);
+
         String line = nextCharacter.getCodeLine().toString();
         int lineNumber = nextCharacter.getLineNumber();
         int columnNumber = nextCharacter.getColumnNumber();
