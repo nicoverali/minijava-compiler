@@ -69,6 +69,6 @@ public class AutomataToken implements Token {
 
     @Override
     public String toString() {
-        return "(" + type + "," + lexeme + "," + getLineNumber() + ")";
+        return "(" + type + "," + lexeme + "," + (getLineNumber()+1) + ")";
     }
 }
