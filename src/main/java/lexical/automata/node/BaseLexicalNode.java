@@ -47,7 +47,7 @@ public class BaseLexicalNode implements LexicalNode {
         return strategy.onNoBranchSelected(reader, currentLexeme, ch);
     }
 
-    private void updateLexeme(SourceCodeReader reader, Lexeme currentLexeme) {
+    protected void updateLexeme(SourceCodeReader reader, Lexeme currentLexeme) {
         currentLexeme.add(reader.next()
                 .orElseThrow(() ->
                         new RuntimeException("Reader was able to peek but not to get next. Maybe it was modified in the middle")

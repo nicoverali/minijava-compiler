@@ -9,6 +9,7 @@ import lexical.automata.NodeBranch;
 import lexical.automata.branch.DefaultNodeBranch;
 import lexical.automata.branch.filter.*;
 import lexical.automata.builder.LexicalNodeBuilder;
+import lexical.automata.node.IntegerLexicalNode;
 import lexical.automata.node.strategy.AcceptorStrategy;
 import lexical.automata.node.strategy.InitialNodeStrategy;
 import lexical.automata.node.strategy.KeywordDecorator;
@@ -248,7 +249,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
                 .ifPass(new UppercaseLetterFilter()).thenMoveTo(classIdentifierAcceptor)
 
                 // Literals
-                .ifPass(new DigitFilter()).thenMoveTo(digitAcceptor)
+                .ifPass(new DigitFilter()).thenMoveTo(new IntegerLexicalNode("Entero demasiado largo"))
                 .ifEquals('"').thenMoveTo(stringInitialNode)
                 .ifEquals('\'').thenMoveTo(charInitialNode)
 
