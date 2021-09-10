@@ -59,13 +59,11 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
 
     private static final LexicalNode plusAcceptor =
             new LexicalNodeBuilder("Tries to match plus_assign token or else return plus token")
-                .ifEquals('=').thenReturn(ASSIGN_PLUS)
                 .ifEquals('+').thenReturn(ASSIGN_INCR)
                 .orElseReturn(OP_PLUS);
 
     private static final LexicalNode minusAcceptor =
             new LexicalNodeBuilder("Tries to match minus_assign token or else return plus token")
-                .ifEquals('=').thenReturn(ASSIGN_MINUS)
                 .ifEquals('-').thenReturn(ASSIGN_DECR)
                 .orElseReturn(OP_MINUS);
 
