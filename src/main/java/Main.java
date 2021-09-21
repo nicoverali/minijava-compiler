@@ -32,7 +32,7 @@ public class Main {
         } while (!reachEOF);
 
         if (!didFindError){
-            System.out.println("[Sin errores]");
+            System.out.println("[SinErrores]");
         }
     }
 
