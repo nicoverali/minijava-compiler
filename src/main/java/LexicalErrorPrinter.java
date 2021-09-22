@@ -10,8 +10,8 @@ public class LexicalErrorPrinter {
 
     private final PrintStream out;
 
-    public LexicalErrorPrinter(PrintStream out){
-        this.out = out;
+    public LexicalErrorPrinter(){
+        this.out = System.out;
     }
 
     public void printError(LexicalException exception){
