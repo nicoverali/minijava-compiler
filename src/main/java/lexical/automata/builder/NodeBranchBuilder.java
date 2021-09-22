@@ -4,11 +4,11 @@ import lexical.TokenType;
 import lexical.automata.LexicalNode;
 import lexical.automata.NodeBranch;
 import lexical.automata.branch.DefaultNodeBranch;
+import lexical.automata.branch.ThrowNodeBranch;
 import lexical.automata.branch.filter.LexicalFilter;
 import lexical.automata.node.BaseLexicalNode;
 import lexical.automata.node.strategy.AcceptorStrategy;
 import lexical.automata.node.strategy.LexicalNodeStrategy;
-import lexical.automata.node.strategy.NonAcceptorStrategy;
 
 public class NodeBranchBuilder{
 
@@ -64,8 +64,8 @@ public class NodeBranchBuilder{
      */
     public LexicalNodeBuilder thenThrow(String errorMsg){
         nodeBuilder.addBranch(
-                new DefaultNodeBranch(filter),
-                new BaseLexicalNode("Non acceptor node", new NonAcceptorStrategy(errorMsg))
+                new ThrowNodeBranch(filter, errorMsg),
+                null
         );
         return nodeBuilder;
     }

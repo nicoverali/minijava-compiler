@@ -34,6 +34,11 @@ public class Lexeme {
         lexemeString.append(character.getValue());
     }
 
+    public void pop(){
+        lexeme.remove(lexeme.size()-1);
+        lexemeString.deleteCharAt(lexemeString.length()-1);
+    }
+
     public Optional<CodeCharacter> getFirst(){
         if (lexeme.isEmpty()) return Optional.empty();
         return Optional.of(lexeme.get(0));
