@@ -38,6 +38,7 @@ public class GeneratorScraper {
             checkForRecursiveCall(body, methods);
             method.addMethodBody(createMethodBody(body, bodyFirsts));
         }
+        method.setFollowTokens(grammar.followOf(currentTerm).stream().map(GrammarTerm::getName).collect(Collectors.toSet()));
         methods.add(method);
     }
 

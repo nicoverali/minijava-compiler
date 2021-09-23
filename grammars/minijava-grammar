@@ -25,9 +25,9 @@
 <Sentencia> ::= ;
 <Sentencia> ::= <AsignacionOLlamada> ;
 <Sentencia> ::= <VarLocal> ;
-<Sentencia> ::= <Return> ;
-<Sentencia> ::= <If>
-<Sentencia> ::= <For>
+<Sentencia> ::= <SentenciaReturn> ;
+<Sentencia> ::= <SentenciaIf>
+<Sentencia> ::= <SentenciaFor>
 <Sentencia> ::= <Bloque>
 <AsignacionOLlamada> ::= <Acceso> <RestoAsignacionOVacio>
 <RestoAsignacionOVacio> ::= <TipoDeAsignacion> | EOF
@@ -35,11 +35,11 @@
 <TipoDeAsignacion> ::= = <Expresion> | ++ | - -
 <VarLocal> ::= <Tipo> idMetVar <VarLocalAsignacionOVacio>
 <VarLocalAsignacionOVacio> ::= = <Expresion> | EOF
-<Return> ::= return <ExpresionOVacio>
+<SentenciaReturn> ::= return <ExpresionOVacio>
 <ExpresionOVacio> ::= <Expresion> | EOF
-<If> ::= if ( <Expresion> ) <Sentencia> <ElseOVacio>
+<SentenciaIf> ::= if ( <Expresion> ) <Sentencia> <ElseOVacio>
 <ElseOVacio> ::= else <Sentencia> | EOF
-<For> ::= for ( <VarLocal> ; <Expresion> ; <Asignacion> ) <Sentencia>
+<SentenciaFor> ::= for ( <VarLocal> ; <Expresion> ; <Asignacion> ) <Sentencia>
 <Expresion> ::= <ExpresionUnaria> <ExpresionResto>
 <ExpresionResto> ::= <OperadorBinario> <ExpresionUnaria> <ExpresionResto> | EOF
 <OperadorBinario> ::= || | && | == | != | < | > | <= | >= | + | - | * | / | %

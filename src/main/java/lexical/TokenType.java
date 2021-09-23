@@ -4,9 +4,11 @@ public enum TokenType {
 
     ID_CLS("idCls"),
     ID_MV("idMv"),
+
     INT("int"),
     CHAR("char"),
     STRING("str"),
+
     P_DOT("punctuation_dot"),
     P_COMMA("punctuation_comma"),
     P_SEMICOLON("punctuation_semicolon"),
@@ -14,6 +16,7 @@ public enum TokenType {
     P_PAREN_CLOSE("punctuation_parenthesis_close"),
     P_BRCKT_OPEN("punctuation_bracket_open"),
     P_BRCKT_CLOSE("punctuation_bracket_close"),
+
     OP_LT("operator_less"),
     OP_LTE("operator_less_or_equals"),
     OP_GT("operator_greater"),
@@ -28,9 +31,11 @@ public enum TokenType {
     OP_NOT("operator_not"),
     OP_AND("operator_and"),
     OP_OR("operator_or"),
+
     ASSIGN("assign"),
     ASSIGN_INCR("assign_increment"),
     ASSIGN_DECR("assign_decrement"),
+
     K_CLASS("keyword_class"),
     K_EXTENDS("keyword_extends"),
     K_STATIC("keyword_static"),
