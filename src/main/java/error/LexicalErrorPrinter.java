@@ -1,3 +1,5 @@
+package error;
+
 import lexical.LexicalException;
 import util.Characters;
 
