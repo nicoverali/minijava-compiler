@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 public class Grammar {
 
     public static final String LAMBDA = "EOF";
+    public static final GrammarTerm LAMBDA_TERM = new GrammarTerm(LAMBDA, false);
+
 
     Multimap<GrammarTerm, GrammarBody> grammar = HashMultimap.create();
 
@@ -111,14 +113,6 @@ public class Grammar {
                 .noneMatch(GrammarTerm::isNonTerminal);
     }
 
-//    public Map<GrammarTerm, List<GrammarTerm>> getFirsts(){
-//        Map<GrammarTerm, List<GrammarTerm>> firsts = new HashMap<>();
-//        for (GrammarTerm head : heads()){
-//            firsts.put(head, firstOf(head));
-//        }
-//        return firsts;
-//    }
-
     /**
      * Returns a {@link List} of all the <b>firsts</b> of the given {@link GrammarTerm}.
      * The definition of <b>firsts</b> can be found here:
@@ -155,6 +149,53 @@ public class Grammar {
             firsts.addAll(firstOf(body.subrange(1, body.size())));
         }
         return firsts;
+    }
+
+    /**
+     * Returns a {@link List} of all the <b>follow</b> terms of the given {@link GrammarTerm}.
+     * The definition of <b>follow</b> terms can be found here:
+     * <a href="https://en.wikipedia.org/wiki/LL_parser#Terminology">Wikipedia: Follow terms</a>
+     * @param term the {@link GrammarTerm} of which will be computed the follow terms
+     * @return a {@link List} of <b>follow</b> terms of the given {@link GrammarTerm}
+     */
+    public Set<GrammarTerm> followOf(GrammarTerm term) {
+        return followOf(term, new HashSet<>(List.of(term)));
+    }
+
+    /**
+     * Will look for the follow terms of the given term, but using the given {@link Set} of visited terms to
+     * avoid infinite loops
+     */
+    private Set<GrammarTerm> followOf(GrammarTerm term, Set<GrammarTerm> visted) {
+        Set<GrammarTerm> follow = new HashSet<>();
+        for (Map.Entry<GrammarTerm, GrammarBody> rule : grammar.entries()) {
+            GrammarTerm head = rule.getKey();
+            GrammarBody body = rule.getValue();
+            if (!visted.contains(head) && body.contains(term)) {
+                visted.add(head);
+                follow.addAll(getFollowOfRule(term, head, body, visted));
+            }
+        }
+
+        follow.remove(LAMBDA_TERM);
+        return follow;
+    }
+
+    private Set<GrammarTerm> getFollowOfRule(GrammarTerm term, GrammarTerm head, GrammarBody body, Set<GrammarTerm> visited) {
+        Set<GrammarTerm> follow = new HashSet<>();
+        List<GrammarTerm> terms = body.getAll();
+        int nextTermIndex = terms.indexOf(term)+1;
+        if (nextTermIndex >= terms.size()){
+            follow.addAll(followOf(head, visited));
+        } else {
+            GrammarBody restOfBody = body.subrange(nextTermIndex, body.size());
+            List<GrammarTerm> firsts = firstOf(restOfBody);
+            follow.addAll(firsts);
+            if (firsts.contains(LAMBDA_TERM)){
+                follow.addAll(followOf(head, visited));
+            }
+        }
+        return follow;
     }
 
     public int getHeadDepth(GrammarTerm head){

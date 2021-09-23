@@ -2,10 +2,7 @@ package grammar;
 
 import com.google.common.base.Joiner;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class GrammarBody implements Iterable<GrammarTerm>{
@@ -61,6 +58,13 @@ public class GrammarBody implements Iterable<GrammarTerm>{
      */
     public boolean contains(GrammarTerm term) {
         return body.contains(term);
+    }
+
+    /**
+     * @return an unmodifiable list containing all the terms of this body
+     */
+    public List<GrammarTerm> getAll(){
+        return Collections.unmodifiableList(body);
     }
 
     public GrammarBody subrange(int start, int end){
