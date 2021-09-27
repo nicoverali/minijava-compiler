@@ -173,7 +173,7 @@ public class Grammar {
             GrammarBody body = rule.getValue();
             if (!visted.contains(head) && body.contains(term)) {
                 visted.add(head);
-                follow.addAll(getFollowOfRule(term, head, body, visted));
+                follow.addAll(getFollowOfRule(term, head, body, new HashSet<>(visted)));
             }
         }
 
