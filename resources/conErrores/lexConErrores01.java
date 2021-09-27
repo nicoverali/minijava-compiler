@@ -1,6 +1,1 @@
-///[Error:#|5]
-
-
-"hola"
-v1 + # chau
-if class}
+///[Error:|0] Archivo vacio
