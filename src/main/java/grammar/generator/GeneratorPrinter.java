@@ -2,34 +2,32 @@ package grammar.generator;
 
 import com.google.common.base.Joiner;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class GeneratorPrinter {
 
     private static final String EQUALS_METHOD = "equalsAny";
     private static final int BASE_INDENT = 1;
 
-    private final PrintWriter out;
+    private final IndentablePrintWriter out;
 
     public GeneratorPrinter(PrintWriter out) {
-         this.out = out;
+         this.out = new IndentablePrintWriter(out, BASE_INDENT);
     }
 
     public void print(List<GeneratorMethod> methods){
         for (GeneratorMethod method : methods){
             printMethodSignature(method);
-            if (method.hasLambda() && method.hasSingleBody()) {
-                printSingleBodyWithLambda(method);
-            } else if (method.hasSingleBody()) {
-                printSingleBody(method);
-            } else {
-                printMultipleBodies(method);
-                printElseBody(method);
-            }
+            out.indent();
+                if (method.hasLambda() && method.hasSingleBody()) {
+                    printSingleBodyWithLambda(method);
+                } else if (method.hasSingleBody()) {
+                    printSingleBody(method);
+                } else {
+                    printMultipleBodies(method);
+                }
+                out.unindent();
             printMethodClose();
 
         }
@@ -39,56 +37,51 @@ public class GeneratorPrinter {
     private void printSingleBodyWithLambda(GeneratorMethod method) {
         GeneratorMethodBody body = method.getMethodBodies().get(0);
         String tokensStr = Joiner.on(", ").join(body.getPredicateTokens());
-        out.printf(indent("if (%s(%s)) {\n", 1), EQUALS_METHOD, tokensStr);
-        body.getActions().forEach(action -> out.println(indent(action, 2)));
-        out.print(indent("} ", 1));
+        out.printf("if (%s(%s)) {\n", EQUALS_METHOD, tokensStr);
+        out.indent();
+            body.getActions().forEach(out::println);
+            out.unindent();
         printElseBody(method);
     }
 
     private void printMethodSignature(GeneratorMethod method){
-        out.println(indent("private void "+method.getName()+"() {"));
+        out.println("private void "+method.getName()+"() {");
     }
 
     private void printSingleBody(GeneratorMethod method){
         GeneratorMethodBody body = method.getMethodBodies().get(0);
-        body.getActions().forEach(action -> out.println(indent(action, 1)));
+        body.getActions().forEach(out::println);
     }
 
     private void printMultipleBodies(GeneratorMethod method){
-        String IF_START = indent("if ", 1);
+        String IF_START = "if ";
         for (GeneratorMethodBody body : method){
             String tokens = Joiner.on(", ").join(body.getPredicateTokens());
             out.printf("%s (%s(%s)) {\n", IF_START, EQUALS_METHOD, tokens);
-            body.getActions().forEach(action -> out.println(indent(action, 2)));
-            out.print(indent("} ", 1));
-            IF_START = "else if ";
+            out.indent();
+                body.getActions().forEach(out::println);
+                out.unindent();
+            IF_START = "} else if ";
         }
+        printElseBody(method);
     }
 
     private void printElseBody(GeneratorMethod method){
         if (!method.hasLambda()){
-            out.println("else {");
-                out.println(indent("sequence.next().ifPresent(token -> ", 2));
-                out.println(indent("{throw new SyntacticException(\"Se esperaba ("+method.getName()+") pero se encontro \"+token.getType(), token);});", 3));
-            out.println(indent("}", 1));
-        } else {
-            out.println("");
+            out.println("} else {");
+            out.indent();
+                out.println("sequence.next().ifPresent(token -> ");
+                out.indent();
+                    out.println("{throw new SyntacticException(\"Se esperaba ("+method.getName()+") pero se encontro \"+token.getType(), token);});");
+                    out.unindent();
+                out.unindent();
         }
+        out.println("}");
     }
 
     private void printMethodClose(){
-        out.println(indent("}"));
+        out.println("}");
         out.println();
-    }
-
-    private String indent(String text){
-        return indent(text, 0);
-    }
-
-    private String indent(String text, int level) {
-        StringBuilder indented = new StringBuilder();
-        IntStream.range(0, BASE_INDENT+level).forEach(v -> indented.append("\t"));
-        return indented.append(text).toString();
     }
 
 }
