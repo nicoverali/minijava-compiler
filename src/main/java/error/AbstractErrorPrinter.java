@@ -4,18 +4,12 @@ import io.code.CodeLine;
 import lexical.Token;
 import util.Characters;
 
-import java.io.PrintStream;
+import static java.lang.System.out;
 
 public abstract class AbstractErrorPrinter {
 
     private static final String DETAIL_PREFIX = "Detalle: ";
     private static final String INITIAL_PADDING = padLeft("", DETAIL_PREFIX.length());
-
-    private final PrintStream out;
-
-    public AbstractErrorPrinter(){
-        this.out = System.out;
-    }
 
 
     protected void printDetail(Token token){
