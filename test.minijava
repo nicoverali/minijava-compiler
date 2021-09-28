@@ -1,5 +1,12 @@
-	45$%	&&$
+class Persona {
 
-"asdasdad"
-"asdsad asd
-"
+	dynamic void method(){
+		++;
+		if({
+			a = b;
+		}
+
+	}
+
+
+}
