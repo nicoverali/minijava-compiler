@@ -23,7 +23,7 @@ public class SyntacticErrorPrinter extends AbstractErrorPrinter{
     private void printDescription(SyntacticException exception){
         int line = exception.getExceptionToken().getLineNumber()+1;
         String errorMsg = exception.getMessage();
-        out.println("Error Sintáctico en linea "+line+": "+errorMsg);
+        out.println("Error Sintactico en linea "+line+": "+errorMsg);
     }
 
 

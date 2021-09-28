@@ -84,4 +84,11 @@ public class GrammarTokenMapper {
         return Verify.verifyNotNull(map.get(term.toString()), "The given term ("+term.getName()+") does not exist in this map");
     }
 
+    public static String reverseMap(String tokenType){
+        return map.entrySet().stream()
+                .filter(entry -> entry.getValue().name().equals(tokenType))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("The given TokenType "+tokenType+" cannot be mapped"))
+                .getKey();
+    }
 }

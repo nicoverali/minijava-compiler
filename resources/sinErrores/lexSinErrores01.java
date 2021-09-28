@@ -51,8 +51,6 @@ class Persona extends SerVivo {
 
         {} // Bloque vacio
     }
-
-    }
 }
 
 class Vacio {
