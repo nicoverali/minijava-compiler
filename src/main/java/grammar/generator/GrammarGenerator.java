@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class GrammarGenerator {
 
-    private static final String FILE_PATH = "grammars/minijava-grammar-04-generics";
+    private static final String FILE_PATH = "grammars/minijava-grammar-05-static-attributes";
     private static final String OUT_PATH = "src/main/java/syntactic/MiniJavaSyntacticAnalyzer.java";
     private static final String LAMBDA = "EOF";
     private static final GrammarTerm INITIAL = new GrammarTerm("Inicial", true);
