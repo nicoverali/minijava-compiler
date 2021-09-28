@@ -11,6 +11,7 @@ public enum TokenType {
 
     P_DOT("punctuation_dot"),
     P_COMMA("punctuation_comma"),
+    P_COLON("punctuation_colon"),
     P_SEMICOLON("punctuation_semicolon"),
     P_PAREN_OPEN("punctuation_parenthesis_open"),
     P_PAREN_CLOSE("punctuation_parenthesis_close"),

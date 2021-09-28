@@ -224,6 +224,7 @@ public class MiniJavaLexicalAnalyzer implements LexicalAnalyzer{
                 // Punctuation
                 .ifEquals('.').thenReturn(P_DOT)
                 .ifEquals(',').thenReturn(P_COMMA)
+                .ifEquals(':').thenReturn(P_COLON)
                 .ifEquals(';').thenReturn(P_SEMICOLON)
                 .ifEquals('(').thenReturn(P_PAREN_OPEN)
                 .ifEquals(')').thenReturn(P_PAREN_CLOSE)

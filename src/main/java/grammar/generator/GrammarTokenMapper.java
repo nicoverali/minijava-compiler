@@ -22,6 +22,7 @@ public class GrammarTokenMapper {
 
         map.put(".", P_DOT);
         map.put(",", P_COMMA);
+        map.put(":", P_COLON);
         map.put(";", P_SEMICOLON);
         map.put("(", P_PAREN_OPEN);
         map.put(")", P_PAREN_CLOSE);
