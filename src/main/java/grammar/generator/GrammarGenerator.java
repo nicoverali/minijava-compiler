@@ -1,18 +1,15 @@
 package grammar.generator;
 
 import grammar.Grammar;
-import grammar.io.GrammarReader;
 import grammar.GrammarTerm;
+import grammar.io.GrammarReader;
 
 import java.io.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GrammarGenerator {
 
-    private static final String FILE_PATH = "grammars/minijava-grammar-05-static-attributes";
+    private static final String FILE_PATH = "grammars/minijava-grammar-06-static-access-var-local";
     private static final String OUT_PATH = "src/main/java/syntactic/MiniJavaSyntacticAnalyzer.java";
     private static final String LAMBDA = "EOF";
     private static final GrammarTerm INITIAL = new GrammarTerm("Inicial", true);

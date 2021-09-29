@@ -1,5 +1,5 @@
-///[Error:System|7]
-// Accesos no puede ser estaticos
+///[SinErrores]
+// xx Accesos no puede ser estaticos xx // Con logro FullStatic si puede ser estaticos
 
 class Clase extends Padre {
 
