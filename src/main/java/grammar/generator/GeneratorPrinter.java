@@ -86,12 +86,13 @@ public class GeneratorPrinter {
                 out.println("// Nothing for now");
                 out.unindent();
             out.println("} else {");
-                String expected = Joiner.on(",").join(method.getMethodBodies().stream().map(GeneratorMethodBody::getPredicateTokens).flatMap(Collection::stream).map(GrammarTokenMapper::reverseMap).collect(Collectors.toSet()));
-                if (expected.isEmpty()) expected = "el final del archivo";
+                Collection<String> expected = method.getMethodBodies().stream().map(GeneratorMethodBody::getPredicateTokens).flatMap(Collection::stream).map(GrammarTokenMapper::reverseMap).collect(Collectors.toSet());
+                expected.addAll(method.getFollowTokens().stream().map(GrammarTokenMapper::reverseMap).collect(Collectors.toSet()));
+                String expectedStr = Joiner.on(", ").join(expected);
                 out.indent();
                     out.println("sequence.peek().ifPresent(token -> ");
                     out.indent();
-                        out.println("{throw new SyntacticException(\"Se esperaba {"+expected+"} pero se encontro \"+token.getLexeme()+\" (\"+token.getType()+\")\", token);});");
+                        out.println("{throw new SyntacticException(\"Se esperaba {"+expectedStr+"} pero se encontro \"+token.getLexeme()+\" (\"+token.getType()+\")\", token);});");
 
         }
         out.unindent();
