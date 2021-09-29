@@ -3,15 +3,9 @@ package error;
 import lexical.Token;
 import syntactic.SyntacticException;
 
-import java.io.PrintStream;
+import static java.lang.System.out;
 
 public class SyntacticErrorPrinter extends AbstractErrorPrinter{
-
-    private final PrintStream out;
-
-    public SyntacticErrorPrinter(){
-        this.out = System.out;
-    }
 
     public void printError(SyntacticException exception){
         Token token = exception.getExceptionToken();

@@ -3,18 +3,12 @@ package error;
 import lexical.LexicalException;
 import util.Characters;
 
-import java.io.PrintStream;
+import static java.lang.System.out;
 
 public class LexicalErrorPrinter {
 
     private static final String DETAIL_PREFIX = "Detalle: ";
     private static final String INITIAL_PADDING = padLeft("", DETAIL_PREFIX.length());
-
-    private final PrintStream out;
-
-    public LexicalErrorPrinter(){
-        this.out = System.out;
-    }
 
     public void printError(LexicalException exception){
         printDescription(exception);
