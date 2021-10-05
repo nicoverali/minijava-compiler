@@ -37,6 +37,7 @@ public class Main {
         }
 
         if (isOk){
+            System.out.println("Compilacion exitosa.\n");
             System.out.println("[SinErrores]");
         }
     }
