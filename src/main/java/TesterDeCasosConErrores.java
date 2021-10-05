@@ -59,8 +59,14 @@ public class TesterDeCasosConErrores {
         String errorCode = getErrorCode(testCaseFilePath);
         String[] args = {testCaseFilePath};
         init.main(args);
-      
-        assertThat("No se encontro el codigo: " + errorCode,  outContent.toString(), CoreMatchers.containsString(errorCode));
+
+        String result = outContent.toString();
+        originalOut.println(result);
+
+        assertThat("No se encontro el codigo: " + errorCode,  result, CoreMatchers.containsString(errorCode));
+        if (!errorCode.equals("[SinErrores]")){
+            assertThat("Compilacion válida cuando hubo error.", result, CoreMatchers.not(CoreMatchers.containsString("[SinErrores]")));
+        }
     }
 
 
