@@ -1,6 +1,5 @@
 package lexical;
 
-import lexical.Token;
 import lexical.analyzer.LexicalAnalyzer;
 import sequence.Sequence;
 
@@ -14,27 +13,35 @@ public class LexicalSequence implements Sequence<Token> {
 
     private final LexicalAnalyzer analyzer;
 
-    private Token current;
+    private Token lastPeek;
 
     public LexicalSequence(LexicalAnalyzer analyzer) {
         this.analyzer = analyzer;
-        current = analyzer.getNextToken().orElse(null);
     }
 
     @Override
     public Optional<Token> next() {
-        Token next = current;
-        current = analyzer.getNextToken().orElse(null);
+        Token next;
+        if (lastPeek != null){
+            next = lastPeek;
+            lastPeek = null;
+        } else {
+            next = analyzer.getNextToken().orElse(null);
+        }
         return Optional.ofNullable(next);
     }
 
     @Override
     public boolean hasNext() {
-        return current != null;
+        return lastPeek != null || (peek().isPresent());
     }
 
     @Override
     public Optional<Token> peek() {
-        return Optional.ofNullable(current);
+        if (lastPeek != null){
+            return Optional.of(lastPeek);
+        }
+        lastPeek = analyzer.getNextToken().orElse(null);
+        return Optional.ofNullable(lastPeek);
     }
 }
