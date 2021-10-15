@@ -4,7 +4,7 @@ import lexical.LexicalException;
 
 import static java.lang.System.out;
 
-public class LexicalErrorPrinter extends AbstractErrorPrinter {
+public class LexicalErrorPrinter extends AbstractErrorPrinter<LexicalException> {
 
     public void printError(LexicalException exception){
         printDescription(exception);

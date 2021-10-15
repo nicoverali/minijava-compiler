@@ -1,25 +1,23 @@
 package error;
 
 import lexical.Token;
-import syntactic.SyntacticException;
+import semantic.SemanticException;
 
 import static java.lang.System.out;
 
-public class SyntacticErrorPrinter extends AbstractErrorPrinter<SyntacticException>{
+public class SemanticErrorPrinter extends AbstractErrorPrinter<SemanticException> {
 
-    public void printError(SyntacticException exception){
+    public void printError(SemanticException exception){
         Token token = exception.getExceptionToken();
         printDescription(exception);
         printDetail(token);
         printErrorCode(token);
     }
 
-    private void printDescription(SyntacticException exception){
+    private void printDescription(SemanticException exception){
         int line = exception.getExceptionToken().getLineNumber()+1;
         String errorMsg = exception.getMessage();
-        out.println("Error Sintactico en linea "+line+": "+errorMsg);
+        out.println("Error Semantico en linea "+line+": "+errorMsg);
     }
-
-
 
 }

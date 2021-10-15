@@ -1,11 +1,13 @@
-import error.LexicalErrorPrinter;
-import error.SyntacticErrorPrinter;
+import error.*;
 import io.code.ScannerSourceCodeReader;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
 import lexical.LexicalSequence;
 import lexical.analyzer.LexicalAnalyzer;
 import lexical.analyzer.MiniJavaLexicalAnalyzer;
+import semantic.CircularInheritanceException;
+import semantic.MainMethodException;
+import semantic.SemanticException;
 import syntactic.MiniJavaSyntacticAnalyzer;
 import syntactic.SyntacticAnalyzer;
 import syntactic.SyntacticException;
@@ -19,21 +21,29 @@ public class Main {
 
     private static final LexicalErrorPrinter lexicalPrinter = new LexicalErrorPrinter();
     private static final SyntacticErrorPrinter syntacticPrinter = new SyntacticErrorPrinter();
+    private static final SemanticErrorPrinter semanticPrinter = new SemanticErrorPrinter();
+    private static final CircularInheritanceErrorPrinter circularPrinter = new CircularInheritanceErrorPrinter();
+    private static final MainMethodErrorPrinter mainPrinter = new MainMethodErrorPrinter();
 
     public static void main(String[] args) {
-        if (args.length < 1) throw new IllegalArgumentException("Se debee proveer el archivo a a analizar");
+        if (args.length < 1) throw new IllegalArgumentException("Se debee proveer el archivo a analizar");
         LexicalAnalyzer lexical = createLexicalAnalyzer(args[0]);
         SyntacticAnalyzer syntactic = createSyntacticAnalyzer(lexical);
 
-        boolean isOk = true;
+        boolean isOk = false;
         try {
             syntactic.analyze();
+            isOk = true;
         } catch (LexicalException e) {
             lexicalPrinter.printError(e);
-            isOk = false;
         } catch (SyntacticException e) {
             syntacticPrinter.printError(e);
-            isOk = false;
+        } catch (SemanticException e) {
+            semanticPrinter.printError(e);
+        } catch (CircularInheritanceException e) {
+            circularPrinter.printError(e);
+        } catch (MainMethodException e) {
+            mainPrinter.printError(e);
         }
 
         if (isOk){
@@ -56,7 +66,5 @@ public class Main {
         LexicalSequence sequence = new LexicalSequence(analyzer);
         return new MiniJavaSyntacticAnalyzer(sequence);
     }
-
-
 
 }

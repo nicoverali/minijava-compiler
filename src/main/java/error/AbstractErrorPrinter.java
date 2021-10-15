@@ -6,11 +6,12 @@ import util.Characters;
 
 import static java.lang.System.out;
 
-public abstract class AbstractErrorPrinter {
+public abstract class AbstractErrorPrinter<T extends Exception> {
 
     private static final String DETAIL_PREFIX = "Detalle: ";
     private static final String INITIAL_PADDING = padLeft("", DETAIL_PREFIX.length());
 
+    abstract public void printError(T exception);
 
     protected void printDetail(Token token){
         this.printDetail(token.getFirstLine().map(CodeLine::toString).orElse(""), token.getColumnNumber());
