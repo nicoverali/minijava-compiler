@@ -75,9 +75,7 @@ public class GeneratorPrinter {
         if (!method.hasLambda()){
             out.println("} else {");
             out.indent();
-                out.println("sequence.next().ifPresent(token -> ");
-                out.indent();
-                    out.println("{throw new SyntacticException(\"Se esperaba ("+method.getName()+") pero se encontro \"+token.getType(), token);});");
+                out.println("throwException(\"Se esperaba ("+method.getName()+") pero se encontro %tokenType%\");");
         } else {
             String tokens = Joiner.on(", ").join(method.getFollowTokens());
             if (tokens.isEmpty()) tokens = "EOF";
@@ -90,12 +88,9 @@ public class GeneratorPrinter {
                 expected.addAll(method.getFollowTokens().stream().map(GrammarTokenMapper::reverseMap).collect(Collectors.toSet()));
                 String expectedStr = Joiner.on(", ").join(expected);
                 out.indent();
-                    out.println("sequence.peek().ifPresent(token -> ");
-                    out.indent();
-                        out.println("{throw new SyntacticException(\"Se esperaba {"+expectedStr+"} pero se encontro \"+token.getLexeme()+\" (\"+token.getType()+\")\", token);});");
+                    out.println("throwException(\"Se esperaba {"+expectedStr+"} pero se encontro %lexeme% (%tokenType%)\");");
 
         }
-        out.unindent();
         out.unindent();
         out.println("}");
     }
