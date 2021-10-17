@@ -10,6 +10,7 @@ public class MainMethodErrorPrinter extends AbstractErrorPrinter<MainMethodExcep
     public void printError(MainMethodException exception) {
         out.println("Error semantico: " + exception.getMessage());
         exception.getExceptionToken().ifPresent(this::printDetail);
+        exception.getExceptionToken().ifPresentOrElse(this::printErrorCode, () -> out.println("\n[Error:main|]"));
     }
 
 }
