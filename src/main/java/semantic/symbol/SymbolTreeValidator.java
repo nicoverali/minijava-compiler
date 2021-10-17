@@ -35,8 +35,7 @@ public class SymbolTreeValidator {
 
     public static void checkMainMethod(Map<String, ? extends ClassSymbol> classes){
         Stream<MethodSymbol> allMethods = classes.values().stream()
-                .map(ClassSymbol::getAllMethods)
-                .map(Map::values)
+                .map(ClassSymbol::getMethods)
                 .flatMap(Collection::stream);
 
         List<MethodSymbol> mainMethods = allMethods
