@@ -3,4 +3,8 @@
 
 class Clase extends Padre {
     int a;
+
+    static void main(){}
 }
+
+class Padre {}

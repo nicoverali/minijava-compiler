@@ -43,7 +43,7 @@ class Clase {
         System.out.println();
     }
 
-    dynamic void main(){
+    static void main(){
         if (Context.bool){
             int a = Context.getInt();
         }

@@ -2,6 +2,8 @@ class Persona extends SerVivo {
     public String a, b, c;
     private int d;
 
+    static void main(){}
+
     static void metodo1(){
 
     }
@@ -56,3 +58,5 @@ class Persona extends SerVivo {
 class Vacio {
 
 }
+
+class SerVivo{}

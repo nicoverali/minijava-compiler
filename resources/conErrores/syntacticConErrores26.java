@@ -3,8 +3,12 @@
 
 class Clase extends Padre {
 
+    static void main(){}
+
     static String metodo(int a){
         if(true){};
     }
 
 }
+
+class Padre{}

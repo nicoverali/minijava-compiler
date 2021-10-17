@@ -8,5 +8,7 @@ class Clase {
     // Metodos estaticos deberian funcionar igual
     static Clase metodo(){}
 
+    static void main(){}
+
     dynamic int metodo2(){}
 }
