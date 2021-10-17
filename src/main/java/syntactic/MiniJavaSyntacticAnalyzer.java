@@ -3,12 +3,29 @@ package syntactic;
 import lexical.LexicalSequence;
 import lexical.Token;
 import lexical.TokenType;
+import semantic.symbol.AttributeSymbol;
+import semantic.symbol.ConstructorSymbol;
+import semantic.symbol.ParameterSymbol;
 import semantic.symbol.SymbolTable;
+import semantic.symbol.attribute.IsPublicAttribute;
+import semantic.symbol.attribute.IsStaticAttribute;
+import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.PrimitiveType;
+import semantic.symbol.attribute.type.ReferenceType;
+import semantic.symbol.attribute.type.Type;
+import semantic.symbol.attribute.type.VoidType;
+import semantic.symbol.user.UserClassSymbol;
+import semantic.symbol.user.UserMethodSymbol;
+import semantic.symbol.user.UserParameterSymbol;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static lexical.TokenType.*;
+import static semantic.symbol.attribute.IsStaticAttribute.createDynamic;
+import static semantic.symbol.attribute.IsStaticAttribute.createStatic;
 
 public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 
@@ -60,22 +77,24 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
     }
 
 	/**
-	 * Throws a new {@link SyntacticException} with the given message and the next {@link Token} of the
+	 * Returns a new {@link SyntacticException} with the given message and the next {@link Token} of the
 	 * {@link LexicalSequence}
 	 * Inside the message you can use both <i>{tokenType}</i> and <i>{lexeme}</i>, they will be replaced with the correct
 	 * value at the moment the exception gets thrown
 	 * @param message the message of the exception
+	 * @return a {@link SyntacticException} with the given message
 	 */
-	private void throwException(String message) {
-		sequence.peek().ifPresent(token -> {
+	private SyntacticException createSyntacticException(String message) {
+		return sequence.peek().map(token -> {
 			String formattedMessage = message;
 			formattedMessage = formattedMessage.replaceAll("%tokenType%", token.getType().toString());
 			formattedMessage = formattedMessage.replaceAll("%lexeme%", token.getLexeme());
-			throw new SyntacticException(formattedMessage, token);
-		});
+			return new SyntacticException(formattedMessage, token);
+		}).orElseThrow();
+
 	}
 
-    ///Start
+    ///[Blocked]Start
 	private void inicial() {
 		listaClases();
 	}
@@ -91,18 +110,29 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(EOF)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {class} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {class} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
 	private void clase() {
 		match(K_CLASS);
-		match(ID_CLS);
+		NameAttribute name = NameAttribute.of(match(ID_CLS));
+		ST.currentClass = new UserClassSymbol(name);
+
+		// TODO Agregar genericidad
 		genExplicitaOVacio();
+
+		// Check if extends from class
 		herencia();
+
+		// Add all members
 		match(P_BRCKT_OPEN);
 		listaMiembros();
 		match(P_BRCKT_CLOSE);
+
+		// Add final class to symbol table
+		ST.add(ST.currentClass);
+		ST.currentClass = null;
 	}
 
 	private void listaMiembros() {
@@ -112,137 +142,237 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_BRCKT_CLOSE)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {private, static, boolean, public, char, dynamic, idClase, String, }, int} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {private, static, boolean, public, char, dynamic, idClase, String, }, int} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
 	private void miembro() {
 		if (equalsAny(K_STATIC)) {
-			match(K_STATIC);
-			atributoOMetodo();
+			// Is a method or attribute and we know is static, we assume public
+			IsStaticAttribute isStatic = createStatic(match(K_STATIC));
+			atributoOMetodo(isStatic);
 		} else if (equalsAny(K_DYNAMIC)) {
-			match(K_DYNAMIC);
-			metodo();
+			// Is a method and we know is dynamic
+			IsStaticAttribute isStatic = createDynamic(match(K_DYNAMIC));
+			metodo(isStatic);
 		} else if (equalsAny(ID_CLS)) {
-			match(ID_CLS);
-			atributoOConstructor();
+			// Is an attribute or a constructor with a given class reference
+			ReferenceType classReference = new ReferenceType(match(ID_CLS));
+			atributoOConstructor(classReference);
 		} else if (equalsAny(K_PUBLIC, K_PRIVATE)) {
-			visibilidad();
-			staticOVacio();
-			atributo();
+			// Is an attribute with a given visibility and staticness
+			IsPublicAttribute isPublic = visibilidad();
+			IsStaticAttribute isStatic = staticOVacio();
+			atributo(isPublic, isStatic);
 		} else if (equalsAny(K_BOOLEAN, K_STRING, K_CHAR, K_INT)) {
-			tipoPrimitivo();
-			listaDecAtrs();
+			// Is a primitive attribute, we assume public and non-static
+			PrimitiveType type = tipoPrimitivo();
+			listaDecAtrs(type);
 			match(P_SEMICOLON);
 		} else {
-			throwException("Se esperaba (miembro) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (miembro) pero se encontro %tokenType%");
 		}
 	}
 
-	private void atributo() {
-		tipo();
-		listaDecAtrs();
+	private void atributo(IsPublicAttribute isPublic, IsStaticAttribute isStatic) {
+		Type type = tipo();
+		listaDecAtrs(isPublic, isStatic, type);
 		match(P_SEMICOLON);
 	}
 
-	private void staticOVacio() {
+	/**
+	 * Checks whether something is static or not, if there's no static token then we assume is
+	 * dynamic.
+	 * @return a {@link IsStaticAttribute}
+	 */
+	private IsStaticAttribute staticOVacio() {
 		if (equalsAny(K_STATIC)) {
-			match(K_STATIC);
+			return IsStaticAttribute.createStatic(match(K_STATIC));
 		} else if (equalsAny(K_STRING, K_INT, K_BOOLEAN, ID_CLS, K_CHAR)) { // Check for follow
 			// Nothing for now
+			return IsStaticAttribute.emptyDynamic();
 		} else {
-			throwException("Se esperaba {static, boolean, char, idClase, String, int} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {static, boolean, char, idClase, String, int} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
-	private void visibilidad() {
+	/**
+	 * Checks whether something is public or not. It fails if neither <i>public</i> nor <i>private</i> tokens
+	 * are present
+	 * @return a {@link IsPublicAttribute}
+	 */
+	private IsPublicAttribute visibilidad() {
 		if (equalsAny(K_PUBLIC)) {
-			match(K_PUBLIC);
+			return IsPublicAttribute.createPublic(match(K_PUBLIC));
 		} else if (equalsAny(K_PRIVATE)) {
-			match(K_PRIVATE);
+			return IsPublicAttribute.createPrivate(match(K_PRIVATE));
 		} else {
-			throwException("Se esperaba (visibilidad) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (visibilidad) pero se encontro %tokenType%");
 		}
 	}
 
-	private void atributoOConstructor() {
+	/**
+	 * Given a {@link ReferenceType} of a class, it builds either an attribute or a constructor
+	 * @param classReference the class of the constructor or the type of the attribute
+	 */
+	private void atributoOConstructor(ReferenceType classReference) {
 		if (equalsAny(OP_LT, ID_MV)) {
+			// TODO Agregar genericidad
 			genExplicitaOVacio();
-			listaDecAtrs();
+			listaDecAtrs(classReference);
 			match(P_SEMICOLON);
 		} else if (equalsAny(P_PAREN_OPEN)) {
-			restoConstructor();
+			restoConstructor(classReference);
 		} else {
-			throwException("Se esperaba (atributoOConstructor) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (atributoOConstructor) pero se encontro %tokenType%");
 		}
 	}
 
-	private void restoConstructor() {
-		argsFormales();
+	/**
+	 * It builds a new constructor that belongs to the class referenced by the given {@link ReferenceType}
+	 * @param classReference a reference to the class the constructor belongs
+	 */
+	private void restoConstructor(ReferenceType classReference) {
+		List<ParameterSymbol> parameters  = argsFormales();
 		bloque();
+		ST.currentClass.add(new ConstructorSymbol(classReference, parameters));
 	}
 
-	private void metodo() {
-		tipoMetodo();
-		match(ID_MV);
-		argsFormales();
+	/**
+	 * It builds a new method with the given staticness and the type, name and parameters it founds
+	 * @param isStatic whether the method is static or not
+	 */
+	private void metodo(IsStaticAttribute isStatic) {
+		Type type = tipoMetodo();
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		List<ParameterSymbol> parameters = argsFormales();
 		bloque();
+
+		ST.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters));
 	}
 
-	private void tipoMetodo() {
+	/**
+	 * Returns the type of a method
+	 * @return a {@link Type}
+	 */
+	private Type tipoMetodo() {
 		if (equalsAny(K_VOID)) {
-			match(K_VOID);
+			return VoidType.VOID(match(K_VOID));
 		} else if (equalsAny(K_BOOLEAN, K_STRING, K_CHAR, K_INT, ID_CLS)) {
-			tipo();
+			return tipo();
 		} else {
-			throwException("Se esperaba (tipoMetodo) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (tipoMetodo) pero se encontro %tokenType%");
 		}
 	}
 
-	private void atributoOMetodo() {
+	/**
+	 * Builds either an attribute or a method with the given staticness
+	 */
+	private void atributoOMetodo(IsStaticAttribute isStatic) {
 		if (equalsAny(K_BOOLEAN, K_STRING, K_CHAR, K_INT, ID_CLS)) {
-			tipo();
-			match(ID_MV);
-			otrosDecAtrsORestoMetodo();
+			Type type = tipo();
+			NameAttribute name = NameAttribute.of(match(ID_MV));
+			otrosDecAtrsORestoMetodo(isStatic, type, name);
 		} else if (equalsAny(K_VOID)) {
-			match(K_VOID);
-			match(ID_MV);
-			restoMetodo();
+			VoidType type = VoidType.VOID(match(K_VOID));
+			NameAttribute name = NameAttribute.of(match(ID_MV));
+			restoMetodo(isStatic, type, name);
 		} else {
-			throwException("Se esperaba (atributoOMetodo) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (atributoOMetodo) pero se encontro %tokenType%");
 		}
 	}
 
-	private void otrosDecAtrsORestoMetodo() {
+	/**
+	 * Build either an attribute or a method with the given staticness, type, and name
+	 */
+	private void otrosDecAtrsORestoMetodo(IsStaticAttribute isStatic, Type type, NameAttribute name) {
 		if (equalsAny(P_PAREN_OPEN)) {
-			restoMetodo();
+			restoMetodo(isStatic, type, name);
 		} else if (equalsAny(P_COMMA, P_SEMICOLON)) {
-			otrosDecAtrs();
+			ST.currentClass.add(new AttributeSymbol(isStatic, type, name));
+			otrosDecAtrs(isStatic, type);
 			match(P_SEMICOLON);
 		} else {
-			throwException("Se esperaba (otrosDecAtrsORestoMetodo) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (otrosDecAtrsORestoMetodo) pero se encontro %tokenType%");
 		}
 	}
 
-	private void otrosDecAtrs() {
+	/**
+	 * Builds attributes with the given visibility, staticness and type
+	 */
+	private void otrosDecAtrs(IsPublicAttribute isPublic, IsStaticAttribute isStatic, Type type) {
 		if (equalsAny(P_COMMA)) {
 			match(P_COMMA);
-			listaDecAtrs();
+			listaDecAtrs(isPublic, isStatic, type);
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {;, ,} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {;, ,} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
-	private void listaDecAtrs() {
-		match(ID_MV);
-		otrosDecAtrs();
+	/**
+	 * Builds attributes with the given staticness and type
+	 */
+	private void otrosDecAtrs(IsStaticAttribute isStatic, Type type) {
+		if (equalsAny(P_COMMA)) {
+			match(P_COMMA);
+			listaDecAtrs(isStatic, type);
+		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
+			// Nothing for now
+		} else {
+			throw createSyntacticException("Se esperaba {;, ,} pero se encontro %lexeme% (%tokenType%)");
+		}
 	}
 
-	private void restoMetodo() {
-		argsFormales();
+	/**
+	 * Builds attributes with the given type
+	 */
+	private void otrosDecAtrs(Type type) {
+		if (equalsAny(P_COMMA)) {
+			match(P_COMMA);
+			listaDecAtrs(type);
+		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
+			// Nothing for now
+		} else {
+			throw createSyntacticException("Se esperaba {;, ,} pero se encontro %lexeme% (%tokenType%)");
+		}
+	}
+
+	/**
+	 * Builds an attribute with the given staticness and type
+	 */
+	private void listaDecAtrs(IsStaticAttribute isStatic, Type type) {
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		ST.currentClass.add(new AttributeSymbol(isStatic, type, name));
+		otrosDecAtrs(isStatic, type);
+	}
+
+	/**
+	 * Builds an attribute with the given type
+	 */
+	private void listaDecAtrs(Type type) {
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		ST.currentClass.add(new AttributeSymbol(type, name));
+		otrosDecAtrs(type);
+	}
+
+	/**
+	 * Builds an attribute with the given visibility, staticness and type
+	 */
+	private void listaDecAtrs(IsPublicAttribute isPublic, IsStaticAttribute isStatic, Type type) {
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		ST.currentClass.add(new AttributeSymbol(isPublic, isStatic, type, name));
+		otrosDecAtrs(isPublic, isStatic, type);
+	}
+
+	/**
+	 * Builds a method with the given staticness, return type and name
+	 */
+	private void restoMetodo(IsStaticAttribute isStatic, Type type, NameAttribute name) {
+		List<ParameterSymbol> parameters = argsFormales();
 		bloque();
+		ST.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters));
 	}
 
 	private void bloque() {
@@ -258,7 +388,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_BRCKT_CLOSE)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {new, for, this, (, String, int, idMetVar, boolean, char, idClase, ;, {, if, }, return} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {new, for, this, (, String, int, idMetVar, boolean, char, idClase, ;, {, if, }, return} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -285,7 +415,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			varLocalPrimitiva();
 			match(P_SEMICOLON);
 		} else {
-			throwException("Se esperaba (sentencia) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (sentencia) pero se encontro %tokenType%");
 		}
 	}
 
@@ -311,7 +441,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(K_NEW, P_SEMICOLON, ID_MV, P_BRCKT_OPEN, K_RETURN, K_THIS, P_BRCKT_CLOSE, K_IF, P_PAREN_OPEN, K_STRING, K_INT, K_BOOLEAN, K_FOR, ID_CLS, K_CHAR)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {new, this, (, for, String, int, idMetVar, boolean, else, char, idClase, ;, {, }, if, return} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {new, this, (, for, String, int, idMetVar, boolean, else, char, idClase, ;, {, }, if, return} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -334,7 +464,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(ASSIGN, P_SEMICOLON)) {
 			restoForClasico();
 		} else {
-			throwException("Se esperaba (restoFor) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (restoFor) pero se encontro %tokenType%");
 		}
 	}
 
@@ -371,7 +501,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {new, !, this, (, intLiteral, false, charLiteral, +, -, idMetVar, null, stringLiteral, true, idClase, ;} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {new, !, this, (, intLiteral, false, charLiteral, +, -, idMetVar, null, stringLiteral, true, idClase, ;} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -384,7 +514,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			match(ID_MV);
 			varLocalAsignacionOVacio();
 		} else {
-			throwException("Se esperaba (restoAccesoEstaticoOVarLocalClase) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (restoAccesoEstaticoOVarLocalClase) pero se encontro %tokenType%");
 		}
 	}
 
@@ -395,7 +525,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {;, =} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {;, =} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -405,7 +535,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {++, ;, =, -} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {++, ;, =, -} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -419,7 +549,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			match(OP_MINUS);
 			match(OP_MINUS);
 		} else {
-			throwException("Se esperaba (tipoDeAsignacion) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro %tokenType%");
 		}
 	}
 
@@ -440,7 +570,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, P_DOT, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {==, &&, ++, ||, <=, %, (, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {==, &&, ++, ||, <=, %, (, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -456,7 +586,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {new, !, this, (, intLiteral, false, ), charLiteral, +, -, idMetVar, null, stringLiteral, true, idClase} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {new, !, this, (, intLiteral, false, ), charLiteral, +, -, idMetVar, null, stringLiteral, true, idClase} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -472,7 +602,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {), ,} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {), ,} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -487,7 +617,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(ID_CLS)) {
 			accesoEstatico();
 		} else {
-			throwException("Se esperaba (expresionUnaria) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (expresionUnaria) pero se encontro %tokenType%");
 		}
 	}
 
@@ -498,7 +628,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			operadorUnario();
 			operando();
 		} else {
-			throwException("Se esperaba (expresionUnariaSinStatic) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (expresionUnariaSinStatic) pero se encontro %tokenType%");
 		}
 	}
 
@@ -510,7 +640,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(OP_MINUS)) {
 			match(OP_MINUS);
 		} else {
-			throwException("Se esperaba (operadorUnario) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (operadorUnario) pero se encontro %tokenType%");
 		}
 	}
 
@@ -520,7 +650,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE)) {
 			literal();
 		} else {
-			throwException("Se esperaba (operando) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (operando) pero se encontro %tokenType%");
 		}
 	}
 
@@ -538,7 +668,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(K_FALSE)) {
 			match(K_FALSE);
 		} else {
-			throwException("Se esperaba (literal) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (literal) pero se encontro %tokenType%");
 		}
 	}
 
@@ -551,7 +681,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			expParenOCasting();
 			encadenado();
 		} else {
-			throwException("Se esperaba (acceso) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (acceso) pero se encontro %tokenType%");
 		}
 	}
 
@@ -564,7 +694,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			match(ID_CLS);
 			restoCastingORestoExpresion();
 		} else {
-			throwException("Se esperaba (expParenOCasting) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (expParenOCasting) pero se encontro %tokenType%");
 		}
 	}
 
@@ -577,7 +707,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			expresionResto();
 			match(P_PAREN_CLOSE);
 		} else {
-			throwException("Se esperaba (restoCastingORestoExpresion) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (restoCastingORestoExpresion) pero se encontro %tokenType%");
 		}
 	}
 
@@ -589,7 +719,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(ID_CLS)) {
 			accesoEstatico();
 		} else {
-			throwException("Se esperaba (accesoEstaticoOPrimarioOExpParen) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (accesoEstaticoOPrimarioOExpParen) pero se encontro %tokenType%");
 		}
 	}
 
@@ -619,7 +749,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_SEMICOLON, P_COMMA, P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {==, &&, ||, <=, %, ), *, +, ,, -, /, ;, <, !=, >, >=} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {==, &&, ||, <=, %, ), *, +, ,, -, /, ;, <, !=, >, >=} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -651,7 +781,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(OP_GT)) {
 			match(OP_GT);
 		} else {
-			throwException("Se esperaba (operadorBinario) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (operadorBinario) pero se encontro %tokenType%");
 		}
 	}
 
@@ -662,7 +792,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {==, &&, ++, ||, <=, %, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {==, &&, ++, ||, <=, %, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -680,7 +810,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(ID_MV)) {
 			accesoVarOMetodo();
 		} else {
-			throwException("Se esperaba (primario) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (primario) pero se encontro %tokenType%");
 		}
 	}
 
@@ -702,7 +832,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(P_PAREN_OPEN)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {(, <} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {(, <} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -712,7 +842,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(OP_GT)) {
 			genRestoImplicito();
 		} else {
-			throwException("Se esperaba (restoGenericidad) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (restoGenericidad) pero se encontro %tokenType%");
 		}
 	}
 
@@ -727,77 +857,108 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		match(OP_GT);
 	}
 
-	private void argsFormales() {
+	/**
+	 * Returns a list of {@link ParameterSymbol}
+	 */
+	private List<ParameterSymbol> argsFormales() {
 		match(P_PAREN_OPEN);
-		listaArgsFormalesOVacio();
+		List<ParameterSymbol> parameters = listaArgsFormalesOVacio();
 		match(P_PAREN_CLOSE);
+		return parameters;
 	}
 
-	private void listaArgsFormalesOVacio() {
+	/**
+	 * Returns a list of {@link ParameterSymbol}
+	 */
+	private List<ParameterSymbol> listaArgsFormalesOVacio() {
 		if (equalsAny(K_BOOLEAN, K_STRING, K_CHAR, K_INT, ID_CLS)) {
-			listaArgsFormales();
+			return listaArgsFormales();
 		} else if (equalsAny(P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
+			return new ArrayList<>();
 		} else {
-			throwException("Se esperaba {boolean, char, ), idClase, String, int} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {boolean, char, ), idClase, String, int} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
-	private void listaArgsFormales() {
-		argFormal();
-		otrosArgsFormales();
+	/**
+	 * Returns a list of {@link ParameterSymbol}
+	 */
+	private List<ParameterSymbol> listaArgsFormales() {
+		ParameterSymbol parameter = argFormal();
+		List<ParameterSymbol> list = otrosArgsFormales();
+		list.add(0, parameter);
+		return list;
 	}
 
-	private void otrosArgsFormales() {
+	/**
+	 * Returns a list of {@link ParameterSymbol}
+	 */
+	private List<ParameterSymbol> otrosArgsFormales() {
 		if (equalsAny(P_COMMA)) {
 			match(P_COMMA);
-			listaArgsFormales();
+			return listaArgsFormales();
 		} else if (equalsAny(P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
+			return new ArrayList<>();
 		} else {
-			throwException("Se esperaba {), ,} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {), ,} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
-	private void argFormal() {
-		tipo();
-		match(ID_MV);
+	/**
+	 * Returns a single {@link ParameterSymbol}
+	 */
+	private ParameterSymbol argFormal() {
+		Type type = tipo();
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		return new UserParameterSymbol(type, name);
 	}
 
-	private void tipo() {
+	/**
+	 * Returns a {@link Type}
+	 */
+	private Type tipo() {
 		if (equalsAny(K_BOOLEAN, K_STRING, K_CHAR, K_INT)) {
-			tipoPrimitivo();
+			return tipoPrimitivo();
 		} else if (equalsAny(ID_CLS)) {
-			match(ID_CLS);
+			ReferenceType type = new ReferenceType(match(ID_CLS));
+			// TODO Agregar genericidad
 			genExplicitaOVacio();
+			return type;
 		} else {
-			throwException("Se esperaba (tipo) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (tipo) pero se encontro %tokenType%");
 		}
 	}
 
-	private void tipoPrimitivo() {
+	/**
+	 * Returns a {@link PrimitiveType}
+	 */
+	private PrimitiveType tipoPrimitivo() {
 		if (equalsAny(K_BOOLEAN)) {
-			match(K_BOOLEAN);
+			return PrimitiveType.BOOLEAN(match(K_BOOLEAN));
 		} else if (equalsAny(K_STRING)) {
-			match(K_STRING);
+			return PrimitiveType.STRING(match(K_STRING));
 		} else if (equalsAny(K_CHAR)) {
-			match(K_CHAR);
+			return PrimitiveType.CHAR(match(K_CHAR));
 		} else if (equalsAny(K_INT)) {
-			match(K_INT);
+			return PrimitiveType.INT(match(K_INT));
 		} else {
-			throwException("Se esperaba (tipoPrimitivo) pero se encontro %tokenType%");
+			throw createSyntacticException("Se esperaba (tipoPrimitivo) pero se encontro %tokenType%");
 		}
 	}
 
 	private void herencia() {
 		if (equalsAny(K_EXTENDS)) {
 			match(K_EXTENDS);
-			match(ID_CLS);
+			ReferenceType extendsType = new ReferenceType(match(ID_CLS));
+			// TODO Agregar genericidad
 			genExplicitaOVacio();
+			ST.currentClass.setParent(extendsType);
 		} else if (equalsAny(P_BRCKT_OPEN)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {extends, {} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {extends, {} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -811,7 +972,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(K_EXTENDS, P_COMMA, OP_GT, ID_MV, P_BRCKT_OPEN, P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {idMetVar, extends, ), {, <, ,, >} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {idMetVar, extends, ), {, <, ,, >} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
@@ -824,7 +985,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(OP_GT)) { // Check for follow
 			// Nothing for now
 		} else {
-			throwException("Se esperaba {,, >} pero se encontro %lexeme% (%tokenType%)");
+			throw createSyntacticException("Se esperaba {,, >} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 

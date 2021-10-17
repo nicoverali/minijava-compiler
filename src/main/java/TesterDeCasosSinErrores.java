@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import semantic.symbol.SymbolTable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -60,6 +61,7 @@ public class TesterDeCasosSinErrores {
         
     @Test
     public void testIterado() {
+        SymbolTable.getInstance().reset();
         probarExito(input);
     }
 

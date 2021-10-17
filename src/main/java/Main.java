@@ -8,6 +8,7 @@ import lexical.analyzer.MiniJavaLexicalAnalyzer;
 import semantic.CircularInheritanceException;
 import semantic.MainMethodException;
 import semantic.SemanticException;
+import semantic.symbol.SymbolTable;
 import syntactic.MiniJavaSyntacticAnalyzer;
 import syntactic.SyntacticAnalyzer;
 import syntactic.SyntacticException;
@@ -33,6 +34,7 @@ public class Main {
         boolean isOk = false;
         try {
             syntactic.analyze();
+            SymbolTable.getInstance().consolidate();
             isOk = true;
         } catch (LexicalException e) {
             lexicalPrinter.printError(e);

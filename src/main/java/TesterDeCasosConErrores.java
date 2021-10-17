@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import semantic.symbol.SymbolTable;
 
 @RunWith(Parameterized.class)
 public class TesterDeCasosConErrores {
@@ -51,6 +52,7 @@ public class TesterDeCasosConErrores {
         
     @Test
     public void test1() {
+        SymbolTable.getInstance().reset();
         probarFallo(input);
     }
 
