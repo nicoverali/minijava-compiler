@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Scanner;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 public class Main {
 
     private static final LexicalErrorPrinter lexicalPrinter = new LexicalErrorPrinter();
@@ -56,7 +58,7 @@ public class Main {
 
     private static LexicalAnalyzer createLexicalAnalyzer(String filePath){
         try {
-            Scanner scanner = new Scanner(new File(filePath));
+            Scanner scanner = new Scanner(new File(filePath), ISO_8859_1);
             SourceCodeReader codeReader = new ScannerSourceCodeReader(scanner);
             return new MiniJavaLexicalAnalyzer(codeReader);
         } catch (IOException e){
