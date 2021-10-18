@@ -1,11 +1,10 @@
-package util;
+package util.map;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
-public class HashMultimap<K, V> {
-
-    private final Map<K, Collection<V>> map = new HashMap<>();
+public interface Multimap<K, V> {
 
     /**
      * Stores a key-value pair in this multimap.
@@ -17,14 +16,7 @@ public class HashMultimap<K, V> {
      * @return {@code true} if the method increased the size of the multimap, or {@code false} if the
      *     multimap already contained the key-value pair and doesn't allow duplicates
      */
-    public boolean put(K key, V value){
-        if (map.containsKey(key)){
-            return map.get(key).add(value);
-        } else {
-            map.put(key, new LinkedList<>(Collections.singleton(value)));
-            return true;
-        }
-    }
+    boolean put(K key, V value);
 
     /**
      * Stores a key-value pair in this multimap for each of {@code values}, all using the same key,
@@ -40,14 +32,17 @@ public class HashMultimap<K, V> {
      *
      * @return {@code true} if the multimap changed
      */
-    public boolean putAll(K key, Collection<? extends V> values){
-        if (map.containsKey(key)){
-            return map.get(key).addAll(values);
-        } else {
-            map.put(key, new LinkedList<>(values));
-            return true;
-        }
-    }
+    boolean putAll(K key, Collection<? extends V> values);
+
+    /**
+     * Copies all mappings from the specified map to this multimap (optional operation).
+     * The effect of this call is equivalent to that of calling put(k, v) on this map once for each mapping from key k to value v in the specified map.
+     *
+     * The behavior of this operation is undefined if the specified map is modified while the operation is in progress.
+     *
+     * @return {@code true} if the multimap changed
+     */
+    boolean putAll(Multimap<K, V> multimap);
 
     /**
      * Returns a view collection of the values associated with {@code key} in this multimap, if any.
@@ -56,17 +51,13 @@ public class HashMultimap<K, V> {
      *
      * <p>Changes to the returned collection will update the underlying multimap, and vice versa.
      */
-    public Collection<V> get(K key){
-        return map.get(key);
-    }
+    Collection<V> get(K key);
 
     /**
      * Returns {@code true} if this multimap contains at least one key-value pair with the key {@code
      * key}.
      */
-    public boolean containsKey(K key){
-       return map.containsKey(key);
-    }
+    boolean containsKey(K key);
 
     /**
      * Returns a view collection of all <i>distinct</i> keys contained in this multimap. Note that the
@@ -75,9 +66,7 @@ public class HashMultimap<K, V> {
      * <p>Changes to the returned set will update the underlying multimap, and vice versa. However,
      * <i>adding</i> to the returned set is not possible.
      */
-    public Set<K> keys(){
-        return map.keySet();
-    }
+    Set<K> keys();
 
     /**
      * Returns a view collection containing the <i>value</i> from each key-value pair contained in
@@ -86,15 +75,12 @@ public class HashMultimap<K, V> {
      * <p>Changes to the returned collection will update the underlying multimap, and vice versa.
      * However, <i>adding</i> to the returned collection is not possible.
      */
-    public Collection<V> values(){
-        return map.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
-    }
+    Collection<V> values();
 
     /**
      * Removes all of the mappings from this map (optional operation). The map will be empty after this call returns
      */
-    public void clear(){
-        map.clear();
-    }
+    void clear();
+
 
 }
