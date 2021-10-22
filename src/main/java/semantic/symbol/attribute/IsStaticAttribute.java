@@ -2,6 +2,8 @@ package semantic.symbol.attribute;
 
 import lexical.Token;
 
+import java.util.Objects;
+
 /**
  * This attribute determines if an Symbol is static or not
  */
@@ -48,18 +50,16 @@ public class IsStaticAttribute implements SymbolAttribute<Boolean>{
         return isStatic;
     }
 
-    /**
-     * @return true if the given object is a {@link IsStaticAttribute} and has the same value as this one
-     */
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof IsStaticAttribute && equals((IsStaticAttribute) obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IsStaticAttribute that = (IsStaticAttribute) o;
+        return isStatic == that.isStatic;
     }
 
-    /**
-     * @return true if the given {@link IsStaticAttribute} has the same value as this one
-     */
-    public boolean equals(IsStaticAttribute attribute){
-        return this.isStatic == attribute.isStatic;
+    @Override
+    public int hashCode() {
+        return Objects.hash(isStatic);
     }
 }

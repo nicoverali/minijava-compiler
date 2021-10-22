@@ -89,28 +89,16 @@ public class UserMethodSymbol implements MethodSymbol {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof MethodSymbol && equals((MethodSymbol) obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserMethodSymbol that = (UserMethodSymbol) o;
+        return Objects.equals(isStatic, that.isStatic) && Objects.equals(returnType, that.returnType) && Objects.equals(name, that.name) && Objects.equals(parameters.values(), that.parameters.values());
     }
 
     @Override
-    public boolean equals(MethodSymbol method) {
-        return this.isStatic.equals(method.getStaticAttribute())
-                && this.returnType.equals(method.getReturnType())
-                && this.name.equals(method.getNameAttribute())
-                && parametersAreEqual(method);
-    }
-
-    private boolean parametersAreEqual(MethodSymbol method) {
-        List<ParameterSymbol> ours = new ArrayList<>(parameters.values());
-        List<ParameterSymbol> theirs = method.getParameters();
-        if (ours.size() != theirs.size()) return false;
-        for (int i = 0; i < ours.size(); i++) {
-            if (!ours.get(i).equals(theirs.get(i))){
-                return false;
-            }
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(isStatic, returnType, name, parameters.values());
     }
 
     @Override

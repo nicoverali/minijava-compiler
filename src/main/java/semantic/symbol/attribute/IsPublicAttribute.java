@@ -2,6 +2,8 @@ package semantic.symbol.attribute;
 
 import lexical.Token;
 
+import java.util.Objects;
+
 /**
  * This attribute determines if a Symbol is public or not
  */
@@ -43,15 +45,16 @@ public class IsPublicAttribute implements SymbolAttribute<Boolean> {
         return isPublic;
     }
 
-    /**
-     * @return if the given object is a {@link IsPublicAttribute} and has the same value as this one
-     */
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof IsPublicAttribute && equals((IsPublicAttribute) obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IsPublicAttribute that = (IsPublicAttribute) o;
+        return isPublic == that.isPublic;
     }
 
-    public boolean equals(IsPublicAttribute attribute){
-        return this.isPublic == attribute.isPublic;
+    @Override
+    public int hashCode() {
+        return Objects.hash(isPublic);
     }
 }

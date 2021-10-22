@@ -9,9 +9,4 @@ public interface ParameterSymbol extends InstantiableSymbol<ParameterSymbol> {
      * @return the {@link Type} associated with this parameter
      */
     Type getType();
-
-    /**
-     * @return true if the given {@link ParameterSymbol} has the same {@link Type} as this one
-     */
-    boolean equals(ParameterSymbol parameter);
 }

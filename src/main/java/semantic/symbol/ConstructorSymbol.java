@@ -6,6 +6,7 @@ import semantic.symbol.attribute.type.ReferenceType;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ConstructorSymbol implements InstantiableSymbol<ConstructorSymbol> {
@@ -71,5 +72,18 @@ public class ConstructorSymbol implements InstantiableSymbol<ConstructorSymbol> 
     public ConstructorSymbol instantiate(ClassSymbol container, String newType) {
         List<ParameterSymbol> params = parameters.stream().map(param -> param.instantiate(container, newType)).collect(Collectors.toList());
         return new ConstructorSymbol(classReference, params);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConstructorSymbol that = (ConstructorSymbol) o;
+        return Objects.equals(classReference, that.classReference) && Objects.equals(parameters, that.parameters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(classReference, parameters);
     }
 }

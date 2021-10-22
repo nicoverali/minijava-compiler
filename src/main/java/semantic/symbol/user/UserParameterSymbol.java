@@ -8,6 +8,8 @@ import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
+import java.util.Objects;
+
 public class UserParameterSymbol implements ParameterSymbol {
 
     private final NameAttribute name;
@@ -32,13 +34,16 @@ public class UserParameterSymbol implements ParameterSymbol {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ParameterSymbol && equals((ParameterSymbol) obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserParameterSymbol that = (UserParameterSymbol) o;
+        return Objects.equals(type, that.type);
     }
 
     @Override
-    public boolean equals(ParameterSymbol parameter) {
-        return this.type.equals(parameter.getType());
+    public int hashCode() {
+        return Objects.hash(type);
     }
 
     @Override

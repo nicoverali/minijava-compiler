@@ -2,6 +2,8 @@ package semantic.symbol.attribute;
 
 import lexical.Token;
 
+import java.util.Objects;
+
 /**
  * This attribute determines the name of a Symbol
  */
@@ -40,18 +42,16 @@ public class NameAttribute implements SymbolAttribute<String> {
         return name;
     }
 
-    /**
-     * @return true if the given object is a {@link NameAttribute} and has the same name as this one
-     */
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof NameAttribute && equals((NameAttribute) obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NameAttribute that = (NameAttribute) o;
+        return Objects.equals(name, that.name);
     }
 
-    /**
-     * @return true if the given {@link NameAttribute} has the same name as this one, false otherwise
-     */
-    public boolean equals(NameAttribute attribute){
-        return this.name.equals(attribute.name);
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

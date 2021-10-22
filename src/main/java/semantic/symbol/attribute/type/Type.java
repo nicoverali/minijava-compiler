@@ -6,6 +6,8 @@ import semantic.symbol.ClassSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.SymbolAttribute;
 
+import java.util.Objects;
+
 /**
  * A type is another {@link SymbolAttribute} that represents the type of a symbol.
  */
@@ -45,23 +47,16 @@ public abstract class Type implements SymbolAttribute<String> {
         // By default, every type is valid
     }
 
-    /**
-     * @return true if the given object is a {@link Type} and has the same value as this one
-     */
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Type && equals((Type) obj);
-    }
-
-    /**
-     * @return true if the given {@link Type} has the same value as this one
-     */
-    public boolean equals(Type type) {
-        return this.name.equals(type.name);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Type type = (Type) o;
+        return Objects.equals(name, type.name);
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return Objects.hash(name);
     }
 }

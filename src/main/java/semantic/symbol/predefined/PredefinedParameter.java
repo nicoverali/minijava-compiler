@@ -6,6 +6,8 @@ import semantic.symbol.ParameterSymbol;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
+import java.util.Objects;
+
 /**
  * A predefined parameter is part of a {@link PredefinedMethod}.
  * It determines the {@link Type} and name of one of its parameters.
@@ -31,13 +33,16 @@ public class PredefinedParameter implements ParameterSymbol {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ParameterSymbol && equals((ParameterSymbol) obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PredefinedParameter that = (PredefinedParameter) o;
+        return Objects.equals(type, that.type);
     }
 
     @Override
-    public boolean equals(ParameterSymbol parameter) {
-        return this.type.equals(parameter.getType());
+    public int hashCode() {
+        return Objects.hash(type);
     }
 
     @Override

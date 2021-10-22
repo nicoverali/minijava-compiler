@@ -31,9 +31,4 @@ public interface MethodSymbol extends InstantiableSymbol<MethodSymbol> {
      * @return true if the method has at least one parameter, false if not
      */
     boolean hasParameters();
-
-    /**
-     * @return true if the given method has the same staticness, type, name, and parameters types, false otherwise
-     */
-    boolean equals(MethodSymbol method);
 }

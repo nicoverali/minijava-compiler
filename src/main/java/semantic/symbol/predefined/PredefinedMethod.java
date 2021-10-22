@@ -11,6 +11,7 @@ import semantic.symbol.attribute.type.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A predefined method is a member of a {@link PredefinedClass}.
@@ -75,26 +76,16 @@ public class PredefinedMethod implements MethodSymbol {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof MethodSymbol && equals((MethodSymbol) obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PredefinedMethod that = (PredefinedMethod) o;
+        return Objects.equals(isStatic, that.isStatic) && Objects.equals(returnType, that.returnType) && Objects.equals(name, that.name) && Objects.equals(parameters, that.parameters);
     }
 
     @Override
-    public boolean equals(MethodSymbol method) {
-        return this.isStatic.equals(method.getStaticAttribute())
-                && this.returnType.equals(method.getReturnType())
-                && this.name.equals(method.getNameAttribute())
-                && parametersAreEqual(method);
-    }
-
-    private boolean parametersAreEqual(MethodSymbol method) {
-        if (parameters.size() != method.getParameters().size()) return false;
-        for (int i = 0; i < parameters.size(); i++) {
-            if (!parameters.get(i).equals(method.getParameters().get(i))){
-                return false;
-            }
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(isStatic, returnType, name, parameters);
     }
 
     @Override
