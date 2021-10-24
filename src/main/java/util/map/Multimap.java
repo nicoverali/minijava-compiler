@@ -1,10 +1,10 @@
 package util.map;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-public interface Multimap<K, V> {
+public interface Multimap<K, V>{
 
     /**
      * Stores a key-value pair in this multimap.
@@ -76,6 +76,11 @@ public interface Multimap<K, V> {
      * However, <i>adding</i> to the returned collection is not possible.
      */
     Collection<V> values();
+
+    /**
+     * Returns a collection containing an {@link Entry} for each key with a {@link Collection} of values
+     */
+    Collection<Entry<K,Collection<V>>> entries();
 
     /**
      * Removes all of the mappings from this map (optional operation). The map will be empty after this call returns

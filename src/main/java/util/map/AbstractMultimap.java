@@ -78,6 +78,11 @@ public abstract class AbstractMultimap<K, V> implements Multimap<K, V>{
     }
 
     @Override
+    public Collection<Map.Entry<K, Collection<V>>> entries() {
+        return map.entrySet();
+    }
+
+    @Override
     public void clear(){
         map.clear();
     }
