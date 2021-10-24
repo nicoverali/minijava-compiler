@@ -1,5 +1,5 @@
-///[Error:main|8]
-// Metodo duplicado
+///[SinErrores]
+// xx Metodo duplicado xx // Ahora esto es sobrecarga
 
 class Clase {
 

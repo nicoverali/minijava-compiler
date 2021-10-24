@@ -9,6 +9,8 @@ import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import util.map.HashSetMultimap;
+import util.map.Multimap;
 
 import java.util.*;
 
@@ -87,18 +89,18 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
-    public Map<String, MethodSymbol> getAllMethods() throws SemanticException {
-        Map<String, MethodSymbol> resultMap;
+    public Multimap<String, MethodSymbol> getAllMethods() throws SemanticException {
+        Multimap<String, MethodSymbol> resultMap;
         ClassSymbol parentSym = null;
         if (parent != null){
             parentSym = SymbolTable.getInstance().getPredefinedClass(parent)
             .orElseThrow(() -> new IllegalStateException("The predefined class has a parent that does not exists"));
         }
-        resultMap = parentSym != null ? new HashMap<>(parentSym.getAllMethods()) : new HashMap<>();
+        resultMap = parentSym != null ? new HashSetMultimap<>(parentSym.getAllMethods()) : new HashSetMultimap<>();
         for (PredefinedMethod method : methods) {
             resultMap.put(method.getName(), method);
         }
-        return Collections.unmodifiableMap(resultMap);
+        return resultMap;
     }
 
     /**

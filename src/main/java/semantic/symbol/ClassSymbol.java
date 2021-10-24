@@ -5,6 +5,8 @@ import semantic.SemanticException;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import util.map.HashSetMultimap;
+import util.map.Multimap;
 
 import java.util.Collection;
 import java.util.Map;
@@ -52,10 +54,10 @@ public interface ClassSymbol extends Symbol {
      * <i>Beware that the result of this method is cached, so calling it again after new methods are added will
      * cause inconsistencies</i>
      *
-     * @return an unmodifiable map from method names to the {@link MethodSymbol} of this class and its ancestors
+     * @return a {@link HashSetMultimap} from method names to the {@link MethodSymbol} of this class and its ancestors
      * @throws SemanticException if a semantic error is detected while obtaining all the methods
      */
-    Map<String, MethodSymbol> getAllMethods() throws SemanticException;
+    Multimap<String, MethodSymbol> getAllMethods() throws SemanticException;
 
     /**
      * @return the {@link Token} associated with the {@link NameAttribute} of this symbol if any

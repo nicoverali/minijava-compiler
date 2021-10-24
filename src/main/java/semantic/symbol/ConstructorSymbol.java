@@ -74,6 +74,18 @@ public class ConstructorSymbol implements InstantiableSymbol<ConstructorSymbol> 
         return new ConstructorSymbol(classReference, params);
     }
 
+    /**
+     * Determines whether the given constructor is a valid overload of this constructor.
+     * Constructors of different classes, although are not actually overloading, will always be considered valid.
+     *
+     * @param constructor another constructor
+     * @return true if the given constructor is a valid overload of this constructor, false otherwise
+     */
+    boolean isValidOverload(ConstructorSymbol constructor){
+        return !classReference.equals(constructor.getClassReference())
+                || !parameters.equals(constructor.parameters);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

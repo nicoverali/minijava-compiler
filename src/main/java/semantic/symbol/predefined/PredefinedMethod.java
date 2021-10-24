@@ -78,9 +78,12 @@ public class PredefinedMethod implements MethodSymbol {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PredefinedMethod that = (PredefinedMethod) o;
-        return Objects.equals(isStatic, that.isStatic) && Objects.equals(returnType, that.returnType) && Objects.equals(name, that.name) && Objects.equals(parameters, that.parameters);
+        if (!(o instanceof MethodSymbol)) return false;
+        MethodSymbol that = (MethodSymbol) o;
+        return Objects.equals(isStatic(), that.isStatic())
+                && Objects.equals(getReturnType(), that.getReturnType())
+                && Objects.equals(getName(), getName())
+                && Objects.equals(getParameters(), that.getParameters());
     }
 
     @Override

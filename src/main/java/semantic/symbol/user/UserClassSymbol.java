@@ -6,6 +6,9 @@ import semantic.symbol.*;
 import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import util.map.HashMultimap;
+import util.map.HashSetMultimap;
+import util.map.Multimap;
 
 import java.util.*;
 
@@ -16,14 +19,14 @@ public class UserClassSymbol implements ClassSymbol {
     private final NameAttribute name;
     private GenericityAttribute generic;
 
-    private ConstructorSymbol constructor;
+    private final List<ConstructorSymbol> constructors = new ArrayList<>();
     private final Map<String, AttributeSymbol> attributes = new HashMap<>();
-    private final Map<String, MethodSymbol> methods = new HashMap<>();
+    private final Multimap<String, MethodSymbol> methods = new HashMultimap<>();
 
     private ReferenceType parent;
 
     private Map<String, AttributeSymbol> inheritedAttributes;
-    private Map<String, MethodSymbol> inheritedMethods;
+    private Multimap<String, MethodSymbol> inheritedMethods;
 
     public UserClassSymbol(NameAttribute name){
         this.name = name;
@@ -63,15 +66,17 @@ public class UserClassSymbol implements ClassSymbol {
 
     /**
      * Adds a {@link ConstructorSymbol} to this class.
-     * If another constructor was previously set, then an exception will be thrown
+     * A class cannot have duplicate constructors, that is, constructors with the same arguments
      *
      * @param constructor a {@link ConstructorSymbol} which will be added to this class
-     * @throws SemanticException if the class already had a {@link ConstructorSymbol}
+     * @throws SemanticException if the class already had a {@link ConstructorSymbol} with the same arguments
      */
     public void add(ConstructorSymbol constructor) throws SemanticException{
-        if (this.constructor != null)
-            throw new SemanticException("Las clases solo pueden tener un unico constructor", constructor.getClassReference());
-        this.constructor = constructor;
+        boolean duplicateConstructor = constructors.stream().anyMatch(c -> c.equals(constructor));
+        if (duplicateConstructor){
+                throw new SemanticException("Constructor duplicado", constructor.getClassReference());
+        }
+        constructors.add(constructor);
     }
 
     /**
@@ -82,8 +87,11 @@ public class UserClassSymbol implements ClassSymbol {
      * @throws SemanticException if the class already had a {@link MethodSymbol} with the same name
      */
     public void add(MethodSymbol method) throws SemanticException{
-        if (methods.containsKey(method.getName()))
-            throw new SemanticException("Una clase no puede tener dos metodos con el mismo nombre", method);
+        boolean duplicateMethod = methods.get(method.getName()).stream().anyMatch(m -> !m.isValidOverload(method));
+        if (duplicateMethod) {
+            throw new SemanticException("Metodo duplicado", method);
+        }
+
         methods.put(method.getName(), method);
     }
 
@@ -133,8 +141,8 @@ public class UserClassSymbol implements ClassSymbol {
     /**
      * @return the {@link ConstructorSymbol} of this class
      */
-    public ConstructorSymbol getConstructor() {
-        return constructor;
+    public List<ConstructorSymbol> getConstructors() {
+        return new ArrayList<>(constructors);
     }
 
     @Override
@@ -162,18 +170,18 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     @Override
-    public Map<String, MethodSymbol> getAllMethods() throws SemanticException {
+    public Multimap<String, MethodSymbol> getAllMethods() throws SemanticException {
         if (inheritedMethods == null)  this.inheritMembers();
 
-        Map<String, MethodSymbol> resultMap = new HashMap<>(inheritedMethods);
+        HashSetMultimap<String, MethodSymbol> resultMap = new HashSetMultimap<>(inheritedMethods);
         resultMap.putAll(methods);
-        return Collections.unmodifiableMap(resultMap);
+        return resultMap;
     }
 
 
     @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {
-        if (constructor != null) constructor.checkDeclaration(this);
+        constructors.forEach(cons -> cons.checkDeclaration(this));
         attributes.values().forEach(attr -> attr.checkDeclaration(this));
         methods.values().forEach(method -> method.checkDeclaration(this));
         checkParent();

@@ -11,6 +11,8 @@ class Class extends ClassPadre1{
 
     }
 
+    static void debugPrint(int a){} // Sobre-escribe metodo predefinido
+
     static void method(int a){} // Sobre-escribe metodo correctamente
 
     dynamic Object getObject(){} // Clases
@@ -47,5 +49,7 @@ class ClassPadre2 extends Object{
 }
 
 class SystemParticular extends System {
+
+    static int read(){} // Sobreescribe metodo predefinido
 
 }

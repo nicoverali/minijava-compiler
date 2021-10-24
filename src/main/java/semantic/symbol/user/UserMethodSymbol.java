@@ -10,7 +10,10 @@ import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class UserMethodSymbol implements MethodSymbol {
@@ -91,9 +94,12 @@ public class UserMethodSymbol implements MethodSymbol {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserMethodSymbol that = (UserMethodSymbol) o;
-        return Objects.equals(isStatic, that.isStatic) && Objects.equals(returnType, that.returnType) && Objects.equals(name, that.name) && Objects.equals(parameters.values(), that.parameters.values());
+        if (!(o instanceof MethodSymbol)) return false;
+        MethodSymbol that = (MethodSymbol) o;
+        return Objects.equals(isStatic(), that.isStatic())
+                && Objects.equals(getReturnType(), that.getReturnType())
+                && Objects.equals(getName(), getName())
+                && Objects.equals(getParameters(), that.getParameters());
     }
 
     @Override
