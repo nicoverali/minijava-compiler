@@ -2,7 +2,6 @@ package semantic.symbol;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import util.map.HashSetMultimap;
@@ -63,11 +62,6 @@ public interface ClassSymbol extends Symbol {
      * @return the {@link Token} associated with the {@link NameAttribute} of this symbol if any
      */
     Token getNameToken();
-
-    /**
-     * @return an {@link Optional} wrapping the {@link GenericityAttribute} of the symbol
-     */
-    Optional<GenericityAttribute> getGeneric();
 
     /**
      * Verifies that the symbol declaration is valid. This method should be execute once the {@link SymbolTable}

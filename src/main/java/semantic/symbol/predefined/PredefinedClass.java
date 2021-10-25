@@ -6,7 +6,6 @@ import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.SymbolTable;
-import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import util.map.HashSetMultimap;
@@ -66,11 +65,6 @@ public class PredefinedClass implements ClassSymbol {
     @Override
     public Collection<AttributeSymbol> getAttributes() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public Optional<GenericityAttribute> getGeneric() {
-        return Optional.empty();
     }
 
     @Override

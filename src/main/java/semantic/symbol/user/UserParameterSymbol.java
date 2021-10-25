@@ -5,7 +5,6 @@ import semantic.symbol.ClassSymbol;
 import semantic.symbol.ParameterSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.NameAttribute;
-import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.Objects;
@@ -49,13 +48,5 @@ public class UserParameterSymbol implements ParameterSymbol {
     @Override
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         this.type.validate(SymbolTable.getInstance(), container);
-    }
-
-    @Override
-    public ParameterSymbol instantiate(ClassSymbol container, String newType) {
-        if (type instanceof ReferenceType){
-            return new UserParameterSymbol(((ReferenceType) type).instantiate(container, newType), name);
-        }
-        return this;
     }
 }

@@ -4,9 +4,8 @@ import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.List;
-import java.util.Objects;
 
-public interface MethodSymbol extends InstantiableSymbol<MethodSymbol> {
+public interface MethodSymbol extends InnerClassSymbol {
     /**
      * @return the {@link IsStaticAttribute} of this method which determines if the method is static or not
      */

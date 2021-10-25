@@ -3,7 +3,6 @@ package semantic.symbol.user;
 import lexical.Token;
 import semantic.SemanticException;
 import semantic.symbol.*;
-import semantic.symbol.attribute.GenericityAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import util.map.HashMultimap;
@@ -17,7 +16,6 @@ public class UserClassSymbol implements ClassSymbol {
     private static final SymbolTable ST = SymbolTable.getInstance();
 
     private final NameAttribute name;
-    private GenericityAttribute generic;
 
     private final List<ConstructorSymbol> constructors = new ArrayList<>();
     private final Map<String, AttributeSymbol> attributes = new HashMap<>();
@@ -47,21 +45,6 @@ public class UserClassSymbol implements ClassSymbol {
             throw new SemanticException("Una clase no puede extenderse a si misma", classReference);
         }
         parent = classReference;
-    }
-
-    /**
-     * Adds a {@link GenericityAttribute} to this class which in turn means that this class is generic.
-     * If a previous {@link GenericityAttribute} was set in this class, then an exception will be thrown
-     *
-     * @see #isGeneric()
-     * @param generic a {@link GenericityAttribute} which will be added to this class
-     * @throws SemanticException if the class was already associated with a generic type
-     */
-    // TODO Ahora las clases pueden tener multiples tipos genericos, con lo cual no debemos lanzar excepción, y debe ser una lista, aunque hay que controlar duplicados
-    public void add(GenericityAttribute generic) throws SemanticException{
-        if (this.generic != null)
-            throw new SemanticException("Una clase no puede tener mas de un tipo generico", generic);
-        this.generic = generic;
     }
 
     /**
@@ -120,22 +103,6 @@ public class UserClassSymbol implements ClassSymbol {
     @Override
     public Token getNameToken() {
         return name.getToken();
-    }
-
-    /**
-     * @return an {@link Optional} wrapping the {@link GenericityAttribute} of this class
-     * which describes the genericity of it
-     */
-    public Optional<GenericityAttribute> getGeneric() {
-        return Optional.ofNullable(generic);
-    }
-
-    /**
-     * @see #getGeneric()
-     * @return true if this class is generic and so has a {@link GenericityAttribute}, false otherwise
-     */
-    public boolean isGeneric(){
-        return generic != null;
     }
 
     /**

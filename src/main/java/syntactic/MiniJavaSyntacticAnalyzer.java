@@ -119,7 +119,6 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		NameAttribute name = NameAttribute.of(match(ID_CLS));
 		ST.currentClass = new UserClassSymbol(name);
 
-		// TODO Agregar genericidad
 		genExplicitaOVacio();
 
 		// Check if extends from class
@@ -217,7 +216,6 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private void atributoOConstructor(ReferenceType classReference) {
 		if (equalsAny(OP_LT, ID_MV)) {
-			// TODO Agregar genericidad
 			genExplicitaOVacio();
 			listaDecAtrs(classReference);
 			match(P_SEMICOLON);
@@ -923,7 +921,6 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			return tipoPrimitivo();
 		} else if (equalsAny(ID_CLS)) {
 			ReferenceType type = new ReferenceType(match(ID_CLS));
-			// TODO Agregar genericidad
 			genExplicitaOVacio();
 			return type;
 		} else {
@@ -952,7 +949,6 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		if (equalsAny(K_EXTENDS)) {
 			match(K_EXTENDS);
 			ReferenceType extendsType = new ReferenceType(match(ID_CLS));
-			// TODO Agregar genericidad
 			genExplicitaOVacio();
 			ST.currentClass.setParent(extendsType);
 		} else if (equalsAny(P_BRCKT_OPEN)) { // Check for follow

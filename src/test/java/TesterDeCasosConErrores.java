@@ -18,22 +18,22 @@ public class TesterDeCasosConErrores {
     private static final Main init = null;
     
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private final PrintStream originalOut = System.out;
+    private final PrintStream originalOut = java.lang.System.out;
     private static final String testFilesDirectoryPath = "resources/conErrores/";
     
      
     @Before
     public  void setUpClass() {
-        System.setOut(new PrintStream(outContent));
+        java.lang.System.setOut(new PrintStream(outContent));
     }
     
     @After
     public  void tearDownClass() {
-        System.setOut(originalOut);
+        java.lang.System.setOut(originalOut);
     }
     
     @Parameters(name = "{0}")
-    public static Iterable<? extends Object> data() {
+    public static Iterable<? extends java.lang.Object> data() {
         File folder = new File(testFilesDirectoryPath);
         ArrayList<String> names = new ArrayList();
         for(File f: folder.listFiles()){

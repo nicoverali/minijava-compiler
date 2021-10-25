@@ -7,9 +7,8 @@ import semantic.symbol.attribute.type.ReferenceType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-public class ConstructorSymbol implements InstantiableSymbol<ConstructorSymbol> {
+public class ConstructorSymbol implements InnerClassSymbol {
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
@@ -66,12 +65,6 @@ public class ConstructorSymbol implements InstantiableSymbol<ConstructorSymbol> 
 
     private boolean nameMatchesClassName(ClassSymbol container) {
         return container.getName().equals(this.classReference.getValue());
-    }
-
-    @Override
-    public ConstructorSymbol instantiate(ClassSymbol container, String newType) {
-        List<ParameterSymbol> params = parameters.stream().map(param -> param.instantiate(container, newType)).collect(Collectors.toList());
-        return new ConstructorSymbol(classReference, params);
     }
 
     /**

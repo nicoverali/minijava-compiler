@@ -7,14 +7,12 @@ import semantic.symbol.ParameterSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
-import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class UserMethodSymbol implements MethodSymbol {
 
@@ -111,15 +109,5 @@ public class UserMethodSymbol implements MethodSymbol {
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         returnType.validate(SymbolTable.getInstance(), container);
         parameters.values().forEach(param -> param.checkDeclaration(container));
-    }
-
-    @Override
-    public MethodSymbol instantiate(ClassSymbol container, String newType) {
-        List<ParameterSymbol> params = parameters.values().stream()
-                .map(param -> param.instantiate(container, newType)).collect(Collectors.toList());
-        if (returnType instanceof ReferenceType){
-            return new UserMethodSymbol(isStatic, ((ReferenceType) returnType).instantiate(container, newType), name, params);
-        }
-        return new UserMethodSymbol(isStatic, returnType, name, params);
     }
 }

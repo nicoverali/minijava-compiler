@@ -2,7 +2,7 @@ package semantic.symbol;
 
 import semantic.SemanticException;
 
-public interface InnerLevelSymbol extends Symbol {
+public interface InnerClassSymbol extends Symbol {
 
     /**
      * Verifies that the symbol declaration is valid. This method should be executed once the {@link SymbolTable}

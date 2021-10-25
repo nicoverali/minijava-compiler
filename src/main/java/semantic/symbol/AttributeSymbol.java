@@ -4,10 +4,9 @@ import semantic.SemanticException;
 import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
-import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
-public class AttributeSymbol implements InstantiableSymbol<AttributeSymbol> {
+public class AttributeSymbol implements InnerClassSymbol {
 
     private IsPublicAttribute isPublic = IsPublicAttribute.defaultAttribute();
     private IsStaticAttribute isStatic = IsStaticAttribute.defaultAttribute();
@@ -66,13 +65,5 @@ public class AttributeSymbol implements InstantiableSymbol<AttributeSymbol> {
     @Override
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         type.validate(SymbolTable.getInstance(), container);
-    }
-
-    @Override
-    public AttributeSymbol instantiate(ClassSymbol container, String newType) {
-        if (type instanceof ReferenceType){
-            return new AttributeSymbol(isPublic, isStatic, ((ReferenceType) type).instantiate(container, newType), name);
-        }
-        return this;
     }
 }

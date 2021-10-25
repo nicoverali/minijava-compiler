@@ -95,9 +95,4 @@ public class PredefinedMethod implements MethodSymbol {
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         // Do nothing
     }
-
-    @Override
-    public MethodSymbol instantiate(ClassSymbol container, String newType) {
-        return this;
-    }
 }

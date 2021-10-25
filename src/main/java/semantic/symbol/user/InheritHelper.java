@@ -1,17 +1,15 @@
 package semantic.symbol.user;
 
 import semantic.SemanticException;
-import semantic.symbol.*;
-import semantic.symbol.attribute.GenericityAttribute;
-import semantic.symbol.attribute.type.ReferenceType;
+import semantic.symbol.AttributeSymbol;
+import semantic.symbol.ClassSymbol;
+import semantic.symbol.MethodSymbol;
+import semantic.symbol.SymbolTable;
 import util.map.HashMultimap;
-import util.map.HashSetMultimap;
 import util.map.Multimap;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 public class InheritHelper {
 
@@ -20,18 +18,17 @@ public class InheritHelper {
     public static Multimap<String, MethodSymbol> inheritMethods(ClassSymbol symbol){
         Multimap<String, MethodSymbol> methods = new HashMultimap<>();
 
-        symbol.getParentClass().ifPresent(parentRef ->
-            ST.getClass(parentRef).ifPresent(parentSymbol -> {
-                for (MethodSymbol inherit : parentSymbol.getAllMethods().values()){
-                    inherit = instantiateMember(inherit, parentRef, parentSymbol);
-                    if (isValidOverload(inherit, methods)){
+        symbol.getParentClass()
+            .flatMap(ST::getClass)
+            .ifPresent(parentSymbol -> {
+                for (MethodSymbol inherit : parentSymbol.getAllMethods().values()) {
+                    if (isValidOverload(inherit, methods)) {
                         methods.put(inherit.getName(), inherit);
                     } else {
                         throw new SemanticException("Metodo duplicado", inherit);
                     }
                 }
-            }
-        ));
+        });
 
         return methods;
     }
@@ -43,25 +40,15 @@ public class InheritHelper {
     public static Map<String, AttributeSymbol> inheritAttributes(ClassSymbol symbol){
         Map<String, AttributeSymbol> attributes = new HashMap<>();
 
-        symbol.getParentClass().ifPresent(parentRef ->
-            ST.getClass(parentRef).ifPresent(parentSymbol -> {
-                for (AttributeSymbol inherit : parentSymbol.getAllAttributes().values()){
-                    inherit = instantiateMember(inherit, parentRef, parentSymbol);
+        symbol.getParentClass()
+            .flatMap(ST::getClass)
+            .ifPresent(parentSymbol -> {
+                for (AttributeSymbol inherit : parentSymbol.getAllAttributes().values()) {
                     attributes.put(inherit.getName(), inherit);
                 }
-            })
-        );
+        });
 
         return attributes;
-    }
-
-    // TODO Check that this instantiation is ok if we implement Genericity
-    public static <T extends InstantiableSymbol<T>> T instantiateMember(T inherit, ReferenceType parentInstance, ClassSymbol parent) {
-        Optional<GenericityAttribute> instanceGen = parentInstance.getGeneric();
-        if (instanceGen.isPresent()){
-            return inherit.instantiate(parent, instanceGen.get().getValue());
-        }
-        return inherit;
     }
 
 }
