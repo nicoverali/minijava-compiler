@@ -78,6 +78,16 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
+    public Collection<ConstructorSymbol> getConstructors() {
+        return List.of(
+                new ConstructorSymbol(
+                        new ReferenceType(name.getValue()),
+                        List.of()
+                )
+        );
+    }
+
+    @Override
     public Map<String, AttributeSymbol> getAllAttributes() throws SemanticException {
         return Collections.emptyMap();
     }

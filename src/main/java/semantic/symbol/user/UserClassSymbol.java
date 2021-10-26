@@ -105,11 +105,10 @@ public class UserClassSymbol implements ClassSymbol {
         return name.getToken();
     }
 
-    /**
-     * @return the {@link ConstructorSymbol} of this class
-     */
+    @Override
     public List<ConstructorSymbol> getConstructors() {
-        return new ArrayList<>(constructors);
+        if (!constructors.isEmpty()) return new ArrayList<>(constructors);
+        return List.of(new ConstructorSymbol(new ReferenceType(getName()), List.of()));
     }
 
     @Override

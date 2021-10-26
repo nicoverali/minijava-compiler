@@ -29,6 +29,16 @@ public interface ClassSymbol extends Symbol {
     Optional<ReferenceType> getParentClass();
 
     /**
+     * Returns all the {@link ConstructorSymbol} of this class. If the user did not set any constructor
+     * for this class, then at least a default constructor will be returned.
+     *
+     * Is safe to assume that the collection of constructor will never be empty
+     *
+     * @return a {@link Collection} of {@link ConstructorSymbol} of this class
+     */
+    Collection<ConstructorSymbol> getConstructors();
+
+    /**
      * Returns a map containing all of the ancestors {@link AttributeSymbol},
      * plus the attributes of this particular class.
      * <br>
