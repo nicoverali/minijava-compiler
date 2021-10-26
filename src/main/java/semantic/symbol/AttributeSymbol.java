@@ -1,12 +1,13 @@
 package semantic.symbol;
 
 import semantic.SemanticException;
+import semantic.Variable;
 import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
-public class AttributeSymbol implements InnerClassSymbol {
+public class AttributeSymbol implements InnerClassSymbol, Variable {
 
     private IsPublicAttribute isPublic = IsPublicAttribute.defaultAttribute();
     private IsStaticAttribute isStatic = IsStaticAttribute.defaultAttribute();
