@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-public class ConstructorSymbol implements InnerClassSymbol {
+public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol {
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
@@ -31,6 +31,11 @@ public class ConstructorSymbol implements InnerClassSymbol {
      */
     public List<ParameterSymbol> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public boolean hasParameters() {
+        return !parameters.isEmpty();
     }
 
     private void checkForDuplicates(List<ParameterSymbol> parameters) throws SemanticException {
