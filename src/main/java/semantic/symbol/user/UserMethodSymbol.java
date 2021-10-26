@@ -107,7 +107,7 @@ public class UserMethodSymbol implements MethodSymbol {
 
     @Override
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
-        returnType.validate(SymbolTable.getInstance(), container);
+        returnType.validate(SymbolTable.getInstance());
         parameters.values().forEach(param -> param.checkDeclaration(container));
     }
 }

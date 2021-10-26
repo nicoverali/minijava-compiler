@@ -2,7 +2,6 @@ package semantic.symbol.attribute.type;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.symbol.ClassSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.SymbolAttribute;
 
@@ -36,14 +35,12 @@ public abstract class Type implements SymbolAttribute<String> {
     }
 
     /**
-     * Verifies that this type is a valid type according to the given {@link SymbolTable} and
-     * within the context of the given {@link ClassSymbol}
+     * Verifies that this type is a valid type according to the given {@link SymbolTable}
      *
      * @param st a {@link SymbolTable} to check if this type is valid
-     * @param classContext  a {@link ClassSymbol} where this type was declared
      * @throws SemanticException if this type is not valid and a semantic error is detected
      */
-    public void validate(SymbolTable st, ClassSymbol classContext) throws SemanticException {
+    public void validate(SymbolTable st) throws SemanticException {
         // By default, every type is valid
     }
 

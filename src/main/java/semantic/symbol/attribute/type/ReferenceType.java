@@ -22,7 +22,7 @@ public class ReferenceType extends Type{
 
 
     @Override
-    public void validate(SymbolTable st, ClassSymbol container) throws SemanticException {
+    public void validate(SymbolTable st) throws SemanticException {
         boolean referenceExists = checkInSymbolTable(st);
         if (!referenceExists){
             throw new SemanticException("El simbolo al que se hace referencia no pudo ser encontrado.", this.token);

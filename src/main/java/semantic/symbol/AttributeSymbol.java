@@ -64,6 +64,6 @@ public class AttributeSymbol implements InnerClassSymbol {
 
     @Override
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
-        type.validate(SymbolTable.getInstance(), container);
+        type.validate(SymbolTable.getInstance());
     }
 }

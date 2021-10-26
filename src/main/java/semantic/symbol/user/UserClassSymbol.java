@@ -154,7 +154,7 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     private void checkParent() {
-        parent.validate(ST, this);
+        parent.validate(ST);
     }
 
     @Override
