@@ -2,12 +2,10 @@ package semantic.symbol.predefined;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.symbol.AttributeSymbol;
-import semantic.symbol.ClassSymbol;
-import semantic.symbol.MethodSymbol;
-import semantic.symbol.SymbolTable;
+import semantic.symbol.*;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import util.map.HashMultimap;
 import util.map.HashSetMultimap;
 import util.map.Multimap;
 
@@ -21,7 +19,8 @@ import java.util.*;
 public class PredefinedClass implements ClassSymbol {
 
     private final NameAttribute name;
-    private final List<PredefinedMethod> methods = new ArrayList<>();
+    private final Multimap<String, MethodSymbol> methods = new HashMultimap<>();
+    private Multimap<String, MethodSymbol> inheritMethods;
 
     private ReferenceType parent;
 
@@ -35,7 +34,7 @@ public class PredefinedClass implements ClassSymbol {
      * @param method a {@link PredefinedMethod} which will be added to this predefined class
      */
     public void add(PredefinedMethod method){
-        methods.add(method);
+        methods.put(method.getName(), method);
     }
 
     /**
@@ -69,7 +68,7 @@ public class PredefinedClass implements ClassSymbol {
 
     @Override
     public Collection<MethodSymbol> getMethods(){
-        return Collections.unmodifiableList(methods);
+        return methods.values();
     }
 
     @Override
@@ -94,30 +93,21 @@ public class PredefinedClass implements ClassSymbol {
 
     @Override
     public Multimap<String, MethodSymbol> getAllMethods() throws SemanticException {
-        Multimap<String, MethodSymbol> resultMap;
+        if (inheritMethods == null) inheritMethods();
+
+        for (MethodSymbol method : methods.values()) {
+            inheritMethods.put(method.getName(), method);
+        }
+        return inheritMethods;
+    }
+
+    private void inheritMethods() {
         ClassSymbol parentSym = null;
         if (parent != null){
             parentSym = SymbolTable.getInstance().getPredefinedClass(parent)
-            .orElseThrow(() -> new IllegalStateException("The predefined class has a parent that does not exists"));
+                    .orElseThrow(() -> new IllegalStateException("The predefined class has a parent that does not exists"));
         }
-        resultMap = parentSym != null ? new HashSetMultimap<>(parentSym.getAllMethods()) : new HashSetMultimap<>();
-        for (PredefinedMethod method : methods) {
-            resultMap.put(method.getName(), method);
-        }
-        return resultMap;
-    }
-
-    /**
-     * Returns a {@link PredefinedMethod} which belongs to this predefined class and has the
-     * same name as the one given as argument.
-     *
-     * @param name the name of the returned method
-     * @return an {@link Optional} wrapping the matched {@link PredefinedMethod}
-     */
-    public Optional<PredefinedMethod> getMethod(String name){
-        return methods.stream()
-                .filter(method -> name.equals(method.getName()))
-                .findFirst();
+        inheritMethods = parentSym != null ? new HashSetMultimap<>(parentSym.getAllMethods()) : new HashSetMultimap<>();
     }
 
     @Override
@@ -127,6 +117,6 @@ public class PredefinedClass implements ClassSymbol {
 
     @Override
     public void consolidate() throws SemanticException, IllegalStateException {
-        // Do nothing
+        if (inheritMethods == null) inheritMethods();
     }
 }
