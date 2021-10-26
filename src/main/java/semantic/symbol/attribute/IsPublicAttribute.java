@@ -20,6 +20,10 @@ public class IsPublicAttribute implements SymbolAttribute<Boolean> {
         return new IsPublicAttribute(token, false);
     }
 
+    public static IsPublicAttribute emptyPublic() { return new IsPublicAttribute(null, true); }
+
+    public static IsPublicAttribute emptyPrivate() { return new IsPublicAttribute(null, false); }
+
     public static IsPublicAttribute defaultAttribute(){
         return new IsPublicAttribute(null, true);
     }
