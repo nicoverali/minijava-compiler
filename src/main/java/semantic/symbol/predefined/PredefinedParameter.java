@@ -54,4 +54,9 @@ public class PredefinedParameter implements ParameterSymbol {
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         // Do nothing
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", type, name);
+    }
 }

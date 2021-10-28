@@ -49,4 +49,9 @@ public class UserParameterSymbol implements ParameterSymbol {
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         this.type.validate(SymbolTable.getInstance());
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", type, name);
+    }
 }

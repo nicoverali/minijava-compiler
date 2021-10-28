@@ -1,5 +1,6 @@
 package lexical;
 
+import io.code.CodeLine;
 import lexical.analyzer.LexicalAnalyzer;
 import sequence.Sequence;
 
@@ -15,6 +16,8 @@ public class LexicalSequence implements Sequence<Token> {
 
     private Token lastPeek;
 
+    private String lastLine; // This is just for debug
+
     public LexicalSequence(LexicalAnalyzer analyzer) {
         this.analyzer = analyzer;
     }
@@ -26,7 +29,9 @@ public class LexicalSequence implements Sequence<Token> {
             next = lastPeek;
             lastPeek = null;
         } else {
-            next = analyzer.getNextToken().orElse(null);
+            Optional<Token> token = analyzer.getNextToken();
+            lastLine = token.flatMap(Token::getFirstLine).map(CodeLine::toString).orElse("");
+            next = token.orElse(null);
         }
         return Optional.ofNullable(next);
     }
@@ -41,7 +46,14 @@ public class LexicalSequence implements Sequence<Token> {
         if (lastPeek != null){
             return Optional.of(lastPeek);
         }
-        lastPeek = analyzer.getNextToken().orElse(null);
-        return Optional.ofNullable(lastPeek);
+        Optional<Token> peek = analyzer.getNextToken();
+        lastLine = peek.flatMap(Token::getFirstLine).map(CodeLine::toString).orElse("");
+        lastPeek = peek.orElse(null);
+        return peek;
+    }
+
+    @Override
+    public String toString() {
+        return lastLine;
     }
 }

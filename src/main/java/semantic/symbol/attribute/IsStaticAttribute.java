@@ -62,4 +62,9 @@ public class IsStaticAttribute implements SymbolAttribute<Boolean>{
     public int hashCode() {
         return Objects.hash(isStatic);
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(isStatic);
+    }
 }

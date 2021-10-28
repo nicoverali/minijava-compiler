@@ -61,4 +61,9 @@ public class IsPublicAttribute implements SymbolAttribute<Boolean> {
     public int hashCode() {
         return Objects.hash(isPublic);
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(isPublic);
+    }
 }
