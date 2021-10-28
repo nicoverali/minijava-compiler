@@ -34,7 +34,7 @@
 <AsignacionOLlamada> ::= <Acceso> <RestoAsignacionOVacio>
 <RestoAsignacionOVacio> ::= <TipoDeAsignacion> | EOF
 <Asignacion> ::= <Acceso> <TipoDeAsignacion>
-<TipoDeAsignacion> ::= = <Expresion> | ++ | - -
+<TipoDeAsignacion> ::= = <Expresion> | ++ | --
 <VarLocal> ::= <Tipo> idMetVar <VarLocalAsignacionOVacio>
 <VarLocalAsignacionOVacio> ::= = <Expresion> | EOF
 <SentenciaReturn> ::= return <ExpresionOVacio>

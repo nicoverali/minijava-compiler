@@ -48,7 +48,7 @@
 <AsignacionOLlamadaPrimitiva> ::= <Acceso> <RestoAsignacionOVacio>
 <RestoAsignacionOVacio> ::= <TipoDeAsignacion> | EOF
 <Asignacion> ::= <Acceso> <TipoDeAsignacion>
-<TipoDeAsignacion> ::= = <Expresion> | ++ | - -
+<TipoDeAsignacion> ::= = <Expresion> | ++ | --
 <VarLocalPrimitiva> ::= <TipoPrimitivo> idMetVar <VarLocalAsignacionOVacio>
 <VarLocalAsignacionOVacio> ::= = <Expresion> | EOF
 <RestoAccesoEstaticoOVarLocalClase> ::= <RestoAccesoEstatico> <RestoAsignacionOVacio>

@@ -528,7 +528,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	}
 
 	private void restoAsignacionOVacio() {
-		if (equalsAny(ASSIGN, ASSIGN_INCR, OP_MINUS)) {
+		if (equalsAny(ASSIGN, ASSIGN_INCR, ASSIGN_DECR)) {
 			tipoDeAsignacion();
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
@@ -543,9 +543,8 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			expresion();
 		} else if (equalsAny(ASSIGN_INCR)) {
 			match(ASSIGN_INCR);
-		} else if (equalsAny(OP_MINUS)) {
-			match(OP_MINUS);
-			match(OP_MINUS);
+		} else if (equalsAny(ASSIGN_DECR)) {
+			match(ASSIGN_DECR);
 		} else {
 			throw createSyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro %tokenType%");
 		}
@@ -565,7 +564,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	private void argsActualesOVacio() {
 		if (equalsAny(P_PAREN_OPEN)) {
 			argsActuales();
-		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, P_DOT, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
+		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, P_DOT, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, ASSIGN_DECR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
 			// Nothing for now
 		} else {
 			throw createSyntacticException("Se esperaba {==, &&, ++, ||, <=, %, (, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
@@ -787,7 +786,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		if (equalsAny(P_DOT)) {
 			varOMetodoEncadenado();
 			encadenado();
-		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
+		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, ASSIGN_DECR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
 			// Nothing for now
 		} else {
 			throw createSyntacticException("Se esperaba {==, &&, ++, ||, <=, %, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
