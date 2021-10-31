@@ -4,6 +4,8 @@ import lexical.Token;
 
 public class VoidType extends Type{
 
+    public static final String VOID = "void";
+
     public static VoidType VOID(Token token){
         return new VoidType(token);
     }
@@ -13,6 +15,6 @@ public class VoidType extends Type{
     }
 
     public VoidType(Token token) {
-        super(token, "void");
+        super(token, VOID);
     }
 }
