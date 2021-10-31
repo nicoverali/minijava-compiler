@@ -3,6 +3,28 @@ package syntactic;
 import lexical.LexicalSequence;
 import lexical.Token;
 import lexical.TokenType;
+import semantic.ast.block.BlockNode;
+import semantic.ast.block.LocalVariable;
+import semantic.ast.expression.CastExpressionNode;
+import semantic.ast.expression.ExpressionNode;
+import semantic.ast.expression.LiteralNode;
+import semantic.ast.expression.OperandNode;
+import semantic.ast.expression.access.AccessNode;
+import semantic.ast.expression.access.ConstructorAccessNode;
+import semantic.ast.expression.access.MethodAccessNode;
+import semantic.ast.expression.access.StaticMethodAccessNode;
+import semantic.ast.expression.access.StaticVarAccessNode;
+import semantic.ast.expression.access.ThisAccessNode;
+import semantic.ast.expression.access.VarAccessNode;
+import semantic.ast.expression.access.chain.ChainNode;
+import semantic.ast.expression.access.chain.ChainedAttrNode;
+import semantic.ast.expression.access.chain.ChainedMethodNode;
+import semantic.ast.sentence.CallSentenceNode;
+import semantic.ast.sentence.IfSentenceNode;
+import semantic.ast.sentence.ReturnSentenceNode;
+import semantic.ast.sentence.SentenceNode;
+import semantic.ast.sentence.ForSentenceNode;
+import semantic.ast.sentence.assignment.AssignmentSentenceNode;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ConstructorSymbol;
 import semantic.symbol.ParameterSymbol;
@@ -373,13 +395,19 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		ST.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters));
 	}
 
-	private void bloque() {
+	/**
+	 * Builds a {@link BlockNode} and returns it
+	 */
+	private BlockNode bloque() {
 		match(P_BRCKT_OPEN);
 		listaSentencias();
 		match(P_BRCKT_CLOSE);
 	}
 
-	private void listaSentencias() {
+	/**
+	 * Returns a list of {@link SentenceNode}
+	 */
+	private SentenceNode listaSentencias() {
 		if (equalsAny(P_SEMICOLON, ID_CLS, K_RETURN, K_FOR, K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, P_BRCKT_OPEN, K_IF, K_BOOLEAN, K_STRING, K_CHAR, K_INT)) {
 			sentencia();
 			listaSentencias();
@@ -390,7 +418,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void sentencia() {
+	/**
+	 * Builds and returns a {@link SentenceNode}
+	 */
+	private SentenceNode sentencia() {
 		if (equalsAny(P_SEMICOLON)) {
 			match(P_SEMICOLON);
 		} else if (equalsAny(ID_CLS)) {
@@ -417,13 +448,19 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void varLocalPrimitiva() {
+	/**
+	 * Returns a {@link LocalVariable} that has a {@link PrimitiveType}
+	 */
+	private LocalVariable varLocalPrimitiva() {
 		tipoPrimitivo();
 		match(ID_MV);
 		varLocalAsignacionOVacio();
 	}
 
-	private void sentenciaIf() {
+	/**
+	 * Returns a {@link IfSentenceNode}
+	 */
+	private IfSentenceNode sentenciaIf() {
 		match(K_IF);
 		match(P_PAREN_OPEN);
 		expresion();
@@ -432,7 +469,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		elseOVacio();
 	}
 
-	private void elseOVacio() {
+	/**
+	 * Returns an {@link Optional} wrapping an else sentence
+	 */
+	private Optional<SentenceNode> elseOVacio() {
 		if (equalsAny(K_ELSE)) {
 			match(K_ELSE);
 			sentencia();
@@ -443,12 +483,18 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void asignacionOLlamadaPrimitiva() {
+	/**
+	 * Returns a {@link SentenceNode} that is either a {@link AssignmentSentenceNode} or a {@link CallSentenceNode}
+	 */
+	private SentenceNode asignacionOLlamadaPrimitiva() {
 		acceso();
 		restoAsignacionOVacio();
 	}
 
-	private void sentenciaFor() {
+	/**
+	 * Returns a {@link ForSentenceNode}
+	 */
+	private ForSentenceNode sentenciaFor() {
 		match(K_FOR);
 		match(P_PAREN_OPEN);
 		tipo();
@@ -456,7 +502,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		restoFor();
 	}
 
-	private void restoFor() {
+	/**
+	 * Returns a {@link ForSentenceNode}. We won't support for-each at this stage
+	 */
+	private ForSentenceNode restoFor() {
 		if (equalsAny(P_COLON)) {
 			restoForEach();
 		} else if (equalsAny(ASSIGN, P_SEMICOLON)) {
@@ -466,7 +515,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void restoForClasico() {
+	/**
+	 * Returns a {@link ForSentenceNode}
+	 */
+	private ForSentenceNode restoForClasico() {
 		varLocalAsignacionOVacio();
 		match(P_SEMICOLON);
 		expresion();
@@ -476,7 +528,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		sentencia();
 	}
 
-	private void asignacion() {
+	/**
+	 * Returns a {@link AssignmentSentenceNode}
+	 */
+	private AssignmentSentenceNode asignacion() {
 		acceso();
 		tipoDeAsignacion();
 	}
@@ -488,12 +543,18 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		sentencia();
 	}
 
-	private void sentenciaReturn() {
+	/**
+	 * Returns a {@link ReturnSentenceNode}
+	 */
+	private ReturnSentenceNode sentenciaReturn() {
 		match(K_RETURN);
 		expresionOVacio();
 	}
 
-	private void expresionOVacio() {
+	/**
+	 * Returns an {@link Optional} wrapping an {@link ExpressionNode}
+	 */
+	private Optional<ExpressionNode> expresionOVacio() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS, ID_CLS)) {
 			expresion();
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
@@ -503,7 +564,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void restoAccesoEstaticoOVarLocalClase() {
+	/**
+	 * Returns a {@link SentenceNode} that is either a {@link AccessNode} or a {@link LocalVariable} with {@link ReferenceType}.
+	 * It uses a {@link ReferenceType} to build the sentence.
+	 */
+	private SentenceNode restoAccesoEstaticoOVarLocalClase(ReferenceType classRef) {
 		if (equalsAny(P_DOT)) {
 			restoAccesoEstatico();
 			restoAsignacionOVacio();
@@ -516,7 +581,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void varLocalAsignacionOVacio() {
+	/**
+	 * Builds a {@link LocalVariable} with the given {@link AccessNode}. It may add an assignment to the declaration
+	 */
+	private LocalVariable varLocalAsignacionOVacio(AccessNode access) {
 		if (equalsAny(ASSIGN)) {
 			match(ASSIGN);
 			expresion();
@@ -527,6 +595,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
+	// TODO
 	private void restoAsignacionOVacio() {
 		if (equalsAny(ASSIGN, ASSIGN_INCR, ASSIGN_DECR)) {
 			tipoDeAsignacion();
@@ -537,6 +606,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
+	// TODO
 	private void tipoDeAsignacion() {
 		if (equalsAny(ASSIGN)) {
 			match(ASSIGN);
@@ -550,18 +620,29 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void restoAccesoEstatico() {
+	/**
+	 * Builds a {@link AccessNode} with the given {@link ReferenceType}
+	 */
+	private AccessNode restoAccesoEstatico(ReferenceType classRed) {
 		match(P_DOT);
 		accesoVarOMetodo();
 		encadenado();
 	}
 
-	private void accesoVarOMetodo() {
+	/**
+	 * Builds a {@link AccessNode} that's either a {@link VarAccessNode} or a {@link MethodAccessNode}
+	 */
+	private AccessNode accesoVarOMetodo() {
 		match(ID_MV);
 		argsActualesOVacio();
 	}
 
-	private void argsActualesOVacio() {
+	/**
+	 * Returns an {@link Optional} wrapping a list of {@link ExpressionNode} that represents actual parameters.
+	 * Although returning an {@link Optional} wrapping a list is not recommended, in this case an empty list will mean
+	 * that we have call but without arguments, instead of not call at all
+	 */
+	private Optional<List<ExpressionNode>> argsActualesOVacio() {
 		if (equalsAny(P_PAREN_OPEN)) {
 			argsActuales();
 		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, P_DOT, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, ASSIGN_DECR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
@@ -571,13 +652,19 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void argsActuales() {
+	/**
+	 * Returns a list of {@link ExpressionNode} that represent actual parameters
+	 */
+	private List<ExpressionNode> argsActuales() {
 		match(P_PAREN_OPEN);
 		listaExpsOVacio();
 		match(P_PAREN_CLOSE);
 	}
 
-	private void listaExpsOVacio() {
+	/**
+	 * Returns a list of {@link ExpressionNode}
+	 */
+	private List<ExpressionNode> listaExpsOVacio() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS, ID_CLS)) {
 			listaExps();
 		} else if (equalsAny(P_PAREN_CLOSE)) { // Check for follow
@@ -587,12 +674,18 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void listaExps() {
+	/**
+	 * Returns a list of {@link ExpressionNode}
+	 */
+	private List<ExpressionNode> listaExps() {
 		expresion();
 		otrosExps();
 	}
 
-	private void otrosExps() {
+	/**
+	 * Returns a list of {@link ExpressionNode}
+	 */
+	private List<ExpressionNode> otrosExps() {
 		if (equalsAny(P_COMMA)) {
 			match(P_COMMA);
 			listaExps();
@@ -603,12 +696,18 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void expresion() {
+	/**
+	 * Builds an {@link ExpressionNode} and returns it
+	 */
+	private ExpressionNode expresion() {
 		expresionUnaria();
 		expresionResto();
 	}
 
-	private void expresionUnaria() {
+	/**
+	 * Builds and returns an {@link ExpressionNode}
+	 */
+	private ExpressionNode expresionUnaria() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS)) {
 			expresionUnariaSinStatic();
 		} else if (equalsAny(ID_CLS)) {
@@ -618,7 +717,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void expresionUnariaSinStatic() {
+	/**
+	 * Builds and returns an {@link ExpressionNode}
+	 */
+	private ExpressionNode expresionUnariaSinStatic() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE)) {
 			operando();
 		} else if (equalsAny(OP_NOT, OP_PLUS, OP_MINUS)) {
@@ -629,7 +731,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void operadorUnario() {
+	/**
+	 * Returns a {@link Token} that represents a unary <b>operator</b>
+	 */
+	private Token operadorUnario() {
 		if (equalsAny(OP_NOT)) {
 			match(OP_NOT);
 		} else if (equalsAny(OP_PLUS)) {
@@ -641,6 +746,9 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
+	/**
+	 * Returns a {@link OperandNode}
+	 */
 	private void operando() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN)) {
 			acceso();
@@ -651,7 +759,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void literal() {
+	/**
+	 * Returns a {@link LiteralNode}
+	 */
+	private LiteralNode literal() {
 		if (equalsAny(CHAR)) {
 			match(CHAR);
 		} else if (equalsAny(STRING)) {
@@ -669,7 +780,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void acceso() {
+	/**
+	 * Builds and returns an {@link AccessNode}
+	 */
+	private AccessNode acceso() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV)) {
 			primario();
 			encadenado();
@@ -682,7 +796,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void expParenOCasting() {
+	/**
+	 * Builds and returns an {@link ExpressionNode} that can be a {@link CastExpressionNode}
+	 */
+	private ExpressionNode expParenOCasting() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS)) {
 			expresionUnariaSinStatic();
 			expresionResto();
@@ -695,7 +812,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void restoCastingORestoExpresion() {
+	/**
+	 * Builds and returns an {@link ExpressionNode} that can be a {@link CastExpressionNode}.
+	 * It uses the given {@link ReferenceType} to build the expression
+	 */
+	private ExpressionNode restoCastingORestoExpresion(ReferenceType classRef) {
 		if (equalsAny(OP_LT, P_PAREN_CLOSE)) {
 			restoCasting();
 			accesoEstaticoOPrimarioOExpParen();
@@ -708,7 +829,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void accesoEstaticoOPrimarioOExpParen() {
+	/**
+	 * Builds and returns an {@link ExpressionNode}
+	 */
+	private ExpressionNode accesoEstaticoOPrimarioOExpParen() {
 		if (equalsAny(P_PAREN_OPEN)) {
 			expresionParentizada();
 		} else if (equalsAny(K_NEW, K_THIS, ID_MV)) {
@@ -720,14 +844,20 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void accesoEstatico() {
+	/**
+	 * Returns an {@link AccessNode} that's either a {@link StaticMethodAccessNode} or a {@link StaticVarAccessNode}
+	 */
+	private AccessNode accesoEstatico() {
 		match(ID_CLS);
 		match(P_DOT);
 		accesoVarOMetodo();
 		encadenado();
 	}
 
-	private void expresionParentizada() {
+	/**
+	 * Returns an {@link ExpressionNode}
+	 */
+	private ExpressionNode expresionParentizada() {
 		match(P_PAREN_OPEN);
 		expresion();
 		match(P_PAREN_CLOSE);
@@ -738,7 +868,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		match(P_PAREN_CLOSE);
 	}
 
-	private void expresionResto() {
+	/**
+	 * Using the given {@link ExpressionNode} it builds either a {@link BinaryExpression} or returns the same
+	 * {@link ExpressionNode}
+	 */
+	private ExpressionNode expresionResto(ExpressionNode leftExpression) {
 		if (equalsAny(OP_MULT, OP_LT, OP_GTE, OP_EQ, OP_AND, OP_LTE, OP_NOTEQ, OP_OR, OP_PLUS, OP_MINUS, OP_DIV, OP_MOD, OP_GT)) {
 			operadorBinario();
 			expresionUnaria();
@@ -750,7 +884,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void operadorBinario() {
+	/**
+	 * Returns a {@link Token} that represents a binary oeprator
+	 */
+	private Token operadorBinario() {
 		if (equalsAny(OP_MULT)) {
 			match(OP_MULT);
 		} else if (equalsAny(OP_LT)) {
@@ -782,7 +919,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void encadenado() {
+	/**
+	 * Using the given {@link AccessNode} it chains to it a {@link ChainNode} if present. Else it returns the
+	 * same {@link AccessNode}
+	 */
+	private AccessNode encadenado(AccessNode leftAccess) {
 		if (equalsAny(P_DOT)) {
 			varOMetodoEncadenado();
 			encadenado();
@@ -793,13 +934,20 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void varOMetodoEncadenado() {
+	/**
+	 * Builds and returns either a {@link ChainedAttrNode} or a {@link ChainedMethodNode}.
+	 * It uses the given {@link AccessNode} to set the chained nodes their left access
+	 */
+	private ChainNode varOMetodoEncadenado(AccessNode leftAccess) {
 		match(P_DOT);
 		match(ID_MV);
 		argsActualesOVacio();
 	}
 
-	private void primario() {
+	/**
+	 * Builds and returns a {@link AccessNode}
+	 */
+	private AccessNode primario() {
 		if (equalsAny(K_NEW)) {
 			accesoConstructor();
 		} else if (equalsAny(K_THIS)) {
@@ -811,11 +959,17 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		}
 	}
 
-	private void accesoThis() {
+	/**
+	 * Returns a {@link ThisAccessNode}
+	 */
+	private ThisAccessNode accesoThis() {
 		match(K_THIS);
 	}
 
-	private void accesoConstructor() {
+	/**
+	 * Returns a {@link ConstructorAccessNode}
+	 */
+	private ConstructorAccessNode accesoConstructor() {
 		match(K_NEW);
 		match(ID_CLS);
 		genericidadOVacio();
