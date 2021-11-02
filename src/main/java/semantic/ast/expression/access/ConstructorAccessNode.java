@@ -51,7 +51,7 @@ public class ConstructorAccessNode extends BaseAccessNode{
 
         // Validate expressions and get types of them
         paramsExpressions.forEach(exp -> exp.validate(scope));
-        List<Type> params = paramsExpressions.stream().map(exp -> getType()).collect(Collectors.toList());
+        List<Type> params = paramsExpressions.stream().map(ExpressionNode::getType).collect(Collectors.toList());
 
         // Find constructor with the given parameters types
         Optional<ConstructorSymbol> constructor = new ConstructorFinder(clazz.get()).find(params);

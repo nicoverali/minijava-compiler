@@ -8,6 +8,7 @@ import semantic.symbol.attribute.type.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -33,11 +34,24 @@ public class ConstructorFinder {
      */
     public Optional<ConstructorSymbol> find(List<Type> parameters){
         List<ConstructorSymbol> result = constructors.stream()
-                .filter(cons -> cons.getParametersTypes().equals(parameters))
+                .filter(parametersConform(parameters))
                 .collect(Collectors.toList());
 
         if (result.size() > 1) throw new SemanticException("Hay mas de un constructor con mismos parametros", result.get(1));
         return result.stream().findFirst();
+    }
+
+    public Predicate<? super ConstructorSymbol> parametersConform(List<Type> ourParameters){
+        return (Predicate<ConstructorSymbol>) constructorSymbol -> {
+            List<Type> theirParameters = constructorSymbol.getParametersTypes();
+            if (ourParameters.size() != theirParameters.size()) return false;
+            for (int i = 0; i < ourParameters.size(); i++) {
+                if (!ourParameters.get(i).conforms(theirParameters.get(i))){
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
 }
