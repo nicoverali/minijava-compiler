@@ -79,7 +79,7 @@ public class PredefinedClass implements ClassSymbol {
 
     @Override
     public Optional<ReferenceType> getParentClass() {
-        return Optional.empty();
+        return Optional.ofNullable(parent);
     }
 
     @Override
