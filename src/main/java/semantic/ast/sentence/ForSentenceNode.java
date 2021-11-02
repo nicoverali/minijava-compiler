@@ -29,10 +29,11 @@ public class ForSentenceNode implements SentenceNode {
 
     @Override
     public void validate(Scope scope) {
-        localVarDeclaration.validate(scope);
-        expressionNode.validate(scope);
-        assignment.validate(scope);
-        loopSentence.validate(scope);
+        Scope forScope = scope.createSubScope();
+        localVarDeclaration.validate(forScope);
+        expressionNode.validate(forScope);
+        assignment.validate(forScope);
+        loopSentence.validate(forScope);
 
         if (!expressionNode.getType().equals(BOOLEAN())) throw new SemanticException("La expresion debe ser booleana", forToken);
     }
