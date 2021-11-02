@@ -1,7 +1,9 @@
 package semantic.ast.sentence;
 
 import semantic.SemanticException;
+import semantic.ast.expression.access.ConstructorAccessNode;
 import semantic.ast.expression.access.MethodAccessNode;
+import semantic.ast.expression.access.StaticMethodAccessNode;
 import semantic.ast.expression.access.chain.ChainedMethodNode;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.AccessNode;
@@ -21,8 +23,8 @@ public class CallSentenceNode implements SentenceNode {
 
         AccessNode lastAccess = access.getChainEnd();
 
-        if (!(lastAccess instanceof MethodAccessNode) && !(lastAccess instanceof ChainedMethodNode)){
-            throw new SemanticException("Una sentencia de llamada de tener un acceso a un metodo", lastAccess.toToken());
+        if (!(lastAccess instanceof MethodAccessNode || lastAccess instanceof ChainedMethodNode || lastAccess instanceof StaticMethodAccessNode || lastAccess instanceof ConstructorAccessNode)){
+            throw new SemanticException("Una sentencia de llamada debe tener un acceso a un metodo", lastAccess.toToken());
         }
     }
 
