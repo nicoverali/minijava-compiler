@@ -29,7 +29,7 @@ public class IncrDecrSentenceNode implements AssignmentNode {
         if (!((lastAccess instanceof VarAccessNode) || (lastAccess instanceof ChainedAttrNode)))
             throw new SemanticException("Solo se puede asignar a una variable o atributo de instancia", access.toToken());
         if (!lastAccess.getType().equals(INT()))
-            throw new SemanticException("Tipo no compatible", access.toToken());
+            throw new SemanticException("Tipo no compatible", incrementToken);
     }
 
     @Override

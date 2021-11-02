@@ -28,7 +28,7 @@ public class AssignmentSentenceNode implements AssignmentNode {
         rightSide.validate(scope);
 
         if (!rightSide.getType().conforms(leftSide.getType())){
-            throw new SemanticException("El lado derecho de la asignacion no conforma el lado izquierdo", assignmentType);
+            throw new SemanticException("El lado derecho de la asignacion no conforma el lado izquierdo", rightSide.toToken());
         }
     }
 
