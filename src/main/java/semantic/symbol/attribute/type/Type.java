@@ -35,6 +35,15 @@ public abstract class Type implements SymbolAttribute<String> {
     }
 
     /**
+     * Determines whether this {@link Type} conforms with another type.
+     * Type A will conform Type B, if they are the same or A is sub-type of B
+     *
+     * @param other other type
+     * @return true if this type conforms with the other type, false otherwise
+     */
+    abstract public boolean conforms(Type other);
+
+    /**
      * Verifies that this type is a valid type according to the given {@link SymbolTable}
      *
      * @param st a {@link SymbolTable} to check if this type is valid

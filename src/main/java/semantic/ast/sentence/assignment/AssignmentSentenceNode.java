@@ -8,11 +8,7 @@ import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.expression.access.VarAccessNode;
 import semantic.ast.expression.ExpressionNode;
-import semantic.ast.sentence.SentenceNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
-import semantic.symbol.attribute.type.ReferenceType;
-import semantic.symbol.attribute.type.Type;
-import semantic.symbol.finder.AncestorFinder;
 
 public class AssignmentSentenceNode implements AssignmentNode {
 
@@ -31,16 +27,9 @@ public class AssignmentSentenceNode implements AssignmentNode {
         validateLeftAccess(scope);
         rightSide.validate(scope);
 
-        Type leftType = leftSide.getType();
-        Type rightType = rightSide.getType();
-
-        if (leftType.equals(rightType)) return;
-
-        if (!(leftType instanceof ReferenceType)) throw new SemanticException("El lado derecho de la asignacion no conforma el lado izquierdo", assignmentType);
-        if (!(rightType instanceof ReferenceType)) throw new SemanticException("El lado derecho de la asignacion no conforma el lado izquierdo", assignmentType);
-
-        if (!(AncestorFinder.isAncestor((ReferenceType) leftType, (ReferenceType) rightType)))
+        if (!rightSide.getType().conforms(leftSide.getType())){
             throw new SemanticException("El lado derecho de la asignacion no conforma el lado izquierdo", assignmentType);
+        }
     }
 
     private void validateLeftAccess(Scope scope) {

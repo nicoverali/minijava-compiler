@@ -17,4 +17,9 @@ public class VoidType extends Type{
     public VoidType(Token token) {
         super(token, VOID);
     }
+
+    @Override
+    public boolean conforms(Type other) {
+        return other.equals(VOID());
+    }
 }

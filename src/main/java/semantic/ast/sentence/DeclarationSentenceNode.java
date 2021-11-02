@@ -30,7 +30,8 @@ public class DeclarationSentenceNode implements SentenceNode {
 
         if (assignment == null) return;
         expression.validate(scope);
-        if (!variable.getType().equals(expression.getType())){
+
+        if (!expression.getType().conforms(variable.getType())){
             throw new SemanticException("La asignacion inicial no conforma con el tipo de variable", assignment);
         }
     }

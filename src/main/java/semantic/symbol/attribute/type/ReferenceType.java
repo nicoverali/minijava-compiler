@@ -4,6 +4,7 @@ import lexical.Token;
 import semantic.SemanticException;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.SymbolTable;
+import semantic.symbol.finder.AncestorFinder;
 
 import java.util.Optional;
 
@@ -28,6 +29,11 @@ public class ReferenceType extends Type{
         super(token, token.getLexeme());
     }
 
+
+    @Override
+    public boolean conforms(Type other) {
+        return other instanceof ReferenceType && AncestorFinder.isAncestor((ReferenceType) other, this);
+    }
 
     @Override
     public void validate(SymbolTable st) throws SemanticException {

@@ -44,4 +44,9 @@ public class PrimitiveType extends Type{
     private PrimitiveType(Token token, String name) {
         super(token, name);
     }
+
+    @Override
+    public boolean conforms(Type other) {
+        return other.getValue().equals(this.getValue());
+    }
 }
