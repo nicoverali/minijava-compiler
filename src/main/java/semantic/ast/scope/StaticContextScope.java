@@ -10,6 +10,7 @@ import semantic.symbol.finder.AttributeFinder;
 import semantic.symbol.finder.MethodFinder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,8 +62,13 @@ public class StaticContextScope implements Scope {
     }
 
     @Override
-    public MethodFinder getMethodFinder() {
-        return new MethodFinder(container);
+    public Optional<MethodSymbol> findMethod(NameAttribute name, List<Type> parameters) {
+        return new MethodFinder(container).find(emptyStatic(), name, parameters);
+    }
+
+    @Override
+    public Collection<MethodSymbol> findMethod(NameAttribute name) {
+        return new MethodFinder(container).find(emptyStatic(), name);
     }
 
     private Variable searchIn(List<? extends Variable> list, NameAttribute name) {

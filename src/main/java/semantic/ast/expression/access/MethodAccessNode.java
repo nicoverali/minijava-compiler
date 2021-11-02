@@ -50,10 +50,10 @@ public class MethodAccessNode extends BaseAccessNode {
         List<Type> paramsTypes = paramsExps.stream().map(ExpressionNode::getType).collect(Collectors.toList());
 
         // Find this method in the current scope
-        Optional<MethodSymbol> method = scope.getMethodFinder().find(name, paramsTypes);
+        Optional<MethodSymbol> method = scope.findMethod(name, paramsTypes);
         if (method.isEmpty()){
             // The method hasn't been declared or parameters are wrong
-            if (scope.getMethodFinder().find(name).isEmpty()){
+            if (scope.findMethod(name).isEmpty()){
                 throw new SemanticException("El metodo no fue declarado", name);
             } else {
                 throw new SemanticException("No se pudo encontrar un metodo adecuado para los parametros dados", name);

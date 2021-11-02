@@ -7,9 +7,10 @@ class Clase<T> {
 
     static Clase<T> metodo(Clase<A> a, Clase<B> b){
         Clase<OtraClase> as = new Clase<>();
-        Clase<T> a = 4;
+        Clase<T> var = new Clase<>();
+        int num = 2;
 
-        for (Clase<OtraClase> a = new Clase<>(); a < 4; b = (Clase<T>) a){
+        for (Clase<OtraClase> clase = new Clase<>(); num < 4; b = (Clase<T>) a){
 
         }
     }

@@ -17,3 +17,9 @@ class Clase {
     }
 
 }
+
+class List {
+
+    public int list;
+
+}

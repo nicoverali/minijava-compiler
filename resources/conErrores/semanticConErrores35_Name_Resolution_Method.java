@@ -1,7 +1,8 @@
-///[Error:metodo|7]
+///[Error:metodo|8]
 // No se puede acceder a un metodo dinamico en un contexto estatico
 
 class Clase extends Padre{
+
     static void main(){
         metodoEstatico();
         metodo();

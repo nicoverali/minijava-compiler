@@ -4,10 +4,11 @@ import semantic.Variable;
 import semantic.ast.block.LocalVariable;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
-import semantic.symbol.finder.MethodFinder;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,9 +43,21 @@ public interface Scope {
     Optional<Variable> findVariable(NameAttribute name);
 
     /**
-     * Returns a {@link MethodFinder} that can lookup method in this scope
+     * Searches for a {@link MethodSymbol} with the given <code>name</code> and <code>parameters</code> in the current scope.
+     *
+     * @param name the name of the method
+     * @param parameters a list of the types of the parameters
+     * @return an {@link Optional} wrapping a {@link MethodSymbol}
      */
-    MethodFinder getMethodFinder();
+    Optional<MethodSymbol> findMethod(NameAttribute name, List<Type> parameters);
+
+    /**
+     * Searches for {@link MethodSymbol} that have the given <code>name</code> in the current scope.
+     *
+     * @param name the name of the method
+     * @return a {@link List} of {@link MethodSymbol} that have the given name
+     */
+    Collection<MethodSymbol> findMethod(NameAttribute name);
 
     /**
      * @return the {@link ClassSymbol} that contains this scope

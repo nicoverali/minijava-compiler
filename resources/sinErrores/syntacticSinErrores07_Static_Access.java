@@ -1,55 +1,123 @@
 class Clase {
 
-    static int a;
+    static OtraClase a;
+    static Clase b;
+    public int num;
 
-    static int expresionesValidas(){
-        int a = 'a' +  4 * null;
-        int a = this.a.b();
-        int a = new Clase<>().b.a();
-        int a = b.a.b.a;
-        int a = metodo().a.b;
-        int a = ( 4 + 5 * 6 ).a();
-        int a = ( new List().b ).b;
+    dynamic int expresionesValidas(){
+        int a1 = 8 +  4 * 10;
+        int a2 = this.a.b();
+        int a3 = new Clase<>().b.a();
+        int a4 = b.a.b.a.b();
+        int a5 = metodo().a.b.a();
+        // int a6 = ( 4 + 5 * 6 ).a(); NO LONGER VALID
+        int a7 = ( new List().b ).b.a();
     }
 
     static int casting(){
-        int a = (Clase<T>) (new List<>()).a;
-        int a = (Clase) system.out.println();
+        Clase a = (Clase<T>) (new List<>()).a;
+        Sistema a2 = (Sistema) Sistema.out;
     }
 
     static int expresionParentizadaEstatica(){
-        int a = (System.out.println()).b().c;
+        int a = (Sistema.clase.metodo()).a.b();
     }
 
     static int expresionEstatica(){
-        int a = System.out.println();
-        int a = (Clase<T>) System.out.println();
-        int a = (Clase) (System.out.println()).a.b;
+        int a = Sistema.clase.a();
+        Clase clase2 = (Clase<T>) Sistema.clase;
+        Clase a2 = (Clase) (Sistema.clase.metodo()).a.b;
 
-        int a = (System.out + Clase.b());
-        int a = (true + Clase.metodo());
-        if(Context.getBool() - metodo() + Context.bool * (Clase<T>) (Context.a)){}
+        int a3 = (Sistema.out.read() + Clase.b());
+        boolean a4 = (true && Clase.bool());
+        if(Context.getBool() == true != Context.bool){}
     }
 
     static int varLocalesYAsignacion(){
-        Clase a = 4;
+        int a = 4;
         int b = 5;
-        Clase.a().b = 4;
-        a().b = 5;
+        Clase.metodo().num = 4;
+        metodo().b = new Clase();
     }
 
     Clase(){
-        System.a;
-        System.out.println();
+        Sistema.a = 5;
+        Sistema.out.printS("Holaa");
     }
 
     static void main(){
         if (Context.bool){
             int a = Context.getInt();
         }
-        x = Id1.m1(4).m2(5, this, 'c');
-
+        new Clase().contextoDinamico();
         for (Clase a : Context.collections.getList()){}
+    }
+
+    dynamic void contextoDinamico(){
+        int x = Id1.m1(4).m2(5, this, 'c');
+    }
+
+    static Clase metodo(){
+        return new Clase();
+    }
+
+    dynamic int a(){}
+
+    static int b(){
+        return 4;
+    }
+
+    static boolean bool(){
+        return false;
+    }
+
+}
+
+class Sistema extends System {
+
+    public static int a;
+    public static System out;
+    public static Clase clase;
+
+}
+
+class OtraClase {
+
+    public static Clase b;
+
+    dynamic int b(){}
+
+}
+
+class List {
+
+    public Clase a;
+    public OtraClase b;
+
+}
+
+class Context {
+
+    public static boolean bool;
+
+    static boolean getBool(){
+        return true;
+    }
+
+    static int getInt(){
+        return 24;
+    }
+
+}
+
+class Id1 {
+
+    static Id1 m1(int num){
+        return new Id1();
+    }
+
+    dynamic int m2(int num, Clase clase, char character){
+        return 44;
     }
 
 }
