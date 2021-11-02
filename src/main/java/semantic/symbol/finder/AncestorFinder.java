@@ -12,7 +12,8 @@ public class AncestorFinder {
 
     /**
      * Checks whether the first reference or class is ancestor of the second one. That means
-     * that the second one inherits from the first.
+     * that the second one inherits from the first, or they are the same class.
+     * A class is ancestor of itself
      *
      * @param ancestorRef ancestor reference or class
      * @param classRef class that inherits from ancestor
@@ -21,6 +22,8 @@ public class AncestorFinder {
      * @throws IllegalStateException if any class has a parent that is undeclared
      */
     public static boolean isAncestor(ReferenceType ancestorRef, ReferenceType classRef) throws IllegalArgumentException, IllegalStateException{
+        if (ancestorRef.equals(classRef)) return true;
+
         Optional<ClassSymbol> ancestorSym = ST.getClass(ancestorRef);
         Optional<ClassSymbol> classSym = ST.getClass(classRef);
 
