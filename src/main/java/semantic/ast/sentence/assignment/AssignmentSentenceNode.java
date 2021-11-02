@@ -28,7 +28,7 @@ public class AssignmentSentenceNode implements AssignmentNode {
         rightSide.validate(scope);
 
         if (!rightSide.getType().conforms(leftSide.getType())){
-            throw new SemanticException("El lado derecho de la asignacion no conforma el lado izquierdo", rightSide.toToken());
+            throw new SemanticException("El lado derecho de la asignacion no conforma el lado izquierdo", assignmentType);
         }
     }
 
@@ -38,7 +38,7 @@ public class AssignmentSentenceNode implements AssignmentNode {
 
         AccessNode lastAccess = leftSide.getChainEnd();
         if (!(lastAccess instanceof VarAccessNode || lastAccess instanceof ChainedAttrNode || lastAccess instanceof StaticVarAccessNode)){
-            throw new SemanticException("El acceso debe ser una variable o atributo de instancia", lastAccess.toToken());
+            throw new SemanticException("El acceso debe ser una variable o atributo de instancia", assignmentType);
         }
     }
 

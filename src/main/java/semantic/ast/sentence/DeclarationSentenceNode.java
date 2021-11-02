@@ -32,7 +32,7 @@ public class DeclarationSentenceNode implements SentenceNode {
         expression.validate(scope);
 
         if (!expression.getType().conforms(variable.getType())){
-            throw new SemanticException("La asignacion inicial no conforma con el tipo de variable", expression.toToken());
+            throw new SemanticException("La asignacion inicial no conforma con el tipo de variable", assignment);
         }
     }
 
