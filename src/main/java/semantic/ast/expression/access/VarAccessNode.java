@@ -1,5 +1,6 @@
 package semantic.ast.expression.access;
 
+import lexical.Token;
 import semantic.SemanticException;
 import semantic.Variable;
 import semantic.ast.scope.Scope;
@@ -25,8 +26,8 @@ public class VarAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public NameAttribute getName() {
-        return name;
+    public Token toToken() {
+        return name.getToken();
     }
 
     @Override

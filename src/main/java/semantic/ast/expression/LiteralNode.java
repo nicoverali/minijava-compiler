@@ -7,11 +7,9 @@ import semantic.symbol.attribute.type.Type;
 
 public class LiteralNode implements OperandNode {
 
-    private Token literalToken;
     private PrimitiveType type;
 
-    public LiteralNode(Token literalToken, PrimitiveType type) {
-        this.literalToken = literalToken;
+    public LiteralNode(PrimitiveType type) {
         this.type = type;
     }
 
@@ -19,6 +17,11 @@ public class LiteralNode implements OperandNode {
     @Override
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public Token toToken() {
+        return type.getToken();
     }
 
     @Override

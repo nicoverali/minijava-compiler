@@ -15,7 +15,8 @@ public abstract class BaseAccessNode implements AccessNode {
         this.chain = chain;
     }
 
-    public void setChainAccess(ChainNode chain) {
+    @Override
+    public void setChain(ChainNode chain) {
         this.chain = chain;
     }
 

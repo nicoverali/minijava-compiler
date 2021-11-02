@@ -1,5 +1,6 @@
 package semantic.ast.expression.access;
 
+import lexical.Token;
 import semantic.SemanticException;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.chain.ChainNode;
@@ -39,8 +40,8 @@ public class MethodAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public NameAttribute getName() {
-        return name;
+    public Token toToken() {
+        return name.getToken();
     }
 
     @Override

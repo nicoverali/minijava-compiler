@@ -1,6 +1,8 @@
 package semantic.ast.expression.access;
 
+import lexical.Token;
 import semantic.ast.expression.OperandNode;
+import semantic.ast.expression.access.chain.ChainNode;
 import semantic.symbol.attribute.NameAttribute;
 
 public interface AccessNode extends OperandNode {
@@ -23,8 +25,10 @@ public interface AccessNode extends OperandNode {
     boolean hasChainedAccess();
 
     /**
-     * @return the main {@link NameAttribute} of this access
+     * Sets the next chain of this access
+     *
+     * @param chain the next access in the chain
      */
-    NameAttribute getName();
+    void setChain(ChainNode chain);
 
 }

@@ -11,7 +11,7 @@ import semantic.ast.sentence.visitor.SentenceVisitor;
 
 import static semantic.symbol.attribute.type.PrimitiveType.INT;
 
-public class IncrDecrSentenceNode implements SentenceNode {
+public class IncrDecrSentenceNode implements AssignmentNode {
 
     private final AccessNode access;
     private final Token incrementToken;
@@ -27,9 +27,9 @@ public class IncrDecrSentenceNode implements SentenceNode {
 
         AccessNode lastAccess = access.getChainEnd();
         if (!((lastAccess instanceof VarAccessNode) || (lastAccess instanceof ChainedAttrNode)))
-            throw new SemanticException("Solo se puede asignar a una variable o atributo de instancia", access.getName());
+            throw new SemanticException("Solo se puede asignar a una variable o atributo de instancia", access.toToken());
         if (!lastAccess.getType().equals(INT()))
-            throw new SemanticException("Tipo no compatible", access.getName());
+            throw new SemanticException("Tipo no compatible", access.toToken());
     }
 
     @Override

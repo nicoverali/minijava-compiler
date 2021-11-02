@@ -38,4 +38,9 @@ public class ArithmeticBinaryExpression implements ExpressionNode{
     public Type getType() {
         return INT(operator);
     }
+
+    @Override
+    public Token toToken() {
+        return operator;
+    }
 }

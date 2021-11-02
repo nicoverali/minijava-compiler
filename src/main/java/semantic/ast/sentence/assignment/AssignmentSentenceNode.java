@@ -13,7 +13,7 @@ import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 import semantic.symbol.finder.AncestorFinder;
 
-public class AssignmentSentenceNode implements SentenceNode {
+public class AssignmentSentenceNode implements AssignmentNode {
 
     protected final AccessNode leftSide;
     protected final Token assignmentType;
@@ -46,13 +46,9 @@ public class AssignmentSentenceNode implements SentenceNode {
         // This will ensure that all parts of the chain are valid
         leftSide.validate(scope);
 
-        if (leftSide.hasChainedAccess()){
-            AccessNode chainEnd = leftSide.getChainEnd();
-            if (!(chainEnd instanceof VarAccessNode || chainEnd instanceof ChainedAttrNode)){
-                throw new SemanticException("El acceso debe ser una variable o atributo de instancia", chainEnd.getName());
-            }
-        } else if (scope.findVariable(leftSide.getName()).isEmpty()){
-            throw new SemanticException("El acceso debe ser una variable declarada", leftSide.getName());
+        AccessNode lastAccess = leftSide.getChainEnd();
+        if (!(lastAccess instanceof VarAccessNode || lastAccess instanceof ChainedAttrNode)){
+            throw new SemanticException("El acceso debe ser una variable o atributo de instancia", lastAccess.toToken());
         }
     }
 

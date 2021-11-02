@@ -1,5 +1,6 @@
 package semantic.ast.expression.access;
 
+import lexical.Token;
 import semantic.SemanticException;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.chain.ChainNode;
@@ -61,8 +62,8 @@ public class StaticVarAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public NameAttribute getName() {
-        return attrName;
+    public Token toToken() {
+        return attrName.getToken();
     }
 
 }

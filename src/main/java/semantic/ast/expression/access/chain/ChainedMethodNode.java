@@ -10,7 +10,6 @@ import semantic.symbol.finder.MethodFinder;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.NameAttribute;
-import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.List;
@@ -67,8 +66,8 @@ public class ChainedMethodNode extends BaseChainNode {
     }
 
     @Override
-    public NameAttribute getName() {
-        return name;
+    public Token toToken() {
+        return name.getToken();
     }
 
 }

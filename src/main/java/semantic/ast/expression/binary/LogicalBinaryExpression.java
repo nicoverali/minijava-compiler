@@ -39,4 +39,9 @@ public class LogicalBinaryExpression implements ExpressionNode{
     public Type getType() {
         return BOOLEAN(operator);
     }
+
+    @Override
+    public Token toToken() {
+        return operator;
+    }
 }

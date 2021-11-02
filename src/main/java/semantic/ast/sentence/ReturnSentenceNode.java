@@ -19,6 +19,11 @@ public class ReturnSentenceNode implements SentenceNode{
         this.returnExpression = returnExpression;
     }
 
+    public ReturnSentenceNode(Token returnToken) {
+        this.returnToken = returnToken;
+        this.returnExpression = null;
+    }
+
     @Override
     public void validate(Scope scope) {
         Optional<Type> expectedReturnType = scope.getExpectedReturnType();

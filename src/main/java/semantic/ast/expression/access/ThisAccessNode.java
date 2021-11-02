@@ -36,8 +36,8 @@ public class ThisAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public NameAttribute getName() {
-        return NameAttribute.of(thisToken);
+    public Token toToken() {
+        return thisToken;
     }
 
 }

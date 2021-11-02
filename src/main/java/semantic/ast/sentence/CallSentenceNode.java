@@ -22,7 +22,7 @@ public class CallSentenceNode implements SentenceNode {
         AccessNode lastAccess = access.getChainEnd();
 
         if (!(lastAccess instanceof MethodAccessNode) && !(lastAccess instanceof ChainedMethodNode)){
-            throw new SemanticException("Una sentencia de llamada de tener un acceso a un metodo", lastAccess.getName());
+            throw new SemanticException("Una sentencia de llamada de tener un acceso a un metodo", lastAccess.toToken());
         }
     }
 

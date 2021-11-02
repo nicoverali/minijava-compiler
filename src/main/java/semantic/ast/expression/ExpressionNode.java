@@ -1,6 +1,8 @@
 package semantic.ast.expression;
 
+import lexical.Token;
 import semantic.ast.ASTNode;
+import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
 public interface ExpressionNode extends ASTNode {
@@ -16,4 +18,13 @@ public interface ExpressionNode extends ASTNode {
      * @return the {@link Type} of this expression
      */
     Type getType();
+
+    /**
+     * Returns a representative {@link Token} for the expression.
+     * In some cases this may be an operand, or an operator, or an attribute
+     * or method of an access
+     *
+     * @return a representative {@link Token} for the expression
+     */
+    Token toToken();
 }

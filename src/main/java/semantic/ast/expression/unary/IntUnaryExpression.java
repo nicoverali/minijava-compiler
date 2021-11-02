@@ -14,6 +14,7 @@ public class IntUnaryExpression implements ExpressionNode {
     private final ExpressionNode expression;
     private final Token operator;
 
+
     public IntUnaryExpression(ExpressionNode expression, Token operator) {
         this.expression = expression;
         this.operator = operator;
@@ -30,5 +31,10 @@ public class IntUnaryExpression implements ExpressionNode {
     @Override
     public Type getType() {
         return INT(operator);
+    }
+
+    @Override
+    public Token toToken() {
+        return operator;
     }
 }

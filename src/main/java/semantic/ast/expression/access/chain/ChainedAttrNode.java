@@ -2,14 +2,13 @@ package semantic.ast.expression.access.chain;
 
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.Variable;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.scope.Scope;
 import semantic.symbol.finder.AttributeFinder;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
-import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.NameAttribute;
-import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.Optional;
@@ -51,8 +50,8 @@ public class ChainedAttrNode extends BaseChainNode{
     }
 
     @Override
-    public NameAttribute getName() {
-        return name;
+    public Token toToken() {
+        return name.getToken();
     }
 
 }

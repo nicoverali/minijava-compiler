@@ -4,6 +4,7 @@ import lexical.Token;
 import semantic.SemanticException;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.ExpressionNode;
+import semantic.ast.sentence.assignment.AssignmentNode;
 import semantic.ast.sentence.assignment.AssignmentSentenceNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
 import semantic.symbol.attribute.type.PrimitiveType;
@@ -15,10 +16,10 @@ public class ForSentenceNode implements SentenceNode {
     private final Token forToken;
     private final DeclarationSentenceNode localVarDeclaration;
     private final ExpressionNode expressionNode;
-    private final AssignmentSentenceNode assignment;
+    private final AssignmentNode assignment;
     private final SentenceNode loopSentence;
 
-    public ForSentenceNode(Token forToken, DeclarationSentenceNode localVarDeclaration, ExpressionNode expressionNode, AssignmentSentenceNode assignment, SentenceNode loopSentence) {
+    public ForSentenceNode(Token forToken, DeclarationSentenceNode localVarDeclaration, ExpressionNode expressionNode, AssignmentNode assignment, SentenceNode loopSentence) {
         this.forToken = forToken;
         this.localVarDeclaration = localVarDeclaration;
         this.expressionNode = expressionNode;
