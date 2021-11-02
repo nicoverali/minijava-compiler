@@ -93,7 +93,7 @@ public class MethodFinder {
     public Optional<MethodSymbol> find(NameAttribute name, List<Type> parameters){
         List<MethodSymbol> result = methods.get(name.getValue())
                 .stream()
-                .filter(m -> m.getParametersTypes().equals(parameters))
+                .filter(m -> ParametersValidation.conforms(parameters, m.getParametersTypes()))
                 .collect(Collectors.toList());
 
         if (result.size() > 1) throw new SemanticException("Theres is more than one method with the same name and arguments", result.get(1));
@@ -112,7 +112,7 @@ public class MethodFinder {
     public Optional<MethodSymbol> find(IsStaticAttribute isStatic, NameAttribute name, List<Type> parameters){
         List<MethodSymbol> result = methods.get(name.getValue())
                 .stream()
-                .filter(m -> m.getParametersTypes().equals(parameters))
+                .filter(m -> ParametersValidation.conforms(parameters, m.getParametersTypes()))
                 .filter(m -> m.getStaticAttribute().equals(isStatic))
                 .collect(Collectors.toList());
 
