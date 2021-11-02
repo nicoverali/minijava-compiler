@@ -12,6 +12,14 @@ import java.util.Optional;
  */
 public class ReferenceType extends Type{
 
+    public static ReferenceType of(String name){
+        return new ReferenceType(name);
+    }
+
+    public static ReferenceType of(Token token){
+        return new ReferenceType(token);
+    }
+
     public ReferenceType(String name){
         super(null, name);
     }
