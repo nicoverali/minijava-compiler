@@ -1,5 +1,6 @@
 package semantic.ast.scope;
 
+import semantic.SemanticException;
 import semantic.Variable;
 import semantic.ast.block.LocalVariable;
 import semantic.symbol.*;
@@ -36,6 +37,11 @@ public class StaticContextScope implements Scope {
 
     @Override
     public void addLocalVariable(LocalVariable variable) {
+        NameAttribute name = variable.getNameAttribute();
+        if (searchIn(localVariables, name) != null || searchIn(parameters, name) != null){
+            throw new SemanticException("La variable ya fue declarada en este scope", name);
+        }
+
         localVariables.add(variable);
     }
 

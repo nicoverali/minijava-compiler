@@ -26,10 +26,6 @@ public class DeclarationSentenceNode implements SentenceNode {
     @Override
     public void validate(Scope scope) {
         variable.validate(scope);
-
-        if (scope.findVariable(variable.getNameAttribute()).isPresent()){
-            throw new SemanticException("La variable ya fue declarada en este scope", variable.getNameAttribute());
-        }
         scope.addLocalVariable(variable);
 
         if (assignment == null) return;
