@@ -33,9 +33,9 @@ public class ChainedAttrNode extends BaseChainNode{
     }
 
     @Override
-    public Type getType() {
+    public Type getAccessType() {
         if (attrSymbol == null) throw new IllegalStateException("Make sure to validate before getting the type of an expression");
-        return thisTypeOrChainType(attrSymbol.getType());
+        return attrSymbol.getType();
     }
 
     @Override

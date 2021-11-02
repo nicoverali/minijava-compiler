@@ -42,10 +42,9 @@ public class StaticMethodAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public Type getType() {
+    public Type getAccessType() {
         if (methodSymbol == null) throw new IllegalStateException("Make sure to validate before getting the type of an expression");
-        Type thisType = methodSymbol.getReturnType();
-        return thisTypeOrChainType(thisType);
+        return methodSymbol.getReturnType();
     }
 
     @Override

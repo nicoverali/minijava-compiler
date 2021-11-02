@@ -33,6 +33,11 @@ public class CastAccessNode extends BaseAccessNode {
     }
 
     @Override
+    public Type getAccessType() {
+        return castType;
+    }
+
+    @Override
     public Token toToken() {
         return access.getChainEnd().toToken();
     }

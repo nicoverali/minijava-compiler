@@ -42,6 +42,11 @@ public abstract class BaseAccessNode implements AccessNode {
         }
     }
 
+    @Override
+    public Type getType() {
+        return thisTypeOrChainType(getAccessType());
+    }
+
     /**
      * Validates this access. You shouldn't be worried about chained access within this method.
      *

@@ -38,10 +38,9 @@ public class StaticVarAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public Type getType() {
+    public Type getAccessType() {
         if (attrSym == null) throw new IllegalStateException("Make sure to validate before getting the type of an expression");
-        Type thisType = attrSym.getType();
-        return thisTypeOrChainType(thisType);
+        return attrSym.getType();
     }
 
     @Override

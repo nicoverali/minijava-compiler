@@ -36,8 +36,8 @@ public class ConstructorAccessNode extends BaseAccessNode{
     }
 
     @Override
-    public Type getType() {
-        return thisTypeOrChainType(classRef);
+    public Type getAccessType() {
+        return classRef;
     }
 
     @Override

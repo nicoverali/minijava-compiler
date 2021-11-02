@@ -34,7 +34,7 @@ public abstract class BaseChainNode extends BaseAccessNode implements ChainNode{
      */
     protected ClassSymbol validateLeftAccess(){
         // Check that the left type is a reference
-        Type leftType = leftAccess.getType();
+        Type leftType = leftAccess.getAccessType();
         if (!(leftType instanceof ReferenceType)){
             throw new SemanticException("Solo se puede encadenar un tipo referencia", dotToken);
         }

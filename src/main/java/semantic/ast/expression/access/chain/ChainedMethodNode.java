@@ -40,8 +40,8 @@ public class ChainedMethodNode extends BaseChainNode {
     }
 
     @Override
-    public Type getType() {
-        return thisTypeOrChainType(methodSymbol.getReturnType());
+    public Type getAccessType() {
+        return methodSymbol.getReturnType();
     }
 
     @Override

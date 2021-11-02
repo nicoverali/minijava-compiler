@@ -1,9 +1,8 @@
 package semantic.ast.expression.access;
 
-import lexical.Token;
 import semantic.ast.expression.OperandNode;
 import semantic.ast.expression.access.chain.ChainNode;
-import semantic.symbol.attribute.NameAttribute;
+import semantic.symbol.attribute.type.Type;
 
 public interface AccessNode extends OperandNode {
 
@@ -30,5 +29,13 @@ public interface AccessNode extends OperandNode {
      * @param chain the next access in the chain
      */
     void setChain(ChainNode chain);
+
+    /**
+     * Returns the {@link Type} of this particular {@link AccessNode}. This type won't depend on
+     * whether the access has a chain or not, it will be the actual type of this {@link AccessNode}
+     *
+     * @return the {@link Type} of this particular {@link AccessNode}
+     */
+    Type getAccessType();
 
 }

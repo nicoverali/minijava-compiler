@@ -20,7 +20,7 @@ public class ParenthesizedExpressionNode extends BaseAccessNode{
     }
 
     @Override
-    public Type getType() {
+    public Type getAccessType() {
         return expression.getType();
     }
 

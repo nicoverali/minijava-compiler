@@ -23,8 +23,8 @@ public class ThisAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public Type getType() {
-        return thisTypeOrChainType(thisRef);
+    public Type getAccessType() {
+        return thisRef;
     }
 
     @Override

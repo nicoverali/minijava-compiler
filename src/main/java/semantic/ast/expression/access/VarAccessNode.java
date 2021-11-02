@@ -31,10 +31,9 @@ public class VarAccessNode extends BaseAccessNode {
     }
 
     @Override
-    public Type getType() {
+    public Type getAccessType() {
         if (variable == null) throw new IllegalStateException("Make sure to validate before getting the type of an expression");
-        Type thisType = variable.getType();
-        return thisTypeOrChainType(thisType);
+        return variable.getType();
     }
 
     @Override
