@@ -1,5 +1,6 @@
 package semantic.ast.sentence;
 
+import lexical.Token;
 import semantic.SemanticException;
 import semantic.ast.expression.access.ConstructorAccessNode;
 import semantic.ast.expression.access.MethodAccessNode;
@@ -12,9 +13,11 @@ import semantic.ast.sentence.visitor.SentenceVisitor;
 public class CallSentenceNode implements SentenceNode {
 
     private final AccessNode access;
+    private final Token semicolonToken;
 
-    public CallSentenceNode(AccessNode access) {
+    public CallSentenceNode(AccessNode access, Token semicolonToken) {
         this.access = access;
+        this.semicolonToken = semicolonToken;
     }
 
     @Override
@@ -24,7 +27,7 @@ public class CallSentenceNode implements SentenceNode {
         AccessNode lastAccess = access.getChainEnd();
 
         if (!(lastAccess instanceof MethodAccessNode || lastAccess instanceof ChainedMethodNode || lastAccess instanceof StaticMethodAccessNode || lastAccess instanceof ConstructorAccessNode)){
-            throw new SemanticException("Una sentencia de llamada debe tener un acceso a un metodo", lastAccess.toToken());
+            throw new SemanticException("Una sentencia de llamada debe tener un acceso a un metodo", semicolonToken);
         }
     }
 

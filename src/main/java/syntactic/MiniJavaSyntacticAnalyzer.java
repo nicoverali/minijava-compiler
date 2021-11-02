@@ -642,7 +642,8 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 			return tipoDeAsignacion(leftAccess);
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
-			return new CallSentenceNode(leftAccess);
+			//noinspection OptionalGetWithoutIsPresent
+			return new CallSentenceNode(leftAccess, sequence.peek().get());
 		} else {
 			throw createSyntacticException("Se esperaba {++, ;, =, -} pero se encontro %lexeme% (%tokenType%)");
 		}
