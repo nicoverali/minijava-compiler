@@ -21,6 +21,11 @@ public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol {
     Type getReturnType();
 
     /**
+     * Validates the block of this method
+     */
+    void validateBlock();
+
+    /**
      * Determines whether the given method is a valid overload of this method.
      * Methods with different name, although are not actually overloading, will always be considered valid.
      *

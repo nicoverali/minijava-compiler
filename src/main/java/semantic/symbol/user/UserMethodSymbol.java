@@ -1,6 +1,9 @@
 package semantic.symbol.user;
 
 import semantic.SemanticException;
+import semantic.ast.block.BlockNode;
+import semantic.ast.scope.DynamicContextScope;
+import semantic.ast.scope.StaticContextScope;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.ParameterSymbol;
@@ -8,25 +11,32 @@ import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
+import semantic.symbol.attribute.type.VoidType;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static semantic.symbol.attribute.type.VoidType.VOID;
+
 public class UserMethodSymbol implements MethodSymbol {
 
     private final IsStaticAttribute isStatic;
     private final Type returnType;
     private final NameAttribute name;
+    private final BlockNode block;
 
     private final LinkedHashMap<String, ParameterSymbol> parameters = new LinkedHashMap<>(); // This type of map maintains order
 
-    public UserMethodSymbol(IsStaticAttribute isStatic, Type returnType, NameAttribute name, List<ParameterSymbol> parameters) {
+    private ClassSymbol container;
+
+    public UserMethodSymbol(IsStaticAttribute isStatic, Type returnType, NameAttribute name, List<ParameterSymbol> parameters, BlockNode block) {
         this.isStatic = isStatic;
         this.returnType = returnType;
         this.name = name;
         parameters.forEach(this::add);
+        this.block = block;
     }
 
     /**
@@ -72,6 +82,16 @@ public class UserMethodSymbol implements MethodSymbol {
         return returnType;
     }
 
+    @Override
+    public void validateBlock() {
+        Type scopeReturnType = returnType.equals(VOID()) ? null : returnType;
+        if (isStatic()){
+            block.validate(new StaticContextScope(scopeReturnType, container, new ArrayList<>(parameters.values())));
+        } else {
+            block.validate(new DynamicContextScope(scopeReturnType, container, new ArrayList<>(parameters.values())));
+        }
+    }
+
     @Override public String getName(){
         return name.getValue();
     }
@@ -109,5 +129,6 @@ public class UserMethodSymbol implements MethodSymbol {
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         returnType.validate(SymbolTable.getInstance());
         parameters.values().forEach(param -> param.checkDeclaration(container));
+        this.container = container;
     }
 }

@@ -2,6 +2,7 @@ package semantic.symbol.predefined;
 
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.block.BlockNode;
 import semantic.symbol.*;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
@@ -81,7 +82,8 @@ public class PredefinedClass implements ClassSymbol {
         return List.of(
                 new ConstructorSymbol(
                         new ReferenceType(name.getValue()),
-                        List.of()
+                        List.of(),
+                        BlockNode.empty()
                 )
         );
     }
@@ -118,5 +120,10 @@ public class PredefinedClass implements ClassSymbol {
     @Override
     public void consolidate() throws SemanticException, IllegalStateException {
         if (inheritMethods == null) inheritMethods();
+    }
+
+    @Override
+    public void checkSentences() throws SemanticException, IllegalStateException {
+        // Predefined classes don't have sentences
     }
 }

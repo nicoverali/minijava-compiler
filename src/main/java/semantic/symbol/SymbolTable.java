@@ -126,6 +126,8 @@ public class SymbolTable {
         SymbolTreeValidator.checkCircularInheritance(classes);
         classes.values().forEach(ClassSymbol::consolidate);
         SymbolTreeValidator.checkMainMethod(classes);
+
+        classes.values().forEach(ClassSymbol::checkSentences);
     }
 
     private void checkForDuplicates(NameAttribute name) throws SemanticException{

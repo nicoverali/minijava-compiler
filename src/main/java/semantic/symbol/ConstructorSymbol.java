@@ -1,8 +1,11 @@
 package semantic.symbol;
 
 import semantic.SemanticException;
+import semantic.ast.block.BlockNode;
+import semantic.ast.scope.DynamicContextScope;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import semantic.symbol.attribute.type.VoidType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,11 +15,15 @@ public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol 
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
+    private final BlockNode block;
 
-    public ConstructorSymbol(ReferenceType classReference, List<ParameterSymbol> parameters) {
+    private ClassSymbol container;
+
+    public ConstructorSymbol(ReferenceType classReference, List<ParameterSymbol> parameters, BlockNode block) {
         checkForDuplicates(parameters);
         this.classReference = classReference;
         this.parameters = parameters;
+        this.block = block;
     }
 
     /**
@@ -62,10 +69,17 @@ public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol 
 
     @Override
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
+        this.container = container;
         parameters.forEach(param -> param.checkDeclaration(container));
-
         if (!nameMatchesClassName(container))
             throw new SemanticException("El nombre del constructor no es el de la clase que lo contiene", getClassReference());
+    }
+
+    /**
+     * Validates the block of this method
+     */
+    public void validateBlock() {
+        block.validate(new DynamicContextScope(container, parameters));
     }
 
     private boolean nameMatchesClassName(ClassSymbol container) {

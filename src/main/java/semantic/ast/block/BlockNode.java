@@ -11,6 +11,10 @@ public class BlockNode implements ASTNode {
 
     private final List<SentenceNode> sentences;
 
+    public static BlockNode empty(){
+        return new BlockNode();
+    }
+
     public BlockNode() {
         sentences = new ArrayList<>();
     }

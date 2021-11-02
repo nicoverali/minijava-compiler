@@ -2,6 +2,7 @@ package semantic.symbol.user;
 
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.block.BlockNode;
 import semantic.symbol.*;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
@@ -108,7 +109,7 @@ public class UserClassSymbol implements ClassSymbol {
     @Override
     public List<ConstructorSymbol> getConstructors() {
         if (!constructors.isEmpty()) return new ArrayList<>(constructors);
-        return List.of(new ConstructorSymbol(new ReferenceType(getName()), List.of()));
+        return List.of(new ConstructorSymbol(new ReferenceType(getName()), List.of(), BlockNode.empty()));
     }
 
     @Override
@@ -161,6 +162,12 @@ public class UserClassSymbol implements ClassSymbol {
     public void consolidate() throws SemanticException {
         inheritMembers();
         OverwrittenValidator.validateMethods(inheritedMethods, methods);
+    }
+
+    @Override
+    public void checkSentences() throws SemanticException, IllegalStateException {
+        constructors.forEach(ConstructorSymbol::validateBlock);
+        methods.values().forEach(MethodSymbol::validateBlock);
     }
 
     private void inheritMembers(){

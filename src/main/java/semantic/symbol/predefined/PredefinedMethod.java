@@ -56,6 +56,11 @@ public class PredefinedMethod implements MethodSymbol {
     }
 
     @Override
+    public void validateBlock() {
+        // Predefined methods don't have blocks
+    }
+
+    @Override
     public String getName() {
         return name.getValue();
     }

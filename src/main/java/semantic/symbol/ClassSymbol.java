@@ -90,4 +90,13 @@ public interface ClassSymbol extends Symbol {
      * @throws IllegalStateException if the symbol or the {@link SymbolTable} is not ready to make this consolidation
      */
     void consolidate() throws SemanticException, IllegalStateException;
+
+    /**
+     * Verifies that all sentences within this class are valid. This check is meant to be the last, so
+     * make sure to check declarations and consolidate classes before calling this method.
+     *
+     * @throws SemanticException if a semantic error is detected during consolidation
+     * @throws IllegalStateException if the symbol or the {@link SymbolTable} is not ready to make this validation
+     */
+    void checkSentences() throws  SemanticException, IllegalStateException;
 }
