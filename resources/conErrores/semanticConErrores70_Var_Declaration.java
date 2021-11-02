@@ -1,4 +1,4 @@
-///[Error:=|7]
+///[Error:Padre|7]
 // Expresion no conforma variable
 
 class Clase extends Padre {

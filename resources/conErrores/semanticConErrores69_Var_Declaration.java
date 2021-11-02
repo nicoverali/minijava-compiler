@@ -1,4 +1,4 @@
-///[Error:=|7]
+///[Error:metodo|7]
 // Expresion no conforma variable
 
 class Clase{

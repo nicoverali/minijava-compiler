@@ -1,4 +1,4 @@
-///[Error:.|9]
+///[Error:.|8]
 // Una variable local no puede tener encadenado
 
 class Clase {

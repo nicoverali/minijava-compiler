@@ -7,6 +7,6 @@ class Clase  {
         {
             String outOfScope = "ERROR";
         }
-        System.printS(outOfScope)
+        System.printS(outOfScope);
     }
 }

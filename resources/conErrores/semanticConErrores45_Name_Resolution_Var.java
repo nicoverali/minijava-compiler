@@ -4,6 +4,6 @@
 class Clase {
 
     static void main(){
-        System.printS(str)
+        System.printS(str);
     }
 }

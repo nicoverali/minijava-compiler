@@ -1,4 +1,4 @@
-///[Error:Hola|7]
+///[Error:>|7]
 // Las comparaciones solo son validas entre enteros
 
 class Clase  {

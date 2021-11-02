@@ -1,4 +1,4 @@
-///[Error:true|8]
+///[Error:-|8]
 // El operador unario - trabaja sobre int
 
 class Clase  {

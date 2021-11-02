@@ -1,4 +1,4 @@
-///[Error:ERROR|8]
+///[Error:%|8]
 // Operadores binarios solo trabajan sobre int
 
 class Clase  {

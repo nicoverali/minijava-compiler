@@ -1,4 +1,4 @@
-///[Error:void|7]
+///[Error:OtraClase|7]
 // Tipo de variable local no valido
 
 class Clase{

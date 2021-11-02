@@ -4,12 +4,12 @@
 class Clase extends Padre {
 
     static void main(){
-        System.printS(attrPrivado)
+        System.printS(attrPrivado);
     }
 }
 
 class Padre {
 
-    private static attrPrivado;
+    private static String attrPrivado;
 
 }

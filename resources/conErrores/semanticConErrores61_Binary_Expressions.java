@@ -1,4 +1,4 @@
-///[Error:null|8]
+///[Error:&&|8]
 // Operadores binarios || y && solo trabajan sobre boolean
 
 class Clase  {

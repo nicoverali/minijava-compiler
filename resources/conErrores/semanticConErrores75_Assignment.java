@@ -1,4 +1,4 @@
-///[Error:=|11]
+///[Error:==|11]
 // La expresion no conforma el tipo de la asignacion
 
 class Clase{

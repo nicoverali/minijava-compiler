@@ -1,4 +1,4 @@
-///[Error:==|7]
+///[Error:!=|7]
 // Los tipos no son compatibles
 
 class Clase {

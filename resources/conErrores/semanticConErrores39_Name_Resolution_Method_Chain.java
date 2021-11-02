@@ -1,4 +1,4 @@
-///[Error:metodoInexistente|6]
+///[Error:metodoInexistente|10]
 // El metodo accedido no fue declarado
 
 class Clase {

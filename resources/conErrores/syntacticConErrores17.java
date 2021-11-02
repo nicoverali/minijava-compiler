@@ -6,9 +6,15 @@ class Clase extends Padre {
     static void main(){}
 
     static String metodo(int a){
-        (Clase) System.out.println();
+        Clase clase = (Clase) Sistema.out;
     }
 
 }
 
-class Padre {}
+class Padre extends System {}
+
+class Sistema {
+
+    public static System out;
+
+}

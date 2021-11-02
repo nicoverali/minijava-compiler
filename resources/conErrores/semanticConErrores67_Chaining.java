@@ -4,7 +4,7 @@
 class Clase{
 
     static void main(){
-        "Hola".attr;
+        int a = "Hola".attr;
     }
 
 

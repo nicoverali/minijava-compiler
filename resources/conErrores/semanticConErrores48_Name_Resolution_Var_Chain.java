@@ -4,7 +4,7 @@
 class Clase  {
 
     static void main(){
-        System.printS(new OtraClase().privateAttr)
+        System.printS(new OtraClase().privateAttr);
     }
 }
 
