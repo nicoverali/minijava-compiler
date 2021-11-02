@@ -3,6 +3,7 @@ package semantic.ast.expression.access;
 import lexical.Token;
 import semantic.SemanticException;
 import semantic.ast.scope.Scope;
+import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
@@ -20,6 +21,7 @@ public class CastAccessNode extends BaseAccessNode {
 
     @Override
     protected void validateAccess(Scope scope) {
+        castType.validate(SymbolTable.getInstance());
         access.validate(scope);
         Type accessType = access.getType();
 
