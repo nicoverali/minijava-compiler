@@ -6,12 +6,11 @@ class Clase extends Padre{
 
     static void main(){
         attrEstatico = "Hola";
-        attr = "Chau";
 
         // Probar en contexto estatico
         contextoEstatico(4);
         // Probar en contexto dinamico
-        new Clase().contextoDinamico();
+        new Clase().contextoDinamico(6);
     }
 
     static void contextoEstatico(int a){
@@ -25,6 +24,7 @@ class Clase extends Padre{
 
 
     dynamic void contextoDinamico(int a){
+        attr = "Chau";
         String localStr = "Hola";
         System.printS(localStr);
         System.printI(a);

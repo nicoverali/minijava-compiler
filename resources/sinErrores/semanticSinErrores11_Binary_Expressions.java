@@ -2,7 +2,7 @@ class Clase extends Padre{
 
     static void main(){
         int a = 4 + 5 / 5 - 5 % 2 * 5;
-        boolean a = true || false && true && false || true;
+        boolean b = true || false && true && false || true;
 
         // Igualdad y desigualdad
         boolean strings = "a" != "b";

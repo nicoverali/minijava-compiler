@@ -1,6 +1,6 @@
 class Clase {
 
-    private int a;
+    private static int a;
 
     static void main(){
         a = (metodo());

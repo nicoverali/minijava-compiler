@@ -19,7 +19,7 @@ class Clase{
         System.printS(new OtraClase().attrEstatico);
 
         // Probar en contexto dinamico
-        new Clase().contextoDinamico();
+        new Clase().contextoDinamico(9);
     }
 
 

@@ -2,7 +2,7 @@ class Clase extends Padre{
 
     private int c;
     private String str;
-    private Clase innerClass;
+    public Clase innerClass;
 
     private int attrTapado;
     public int attrTapadoPublic;
@@ -20,7 +20,7 @@ class Clase extends Padre{
         c++;
         c--;
         str = "Hola";
-        this.innerClass = new Class();
+        this.innerClass = new Clase();
         OtraClase.staticBool = true;
         new OtraClase().bool = false;
         padreNum = 44;
@@ -40,7 +40,7 @@ class Clase extends Padre{
 
         // Var locales
         String varLocal1;
-        String varLocal2 = "H" + "o" + "l" + "a";
+        // String varLocal2 = "H" + "o" + "l" + "a"; INVALIDO !! No se pueden concatenar Strings
         int varLocal3 = 4 + 3 / 2 + (padreMetodo(10));
         Clase varClase = OtraClase.crearClase();
         int varLocal4 = OtraClase.crearClase().padreMetodo(10);
@@ -55,7 +55,7 @@ class Clase extends Padre{
         else if (2 + 2 == 4) System.printS("La aritmetica funciona");
         else System.printS("Esta todo roto");
 
-        if (c == "Chau"){
+        if (str == "Chau"){
             System.printS("Dice chau");
         } else {
             System.printS("Dice hola");
@@ -64,14 +64,14 @@ class Clase extends Padre{
         // Sentencias for
         int loop = 10;
         for (int i = 0; i < loop; i++) {
-            if (i == loop-1) {
+            if (loop-1 == i) {
                 System.printS("Ultimo loop");
             }
             {
                 System.printI(i);
             }
         }
-        for (String forStr = ""; forStr != "AAAAAAA"; forStr = forStr + "A")
+        for (String forStr = ""; forStr != "AAAAAAA"; loop = loop + 2)
             System.printS("Loop de strings");
 
         // Bloques
@@ -120,7 +120,7 @@ class OtraClase {
     static void metodoEstaticoVacio(){}
 
     static Clase crearClase(){
-        return new Class();
+        return new Clase();
     }
 
 }
