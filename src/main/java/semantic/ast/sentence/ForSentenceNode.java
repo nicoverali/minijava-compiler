@@ -2,12 +2,10 @@ package semantic.ast.sentence;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.ast.scope.Scope;
 import semantic.ast.expression.ExpressionNode;
+import semantic.ast.scope.Scope;
 import semantic.ast.sentence.assignment.AssignmentNode;
-import semantic.ast.sentence.assignment.AssignmentSentenceNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
-import semantic.symbol.attribute.type.PrimitiveType;
 
 import static semantic.symbol.attribute.type.PrimitiveType.BOOLEAN;
 
@@ -41,5 +39,10 @@ public class ForSentenceNode implements SentenceNode {
     @Override
     public void accept(SentenceVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public Token toToken() {
+        return forToken;
     }
 }

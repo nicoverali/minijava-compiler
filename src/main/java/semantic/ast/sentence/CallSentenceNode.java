@@ -35,4 +35,9 @@ public class CallSentenceNode implements SentenceNode {
     public void accept(SentenceVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public Token toToken() {
+        return access.toToken();
+    }
 }

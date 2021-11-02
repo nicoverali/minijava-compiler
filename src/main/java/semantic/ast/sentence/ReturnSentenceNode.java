@@ -44,4 +44,9 @@ public class ReturnSentenceNode implements SentenceNode{
     public void accept(SentenceVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public Token toToken() {
+        return returnToken;
+    }
 }

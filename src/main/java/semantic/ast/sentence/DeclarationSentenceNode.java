@@ -41,4 +41,9 @@ public class DeclarationSentenceNode implements SentenceNode {
         visitor.visit(this);
     }
 
+    @Override
+    public Token toToken() {
+        return variable.getType().getToken();
+    }
+
 }

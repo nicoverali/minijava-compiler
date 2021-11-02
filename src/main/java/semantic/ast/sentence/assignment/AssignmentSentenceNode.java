@@ -47,4 +47,9 @@ public class AssignmentSentenceNode implements AssignmentNode {
         visitor.visit(this);
     }
 
+    @Override
+    public Token toToken() {
+        return leftSide.toToken();
+    }
+
 }

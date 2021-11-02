@@ -44,4 +44,9 @@ public class IfSentenceNode implements SentenceNode {
         visitor.visit(this);
     }
 
+    @Override
+    public Token toToken() {
+        return ifToken;
+    }
+
 }

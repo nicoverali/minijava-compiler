@@ -1,9 +1,16 @@
 package semantic.ast.sentence;
 
+import lexical.Token;
 import semantic.ast.scope.Scope;
 import semantic.ast.sentence.visitor.SentenceVisitor;
 
 public class EmptySentenceNode implements SentenceNode {
+
+    private final Token semicolonToken;
+
+    public EmptySentenceNode(Token semicolonToken) {
+        this.semicolonToken = semicolonToken;
+    }
 
     @Override
     public void validate(Scope scope) {
@@ -13,6 +20,11 @@ public class EmptySentenceNode implements SentenceNode {
     @Override
     public void accept(SentenceVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public Token toToken() {
+        return semicolonToken;
     }
 
 }

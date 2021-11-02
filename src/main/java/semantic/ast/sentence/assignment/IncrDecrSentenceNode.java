@@ -6,7 +6,6 @@ import semantic.ast.expression.access.AccessNode;
 import semantic.ast.expression.access.VarAccessNode;
 import semantic.ast.expression.access.chain.ChainedAttrNode;
 import semantic.ast.scope.Scope;
-import semantic.ast.sentence.SentenceNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
 
 import static semantic.symbol.attribute.type.PrimitiveType.INT;
@@ -35,5 +34,10 @@ public class IncrDecrSentenceNode implements AssignmentNode {
     @Override
     public void accept(SentenceVisitor visitor) {
 
+    }
+
+    @Override
+    public Token toToken() {
+        return access.toToken();
     }
 }
