@@ -1,4 +1,4 @@
-///[Error:b|11]
+///[Error:=|11]
 // Un atributo o variable en una expresion parentizada no es asignable
 
 class Clase {

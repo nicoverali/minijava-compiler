@@ -1,4 +1,4 @@
-///[Error:metodo|7]
+///[Error:;|7]
 // Un metodo en una expresión parentizada no es llamable
 
 class Clase {

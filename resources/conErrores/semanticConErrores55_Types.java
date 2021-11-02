@@ -1,4 +1,4 @@
-///[Error:true|7]
+///[Error:=|7]
 // Una String no puede ser un boolean
 
 class Clase  {

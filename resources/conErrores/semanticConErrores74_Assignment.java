@@ -1,4 +1,4 @@
-///[Error:metodoOtraClase|7]
+///[Error:=|7]
 // No se puede asignar a un metodo
 
 class Clase{

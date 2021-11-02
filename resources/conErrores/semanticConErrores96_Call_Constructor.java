@@ -1,4 +1,4 @@
-///[Error:Padre|8]
+///[Error:;|8]
 // No es una llamada valida, tiene que ser llamada a constructor directa
 
 class Clase extends Padre{

@@ -1,4 +1,4 @@
-///[Error:new Clase()|7]
+///[Error:=|7]
 // Una String no puede ser una clase
 
 class Clase  {

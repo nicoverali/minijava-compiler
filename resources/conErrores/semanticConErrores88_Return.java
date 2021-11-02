@@ -1,4 +1,4 @@
-///[Error:Object|11]
+///[Error:return|11]
 // El tipo del return no conforma con el tipo de retorno del metodo
 
 class Clase{

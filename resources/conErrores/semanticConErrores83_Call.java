@@ -1,4 +1,4 @@
-///[Error:b|9]
+///[Error:;|9]
 // Una llamada no puede ser un atributo
 
 class Clase{
