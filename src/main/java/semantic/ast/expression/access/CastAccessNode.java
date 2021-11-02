@@ -24,7 +24,7 @@ public class CastAccessNode extends BaseAccessNode {
         Type accessType = access.getType();
 
         if (!(accessType instanceof ReferenceType)) throw new SemanticException("Solo se puede castear tipos clase", castType);
-        if (!isAncestor(castType, (ReferenceType) accessType)) throw new SemanticException("Tipos incompatibles", castType);
+        if (!isAncestor((ReferenceType) accessType, castType)) throw new SemanticException("Tipos incompatibles", castType);
     }
 
     @Override
