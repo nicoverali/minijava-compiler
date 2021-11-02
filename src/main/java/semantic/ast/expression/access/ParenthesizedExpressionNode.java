@@ -31,6 +31,6 @@ public class ParenthesizedExpressionNode extends BaseAccessNode{
 
     @Override
     protected void validateAccess(Scope scope) {
-
+        expression.validate(scope);
     }
 }
