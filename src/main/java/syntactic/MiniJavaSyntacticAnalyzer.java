@@ -901,7 +901,8 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		if (equalsAny(OP_LT, P_PAREN_CLOSE)) {
 			restoCasting();
 			AccessNode access = accesoEstaticoOPrimarioOExpParen();
-			return new CastAccessNode(classRef, access);
+			AccessNode finalAccess = encadenado(access);
+			return new CastAccessNode(classRef, finalAccess);
 		} else if (equalsAny(P_DOT)) {
 			AccessNode leftAccess = restoAccesoEstatico(classRef);
 			ExpressionNode expression = expresionResto(leftAccess);
