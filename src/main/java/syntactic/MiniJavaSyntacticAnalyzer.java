@@ -5,13 +5,15 @@ import lexical.Token;
 import lexical.TokenType;
 import semantic.ast.block.BlockNode;
 import semantic.ast.block.LocalVariable;
-import semantic.ast.expression.CastExpressionNode;
+import semantic.ast.expression.NullNode;
+import semantic.ast.expression.access.CastAccessNode;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.expression.LiteralNode;
 import semantic.ast.expression.OperandNode;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.expression.access.ConstructorAccessNode;
 import semantic.ast.expression.access.MethodAccessNode;
+import semantic.ast.expression.access.ParenthesizedExpressionNode;
 import semantic.ast.expression.access.StaticMethodAccessNode;
 import semantic.ast.expression.access.StaticVarAccessNode;
 import semantic.ast.expression.access.ThisAccessNode;
@@ -19,12 +21,16 @@ import semantic.ast.expression.access.VarAccessNode;
 import semantic.ast.expression.access.chain.ChainNode;
 import semantic.ast.expression.access.chain.ChainedAttrNode;
 import semantic.ast.expression.access.chain.ChainedMethodNode;
-import semantic.ast.sentence.CallSentenceNode;
-import semantic.ast.sentence.IfSentenceNode;
-import semantic.ast.sentence.ReturnSentenceNode;
-import semantic.ast.sentence.SentenceNode;
-import semantic.ast.sentence.ForSentenceNode;
+import semantic.ast.expression.binary.ArithmeticBinaryExpression;
+import semantic.ast.expression.binary.ComparisonBinaryExpression;
+import semantic.ast.expression.binary.EqualityBinaryExpression;
+import semantic.ast.expression.binary.LogicalBinaryExpression;
+import semantic.ast.expression.unary.IntUnaryExpression;
+import semantic.ast.expression.unary.NotUnaryExpression;
+import semantic.ast.sentence.*;
+import semantic.ast.sentence.assignment.AssignmentNode;
 import semantic.ast.sentence.assignment.AssignmentSentenceNode;
+import semantic.ast.sentence.assignment.IncrDecrSentenceNode;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ConstructorSymbol;
 import semantic.symbol.ParameterSymbol;
@@ -48,6 +54,7 @@ import java.util.Optional;
 import static lexical.TokenType.*;
 import static semantic.symbol.attribute.IsStaticAttribute.createDynamic;
 import static semantic.symbol.attribute.IsStaticAttribute.createStatic;
+import static semantic.symbol.attribute.type.ReferenceType.of;
 
 public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 
@@ -254,8 +261,8 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private void restoConstructor(ReferenceType classReference) {
 		List<ParameterSymbol> parameters  = argsFormales();
-		bloque();
-		ST.currentClass.add(new ConstructorSymbol(classReference, parameters));
+		BlockNode block = bloque();
+		ST.currentClass.add(new ConstructorSymbol(classReference, parameters, block));
 	}
 
 	/**
@@ -266,9 +273,9 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		Type type = tipoMetodo();
 		NameAttribute name = NameAttribute.of(match(ID_MV));
 		List<ParameterSymbol> parameters = argsFormales();
-		bloque();
+		BlockNode block = bloque();
 
-		ST.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters));
+		ST.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters, block));
 	}
 
 	/**
@@ -391,8 +398,8 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private void restoMetodo(IsStaticAttribute isStatic, Type type, NameAttribute name) {
 		List<ParameterSymbol> parameters = argsFormales();
-		bloque();
-		ST.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters));
+		BlockNode block = bloque();
+		ST.currentClass.add(new UserMethodSymbol(isStatic, type, name, parameters, block));
 	}
 
 	/**
@@ -400,19 +407,23 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private BlockNode bloque() {
 		match(P_BRCKT_OPEN);
-		listaSentencias();
+		List<SentenceNode> sentences = listaSentencias();
 		match(P_BRCKT_CLOSE);
+		return new BlockNode(sentences);
 	}
 
 	/**
 	 * Returns a list of {@link SentenceNode}
 	 */
-	private SentenceNode listaSentencias() {
+	private List<SentenceNode> listaSentencias() {
 		if (equalsAny(P_SEMICOLON, ID_CLS, K_RETURN, K_FOR, K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, P_BRCKT_OPEN, K_IF, K_BOOLEAN, K_STRING, K_CHAR, K_INT)) {
-			sentencia();
-			listaSentencias();
+			SentenceNode sentence = sentencia();
+			List<SentenceNode> list = listaSentencias();
+			list.add(0, sentence); // Add it to the beginning
+			return list;
 		} else if (equalsAny(P_BRCKT_CLOSE)) { // Check for follow
 			// Nothing for now
+			return new ArrayList<>();
 		} else {
 			throw createSyntacticException("Se esperaba {new, for, this, (, String, int, idMetVar, boolean, char, idClase, ;, {, if, }, return} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -424,49 +435,60 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	private SentenceNode sentencia() {
 		if (equalsAny(P_SEMICOLON)) {
 			match(P_SEMICOLON);
+			return new EmptySentenceNode();
 		} else if (equalsAny(ID_CLS)) {
-			match(ID_CLS);
-			restoAccesoEstaticoOVarLocalClase();
+			ReferenceType classRef = of(match(ID_CLS));
+			SentenceNode sentence = restoAccesoEstaticoOVarLocalClase(classRef);
 			match(P_SEMICOLON);
+			return sentence;
 		} else if (equalsAny(K_RETURN)) {
-			sentenciaReturn();
+			ReturnSentenceNode sentence = sentenciaReturn();
 			match(P_SEMICOLON);
+			return sentence;
 		} else if (equalsAny(K_FOR)) {
-			sentenciaFor();
+			return sentenciaFor();
 		} else if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN)) {
-			asignacionOLlamadaPrimitiva();
+			SentenceNode sentence = asignacionOLlamadaPrimitiva();
 			match(P_SEMICOLON);
+			return sentence;
 		} else if (equalsAny(P_BRCKT_OPEN)) {
-			bloque();
+			BlockNode block = bloque();
+			return new BlockSentenceNode(block);
 		} else if (equalsAny(K_IF)) {
-			sentenciaIf();
+			return sentenciaIf();
 		} else if (equalsAny(K_BOOLEAN, K_STRING, K_CHAR, K_INT)) {
-			varLocalPrimitiva();
+			DeclarationSentenceNode sentence = varLocalPrimitiva();
 			match(P_SEMICOLON);
+			return sentence;
 		} else {
 			throw createSyntacticException("Se esperaba (sentencia) pero se encontro %tokenType%");
 		}
 	}
 
 	/**
-	 * Returns a {@link LocalVariable} that has a {@link PrimitiveType}
+	 * Returns a {@link DeclarationSentenceNode} that has a {@link LocalVariable} of {@link PrimitiveType}
 	 */
-	private LocalVariable varLocalPrimitiva() {
-		tipoPrimitivo();
-		match(ID_MV);
-		varLocalAsignacionOVacio();
+	private DeclarationSentenceNode varLocalPrimitiva() {
+		PrimitiveType type = tipoPrimitivo();
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+
+		return varLocalAsignacionOVacio(new LocalVariable(type, name));
 	}
 
 	/**
 	 * Returns a {@link IfSentenceNode}
 	 */
 	private IfSentenceNode sentenciaIf() {
-		match(K_IF);
+		Token ifToken = match(K_IF);
 		match(P_PAREN_OPEN);
-		expresion();
+		ExpressionNode ifExpression = expresion();
 		match(P_PAREN_CLOSE);
-		sentencia();
-		elseOVacio();
+		SentenceNode sentence = sentencia();
+		Optional<SentenceNode> elseSentence = elseOVacio();
+
+		return elseSentence.isPresent()
+				? new IfSentenceNode(ifToken, ifExpression, sentence, elseSentence.get())
+				: new IfSentenceNode(ifToken, ifExpression, sentence);
 	}
 
 	/**
@@ -475,9 +497,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	private Optional<SentenceNode> elseOVacio() {
 		if (equalsAny(K_ELSE)) {
 			match(K_ELSE);
-			sentencia();
+			return Optional.of(sentencia());
 		} else if (equalsAny(K_NEW, P_SEMICOLON, ID_MV, P_BRCKT_OPEN, K_RETURN, K_THIS, P_BRCKT_CLOSE, K_IF, P_PAREN_OPEN, K_STRING, K_INT, K_BOOLEAN, K_FOR, ID_CLS, K_CHAR)) { // Check for follow
 			// Nothing for now
+			return Optional.empty();
 		} else {
 			throw createSyntacticException("Se esperaba {new, this, (, for, String, int, idMetVar, boolean, else, char, idClase, ;, {, }, if, return} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -487,29 +510,34 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * Returns a {@link SentenceNode} that is either a {@link AssignmentSentenceNode} or a {@link CallSentenceNode}
 	 */
 	private SentenceNode asignacionOLlamadaPrimitiva() {
-		acceso();
-		restoAsignacionOVacio();
+		AccessNode leftAccess = acceso();
+		return restoAsignacionOVacio(leftAccess);
 	}
 
 	/**
-	 * Returns a {@link ForSentenceNode}
+	 * Returns a {@link SentenceNode} that is a {@link ForSentenceNode}.
+	 * In cases where the source code uses for-each statements they get mapped to
+	 * an {@link EmptySentenceNode}
 	 */
-	private ForSentenceNode sentenciaFor() {
-		match(K_FOR);
+	private SentenceNode sentenciaFor() {
+		Token forToken = match(K_FOR);
 		match(P_PAREN_OPEN);
-		tipo();
-		match(ID_MV);
-		restoFor();
+		Type varType = tipo();
+		NameAttribute varName = NameAttribute.of(match(ID_MV));
+		return restoFor(forToken, new LocalVariable(varType, varName));
 	}
 
 	/**
-	 * Returns a {@link ForSentenceNode}. We won't support for-each at this stage
+	 * Returns a {@link SentenceNode} that has to be a {@link ForSentenceNode}.
+	 * We won't support for-each at this stage. If we get to compile a source code that
+	 * contains a for-each, then we simply map the for-each sentence to an {@link EmptySentenceNode}
 	 */
-	private ForSentenceNode restoFor() {
+	private SentenceNode restoFor(Token forToken, LocalVariable var) {
 		if (equalsAny(P_COLON)) {
 			restoForEach();
+			return new EmptySentenceNode();
 		} else if (equalsAny(ASSIGN, P_SEMICOLON)) {
-			restoForClasico();
+			return restoForClasico(forToken, var);
 		} else {
 			throw createSyntacticException("Se esperaba (restoFor) pero se encontro %tokenType%");
 		}
@@ -518,22 +546,23 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	/**
 	 * Returns a {@link ForSentenceNode}
 	 */
-	private ForSentenceNode restoForClasico() {
-		varLocalAsignacionOVacio();
+	private ForSentenceNode restoForClasico(Token forToken, LocalVariable var) {
+		DeclarationSentenceNode declaration = varLocalAsignacionOVacio(var);
 		match(P_SEMICOLON);
-		expresion();
+		ExpressionNode expression = expresion();
 		match(P_SEMICOLON);
-		asignacion();
+		AssignmentNode assignment = asignacion();
 		match(P_PAREN_CLOSE);
-		sentencia();
+		SentenceNode sentence = sentencia();
+		return new ForSentenceNode(forToken, declaration, expression, assignment, sentence);
 	}
 
 	/**
-	 * Returns a {@link AssignmentSentenceNode}
+	 * Returns a {@link AssignmentNode} that has to be one of the available assignments
 	 */
-	private AssignmentSentenceNode asignacion() {
-		acceso();
-		tipoDeAsignacion();
+	private AssignmentNode asignacion() {
+		AccessNode leftAccess = acceso();
+		return tipoDeAsignacion(leftAccess);
 	}
 
 	private void restoForEach() {
@@ -547,8 +576,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * Returns a {@link ReturnSentenceNode}
 	 */
 	private ReturnSentenceNode sentenciaReturn() {
-		match(K_RETURN);
-		expresionOVacio();
+		Token returnToken = match(K_RETURN);
+		Optional<ExpressionNode> exp = expresionOVacio();
+		return exp.isPresent()
+				? new ReturnSentenceNode(returnToken, exp.get())
+				: new ReturnSentenceNode(returnToken);
 	}
 
 	/**
@@ -556,9 +588,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private Optional<ExpressionNode> expresionOVacio() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS, ID_CLS)) {
-			expresion();
+			return Optional.of(expresion());
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
+			return Optional.empty();
 		} else {
 			throw createSyntacticException("Se esperaba {new, !, this, (, intLiteral, false, charLiteral, +, -, idMetVar, null, stringLiteral, true, idClase, ;} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -570,51 +603,65 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private SentenceNode restoAccesoEstaticoOVarLocalClase(ReferenceType classRef) {
 		if (equalsAny(P_DOT)) {
-			restoAccesoEstatico();
-			restoAsignacionOVacio();
+			AccessNode leftAccess = restoAccesoEstatico(classRef);
+			return restoAsignacionOVacio(leftAccess);
 		} else if (equalsAny(OP_LT, ID_MV)) {
 			genExplicitaOVacio();
-			match(ID_MV);
-			varLocalAsignacionOVacio();
+			NameAttribute varName = NameAttribute.of(match(ID_MV));
+			return varLocalAsignacionOVacio(new LocalVariable(classRef, varName));
 		} else {
 			throw createSyntacticException("Se esperaba (restoAccesoEstaticoOVarLocalClase) pero se encontro %tokenType%");
 		}
 	}
 
 	/**
-	 * Builds a {@link LocalVariable} with the given {@link AccessNode}. It may add an assignment to the declaration
+	 * Builds a {@link DeclarationSentenceNode} with the given {@link LocalVariable}. It may add an assignment to the declaration
 	 */
-	private LocalVariable varLocalAsignacionOVacio(AccessNode access) {
+	private DeclarationSentenceNode varLocalAsignacionOVacio(LocalVariable variable) {
 		if (equalsAny(ASSIGN)) {
-			match(ASSIGN);
-			expresion();
+			Token assignToken = match(ASSIGN);
+			ExpressionNode expression = expresion();
+			return new DeclarationSentenceNode(variable, assignToken, expression);
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
+			return new DeclarationSentenceNode(variable);
 		} else {
 			throw createSyntacticException("Se esperaba {;, =} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
-	// TODO
-	private void restoAsignacionOVacio() {
+	/**
+	 * Receives an {@link AccessNode} and returns either an assignment sentences or a
+	 * call sentences depending on the rest of the sentences.
+	 * If the rest contains and assignment operator the the return sentences could be
+	 * a {@link AssignmentSentenceNode} or a {@link IncrDecrSentenceNode}.
+	 * If the rest is empty, then the given access is actually a {@link CallSentenceNode}
+	 */
+	private SentenceNode restoAsignacionOVacio(AccessNode leftAccess) {
 		if (equalsAny(ASSIGN, ASSIGN_INCR, ASSIGN_DECR)) {
-			tipoDeAsignacion();
+			return tipoDeAsignacion(leftAccess);
 		} else if (equalsAny(P_SEMICOLON)) { // Check for follow
 			// Nothing for now
+			return new CallSentenceNode(leftAccess);
 		} else {
 			throw createSyntacticException("Se esperaba {++, ;, =, -} pero se encontro %lexeme% (%tokenType%)");
 		}
 	}
 
-	// TODO
-	private void tipoDeAsignacion() {
+	/**
+	 * Builds and returns an assignment sentences with the given {@link AccessNode}
+	 */
+	private AssignmentNode tipoDeAsignacion(AccessNode leftAccess) {
 		if (equalsAny(ASSIGN)) {
-			match(ASSIGN);
-			expresion();
+			Token assignToken = match(ASSIGN);
+			ExpressionNode expression = expresion();
+			return new AssignmentSentenceNode(leftAccess, assignToken, expression);
 		} else if (equalsAny(ASSIGN_INCR)) {
-			match(ASSIGN_INCR);
+			Token incrToken = match(ASSIGN_INCR);
+			return new IncrDecrSentenceNode(leftAccess, incrToken);
 		} else if (equalsAny(ASSIGN_DECR)) {
-			match(ASSIGN_DECR);
+			Token decrToken = match(ASSIGN_DECR);
+			return new IncrDecrSentenceNode(leftAccess, decrToken);
 		} else {
 			throw createSyntacticException("Se esperaba (tipoDeAsignacion) pero se encontro %tokenType%");
 		}
@@ -623,18 +670,35 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	/**
 	 * Builds a {@link AccessNode} with the given {@link ReferenceType}
 	 */
-	private AccessNode restoAccesoEstatico(ReferenceType classRed) {
-		match(P_DOT);
-		accesoVarOMetodo();
-		encadenado();
+	private AccessNode restoAccesoEstatico(ReferenceType classRef) {
+		Token dotToken = match(P_DOT);
+		AccessNode access = accesoVarOMetodoEstatico(classRef);
+		access = encadenado(access);
+		return access;
 	}
 
 	/**
 	 * Builds a {@link AccessNode} that's either a {@link VarAccessNode} or a {@link MethodAccessNode}
 	 */
 	private AccessNode accesoVarOMetodo() {
-		match(ID_MV);
-		argsActualesOVacio();
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		Optional<List<ExpressionNode>> arguments = argsActualesOVacio();
+		return arguments.isPresent()
+				? new MethodAccessNode(name, arguments.get())
+				: new VarAccessNode(name);
+	}
+
+	/**
+	 * Builds a {@link AccessNode} that's either a {@link StaticVarAccessNode} or a {@link StaticMethodAccessNode}.
+	 * It uses the given {@link ReferenceType} to build the access
+	 */
+	private AccessNode accesoVarOMetodoEstatico(ReferenceType classRef) {
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		Optional<List<ExpressionNode>> arguments = argsActualesOVacio();
+
+		return arguments.isPresent()
+				? new StaticMethodAccessNode(classRef, name, arguments.get())
+				: new StaticVarAccessNode(classRef, name);
 	}
 
 	/**
@@ -644,9 +708,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private Optional<List<ExpressionNode>> argsActualesOVacio() {
 		if (equalsAny(P_PAREN_OPEN)) {
-			argsActuales();
+			return Optional.of(argsActuales());
 		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, P_DOT, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, ASSIGN_DECR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
 			// Nothing for now
+			return Optional.empty();
 		} else {
 			throw createSyntacticException("Se esperaba {==, &&, ++, ||, <=, %, (, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -657,8 +722,9 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private List<ExpressionNode> argsActuales() {
 		match(P_PAREN_OPEN);
-		listaExpsOVacio();
+		List<ExpressionNode> exps = listaExpsOVacio();
 		match(P_PAREN_CLOSE);
+		return exps;
 	}
 
 	/**
@@ -666,9 +732,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private List<ExpressionNode> listaExpsOVacio() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS, ID_CLS)) {
-			listaExps();
+			return listaExps();
 		} else if (equalsAny(P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
+			return List.of();
 		} else {
 			throw createSyntacticException("Se esperaba {new, !, this, (, intLiteral, false, ), charLiteral, +, -, idMetVar, null, stringLiteral, true, idClase} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -678,8 +745,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * Returns a list of {@link ExpressionNode}
 	 */
 	private List<ExpressionNode> listaExps() {
-		expresion();
-		otrosExps();
+		ExpressionNode expression = expresion();
+		List<ExpressionNode> list = otrosExps();
+		list.add(0, expression); // Add it to the beginning
+		return list;
 	}
 
 	/**
@@ -688,9 +757,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	private List<ExpressionNode> otrosExps() {
 		if (equalsAny(P_COMMA)) {
 			match(P_COMMA);
-			listaExps();
+			return listaExps();
 		} else if (equalsAny(P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
+			return new ArrayList<>();
 		} else {
 			throw createSyntacticException("Se esperaba {), ,} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -700,8 +770,8 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * Builds an {@link ExpressionNode} and returns it
 	 */
 	private ExpressionNode expresion() {
-		expresionUnaria();
-		expresionResto();
+		ExpressionNode leftExp = expresionUnaria();
+		return expresionResto(leftExp);
 	}
 
 	/**
@@ -709,9 +779,9 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private ExpressionNode expresionUnaria() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS)) {
-			expresionUnariaSinStatic();
+			return expresionUnariaSinStatic();
 		} else if (equalsAny(ID_CLS)) {
-			accesoEstatico();
+			return accesoEstatico();
 		} else {
 			throw createSyntacticException("Se esperaba (expresionUnaria) pero se encontro %tokenType%");
 		}
@@ -722,10 +792,17 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private ExpressionNode expresionUnariaSinStatic() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE)) {
-			operando();
+			return operando();
 		} else if (equalsAny(OP_NOT, OP_PLUS, OP_MINUS)) {
-			operadorUnario();
-			operando();
+			Token operator = operadorUnario();
+			OperandNode operand = operando();
+			switch (operator.getType()){
+				case OP_PLUS: case OP_MINUS:
+					return new IntUnaryExpression(operand, operator);
+				case OP_NOT:
+					return new NotUnaryExpression(operand, operator);
+				default: throw new RuntimeException("Operator should be one of the given above");
+			}
 		} else {
 			throw createSyntacticException("Se esperaba (expresionUnariaSinStatic) pero se encontro %tokenType%");
 		}
@@ -736,11 +813,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private Token operadorUnario() {
 		if (equalsAny(OP_NOT)) {
-			match(OP_NOT);
+			return match(OP_NOT);
 		} else if (equalsAny(OP_PLUS)) {
-			match(OP_PLUS);
+			return match(OP_PLUS);
 		} else if (equalsAny(OP_MINUS)) {
-			match(OP_MINUS);
+			return match(OP_MINUS);
 		} else {
 			throw createSyntacticException("Se esperaba (operadorUnario) pero se encontro %tokenType%");
 		}
@@ -749,32 +826,32 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	/**
 	 * Returns a {@link OperandNode}
 	 */
-	private void operando() {
+	private OperandNode operando() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN)) {
-			acceso();
+			return acceso();
 		} else if (equalsAny(CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE)) {
-			literal();
+			return literal();
 		} else {
 			throw createSyntacticException("Se esperaba (operando) pero se encontro %tokenType%");
 		}
 	}
 
 	/**
-	 * Returns a {@link LiteralNode}
+	 * Returns a {@link OperandNode}
 	 */
-	private LiteralNode literal() {
+	private OperandNode literal() {
 		if (equalsAny(CHAR)) {
-			match(CHAR);
+			return new LiteralNode(PrimitiveType.CHAR(match(CHAR)));
 		} else if (equalsAny(STRING)) {
-			match(STRING);
+			return new LiteralNode(PrimitiveType.STRING(match(STRING)));
 		} else if (equalsAny(K_NULL)) {
-			match(K_NULL);
+			return new NullNode(match(K_NULL));
 		} else if (equalsAny(K_TRUE)) {
-			match(K_TRUE);
+			return new LiteralNode(PrimitiveType.BOOLEAN(match(K_TRUE)));
 		} else if (equalsAny(INT)) {
-			match(INT);
+			return new LiteralNode(PrimitiveType.INT(match(INT)));
 		} else if (equalsAny(K_FALSE)) {
-			match(K_FALSE);
+			return new LiteralNode(PrimitiveType.BOOLEAN(match(K_FALSE)));
 		} else {
 			throw createSyntacticException("Se esperaba (literal) pero se encontro %tokenType%");
 		}
@@ -785,60 +862,66 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private AccessNode acceso() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV)) {
-			primario();
-			encadenado();
+			AccessNode access = primario();
+			access = encadenado(access);
+			return access;
 		} else if (equalsAny(P_PAREN_OPEN)) {
 			match(P_PAREN_OPEN);
-			expParenOCasting();
-			encadenado();
+			AccessNode leftAccess = expParenOCasting();
+			return encadenado(leftAccess);
 		} else {
 			throw createSyntacticException("Se esperaba (acceso) pero se encontro %tokenType%");
 		}
 	}
 
 	/**
-	 * Builds and returns an {@link ExpressionNode} that can be a {@link CastExpressionNode}
+	 * Builds and returns an {@link AccessNode} that can be a {@link CastAccessNode}
+	 * or a {@link ParenthesizedExpressionNode}
 	 */
-	private ExpressionNode expParenOCasting() {
+	private AccessNode expParenOCasting() {
 		if (equalsAny(K_NEW, K_THIS, ID_MV, P_PAREN_OPEN, CHAR, STRING, K_NULL, K_TRUE, INT, K_FALSE, OP_NOT, OP_PLUS, OP_MINUS)) {
-			expresionUnariaSinStatic();
-			expresionResto();
+			ExpressionNode exp = expresionUnariaSinStatic();
+			exp = expresionResto(exp);
 			match(P_PAREN_CLOSE);
+			return new ParenthesizedExpressionNode(exp);
 		} else if (equalsAny(ID_CLS)) {
-			match(ID_CLS);
-			restoCastingORestoExpresion();
+			ReferenceType classRef = of(match(ID_CLS));
+			return restoCastingORestoExpresion(classRef);
 		} else {
 			throw createSyntacticException("Se esperaba (expParenOCasting) pero se encontro %tokenType%");
 		}
 	}
 
 	/**
-	 * Builds and returns an {@link ExpressionNode} that can be a {@link CastExpressionNode}.
+	 * Builds and returns an {@link AccessNode} that can be a {@link CastAccessNode}
+	 * or a {@link ParenthesizedExpressionNode}
 	 * It uses the given {@link ReferenceType} to build the expression
 	 */
-	private ExpressionNode restoCastingORestoExpresion(ReferenceType classRef) {
+	private AccessNode restoCastingORestoExpresion(ReferenceType classRef) {
 		if (equalsAny(OP_LT, P_PAREN_CLOSE)) {
 			restoCasting();
-			accesoEstaticoOPrimarioOExpParen();
+			AccessNode access = accesoEstaticoOPrimarioOExpParen();
+			return new CastAccessNode(classRef, access);
 		} else if (equalsAny(P_DOT)) {
-			restoAccesoEstatico();
-			expresionResto();
+			AccessNode leftAccess = restoAccesoEstatico(classRef);
+			ExpressionNode expression = expresionResto(leftAccess);
 			match(P_PAREN_CLOSE);
+			return new ParenthesizedExpressionNode(expression);
 		} else {
 			throw createSyntacticException("Se esperaba (restoCastingORestoExpresion) pero se encontro %tokenType%");
 		}
 	}
 
 	/**
-	 * Builds and returns an {@link ExpressionNode}
+	 * Builds and returns an {@link AccessNode}
 	 */
-	private ExpressionNode accesoEstaticoOPrimarioOExpParen() {
+	private AccessNode accesoEstaticoOPrimarioOExpParen() {
 		if (equalsAny(P_PAREN_OPEN)) {
-			expresionParentizada();
+			return expresionParentizada();
 		} else if (equalsAny(K_NEW, K_THIS, ID_MV)) {
-			primario();
+			return primario();
 		} else if (equalsAny(ID_CLS)) {
-			accesoEstatico();
+			return accesoEstatico();
 		} else {
 			throw createSyntacticException("Se esperaba (accesoEstaticoOPrimarioOExpParen) pero se encontro %tokenType%");
 		}
@@ -848,19 +931,20 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * Returns an {@link AccessNode} that's either a {@link StaticMethodAccessNode} or a {@link StaticVarAccessNode}
 	 */
 	private AccessNode accesoEstatico() {
-		match(ID_CLS);
+		ReferenceType classRef = of(match(ID_CLS));
 		match(P_DOT);
-		accesoVarOMetodo();
-		encadenado();
+		AccessNode leftAccess = accesoVarOMetodoEstatico(classRef);
+		return encadenado(leftAccess);
 	}
 
 	/**
-	 * Returns an {@link ExpressionNode}
+	 * Returns an {@link AccessNode}
 	 */
-	private ExpressionNode expresionParentizada() {
+	private AccessNode expresionParentizada() {
 		match(P_PAREN_OPEN);
-		expresion();
+		ExpressionNode expression = expresion();
 		match(P_PAREN_CLOSE);
+		return new ParenthesizedExpressionNode(expression);
 	}
 
 	private void restoCasting() {
@@ -869,16 +953,27 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	}
 
 	/**
-	 * Using the given {@link ExpressionNode} it builds either a {@link BinaryExpression} or returns the same
+	 * Using the given {@link ExpressionNode} it builds either a binary expression or returns the same
 	 * {@link ExpressionNode}
 	 */
 	private ExpressionNode expresionResto(ExpressionNode leftExpression) {
 		if (equalsAny(OP_MULT, OP_LT, OP_GTE, OP_EQ, OP_AND, OP_LTE, OP_NOTEQ, OP_OR, OP_PLUS, OP_MINUS, OP_DIV, OP_MOD, OP_GT)) {
-			operadorBinario();
-			expresionUnaria();
-			expresionResto();
+			Token operator = operadorBinario();
+			ExpressionNode exp = expresionUnaria();
+			switch (operator.getType()){
+				case OP_MULT: case OP_PLUS: case OP_MINUS: case OP_DIV: case OP_MOD:
+					exp = new ArithmeticBinaryExpression(leftExpression, exp, operator); break;
+				case OP_AND: case OP_OR:
+					exp = new LogicalBinaryExpression(leftExpression, exp, operator); break;
+				case OP_EQ: case OP_NOTEQ:
+					exp = new EqualityBinaryExpression(leftExpression, exp, operator); break;
+				case OP_GT: case OP_GTE: case OP_LT: case OP_LTE:
+					exp = new ComparisonBinaryExpression(leftExpression, exp, operator); break;
+			}
+			return expresionResto(exp);
 		} else if (equalsAny(P_SEMICOLON, P_COMMA, P_PAREN_CLOSE)) { // Check for follow
 			// Nothing for now
+			return leftExpression;
 		} else {
 			throw createSyntacticException("Se esperaba {==, &&, ||, <=, %, ), *, +, ,, -, /, ;, <, !=, >, >=} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -889,31 +984,31 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private Token operadorBinario() {
 		if (equalsAny(OP_MULT)) {
-			match(OP_MULT);
+			return match(OP_MULT);
 		} else if (equalsAny(OP_LT)) {
-			match(OP_LT);
+			return match(OP_LT);
 		} else if (equalsAny(OP_GTE)) {
-			match(OP_GTE);
+			return match(OP_GTE);
 		} else if (equalsAny(OP_EQ)) {
-			match(OP_EQ);
+			return match(OP_EQ);
 		} else if (equalsAny(OP_AND)) {
-			match(OP_AND);
+			return match(OP_AND);
 		} else if (equalsAny(OP_LTE)) {
-			match(OP_LTE);
+			return match(OP_LTE);
 		} else if (equalsAny(OP_NOTEQ)) {
-			match(OP_NOTEQ);
+			return match(OP_NOTEQ);
 		} else if (equalsAny(OP_OR)) {
-			match(OP_OR);
+			return match(OP_OR);
 		} else if (equalsAny(OP_PLUS)) {
-			match(OP_PLUS);
+			return match(OP_PLUS);
 		} else if (equalsAny(OP_MINUS)) {
-			match(OP_MINUS);
+			return match(OP_MINUS);
 		} else if (equalsAny(OP_DIV)) {
-			match(OP_DIV);
+			return match(OP_DIV);
 		} else if (equalsAny(OP_MOD)) {
-			match(OP_MOD);
+			return match(OP_MOD);
 		} else if (equalsAny(OP_GT)) {
-			match(OP_GT);
+			return match(OP_GT);
 		} else {
 			throw createSyntacticException("Se esperaba (operadorBinario) pero se encontro %tokenType%");
 		}
@@ -925,10 +1020,13 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private AccessNode encadenado(AccessNode leftAccess) {
 		if (equalsAny(P_DOT)) {
-			varOMetodoEncadenado();
-			encadenado();
+			ChainNode chainNode = varOMetodoEncadenado(leftAccess);
+			leftAccess.setChain(chainNode);
+			encadenado(chainNode);
+			return leftAccess;
 		} else if (equalsAny(OP_MULT, P_SEMICOLON, P_COMMA, OP_MOD, OP_PLUS, ASSIGN, OP_DIV, OP_GT, OP_EQ, OP_GTE, OP_LT, OP_MINUS, P_PAREN_CLOSE, OP_AND, ASSIGN_INCR, ASSIGN_DECR, OP_LTE, OP_NOTEQ, OP_OR)) { // Check for follow
 			// Nothing for now
+			return leftAccess;
 		} else {
 			throw createSyntacticException("Se esperaba {==, &&, ++, ||, <=, %, ), *, +, ,, -, ., /, ;, <, !=, =, >, >=} pero se encontro %lexeme% (%tokenType%)");
 		}
@@ -939,9 +1037,12 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * It uses the given {@link AccessNode} to set the chained nodes their left access
 	 */
 	private ChainNode varOMetodoEncadenado(AccessNode leftAccess) {
-		match(P_DOT);
-		match(ID_MV);
-		argsActualesOVacio();
+		Token dotToken = match(P_DOT);
+		NameAttribute name = NameAttribute.of(match(ID_MV));
+		Optional<List<ExpressionNode>> arguments = argsActualesOVacio();
+		return arguments.isPresent()
+				? new ChainedMethodNode(leftAccess, dotToken, name, arguments.get())
+				: new ChainedAttrNode(leftAccess, dotToken, name);
 	}
 
 	/**
@@ -949,11 +1050,11 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private AccessNode primario() {
 		if (equalsAny(K_NEW)) {
-			accesoConstructor();
+			return accesoConstructor();
 		} else if (equalsAny(K_THIS)) {
-			accesoThis();
+			return accesoThis();
 		} else if (equalsAny(ID_MV)) {
-			accesoVarOMetodo();
+			return accesoVarOMetodo();
 		} else {
 			throw createSyntacticException("Se esperaba (primario) pero se encontro %tokenType%");
 		}
@@ -963,7 +1064,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * Returns a {@link ThisAccessNode}
 	 */
 	private ThisAccessNode accesoThis() {
-		match(K_THIS);
+		return new ThisAccessNode(match(K_THIS));
 	}
 
 	/**
@@ -971,9 +1072,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private ConstructorAccessNode accesoConstructor() {
 		match(K_NEW);
-		match(ID_CLS);
+		ReferenceType classRef = of(match(ID_CLS));
 		genericidadOVacio();
-		argsActuales();
+		List<ExpressionNode> arguments = argsActuales();
+		return new ConstructorAccessNode(classRef, arguments);
 	}
 
 	private void genericidadOVacio() {
