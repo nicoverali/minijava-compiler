@@ -34,7 +34,7 @@ public class ReturnSentenceNode implements SentenceNode{
             throw new SemanticException("Falta el valor de retorno", returnToken);
         } else if (returnExpression != null){
             returnExpression.validate(scope);
-            if (!expectedReturnType.get().equals(returnExpression.getType())){
+            if (!returnExpression.getType().conforms(expectedReturnType.get())){
                 throw new SemanticException("Valor de retorno incompatible", returnToken);
             }
         }
