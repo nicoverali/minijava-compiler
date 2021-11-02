@@ -19,6 +19,11 @@ public interface ClassSymbol extends Symbol {
     Collection<AttributeSymbol> getAttributes();
 
     /**
+     * @return a collection of all the {@link AttributeSymbol} that are inherited by this class
+     */
+    Collection<AttributeSymbol> getInheritAttributes();
+
+    /**
      * @return a collection of all the {@link MethodSymbol} of this class
      */
     Collection<MethodSymbol> getMethods();

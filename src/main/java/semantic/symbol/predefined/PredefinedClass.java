@@ -68,6 +68,11 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
+    public Collection<AttributeSymbol> getInheritAttributes() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public Collection<MethodSymbol> getMethods(){
         return methods.values();
     }
