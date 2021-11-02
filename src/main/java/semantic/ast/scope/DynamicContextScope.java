@@ -58,7 +58,7 @@ public class DynamicContextScope implements Scope {
         var = searchIn(parameters, name);
         if (var != null) return Optional.of(var);
 
-        return new AttributeFinder(container).find(emptyDynamic(), name).map(attr -> attr);
+        return new AttributeFinder(container).find(name).map(attr -> attr);
     }
 
     private Variable searchIn(List<? extends Variable> list, NameAttribute name) {

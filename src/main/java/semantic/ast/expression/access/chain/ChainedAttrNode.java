@@ -44,7 +44,7 @@ public class ChainedAttrNode extends BaseChainNode{
 
         // Find this attribute within the left referenced class
         Optional<AttributeSymbol> attr = new AttributeFinder(classSym)
-                .find(emptyPublic(), emptyDynamic(), name);
+                .find(emptyPublic(), name);
         if (attr.isEmpty()) throw new SemanticException("No se pudo encontrar el atributo", name);
         attrSymbol = attr.get();
     }

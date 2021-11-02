@@ -53,7 +53,7 @@ public class ChainedMethodNode extends BaseChainNode {
         List<Type> paramsType = paramsExps.stream().map(ExpressionNode::getType).collect(Collectors.toList());
 
         // Find this method within the left referenced class
-        Optional<MethodSymbol> method = new MethodFinder(classSym).find(emptyDynamic(), name, paramsType);
+        Optional<MethodSymbol> method = new MethodFinder(classSym).find(name, paramsType);
         if (method.isEmpty()){
             // Method is not declared or not suitable parameters found
             if (new MethodFinder(classSym).find(emptyDynamic(), name).isEmpty()){
