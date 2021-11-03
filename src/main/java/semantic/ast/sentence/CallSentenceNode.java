@@ -38,6 +38,6 @@ public class CallSentenceNode implements SentenceNode {
 
     @Override
     public Token toToken() {
-        return access.toToken();
+        return semicolonToken;
     }
 }

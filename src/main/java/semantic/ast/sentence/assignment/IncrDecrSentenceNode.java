@@ -38,6 +38,6 @@ public class IncrDecrSentenceNode implements AssignmentNode {
 
     @Override
     public Token toToken() {
-        return access.toToken();
+        return incrementToken;
     }
 }

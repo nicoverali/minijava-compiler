@@ -95,7 +95,7 @@ public class UserMethodSymbol implements MethodSymbol {
         if (returnType.equals(VOID())){
             new CodeFlowValidator().checkUnreachableCode(block.getSentences());
         } else if (!new CodeFlowValidator().doesReturnAlways(block.getSentences())){
-            throw new SemanticException("Falta expresion return", block.getCloseBracket());
+            throw new SemanticException("Falta expresion return", name);
         }
     }
 

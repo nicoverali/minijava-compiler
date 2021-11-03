@@ -1,4 +1,4 @@
-///[Error:int|10]
+///[Error:=|10]
 // Codigo muerto
 
 class Clase {

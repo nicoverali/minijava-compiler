@@ -1,26 +1,27 @@
-///[Error:;|21]
-// Codigo muerto
+///[Error:metodo|11]
+// Falta return
 
 class Clase {
 
 
     static void main(){
+        new Clase().metodo();
+    }
+
+    dynamic int metodo(){
         if (true) {
             if (true){
                 if (true){
-                    return;
+                    return 5;
                 } else {
-                    return;
                 }
             } else {
-                return;
+                return 2;
             }
         }else {
-            return;
+            return 3;
         }
         System.read();
-        return;
-
     }
 
 

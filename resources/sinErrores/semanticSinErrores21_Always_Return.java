@@ -1,26 +1,20 @@
-///[Error:;|21]
-// Codigo muerto
-
 class Clase {
 
 
-    static void main(){
+    static int main(){
         if (true) {
             if (true){
                 if (true){
-                    return;
+                    return 3;
                 } else {
-                    return;
+                    return 3;
                 }
             } else {
-                return;
+                return 3;
             }
         }else {
-            return;
+            return 3;
         }
-        System.read();
-        return;
-
     }
 
 

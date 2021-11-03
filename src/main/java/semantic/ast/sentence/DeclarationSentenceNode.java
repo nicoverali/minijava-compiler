@@ -43,7 +43,7 @@ public class DeclarationSentenceNode implements SentenceNode {
 
     @Override
     public Token toToken() {
-        return variable.getType().getToken();
+        return assignment;
     }
 
 }

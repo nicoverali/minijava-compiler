@@ -1,4 +1,4 @@
-///[Error:read|13]
+///[Error:;|13]
 // Codigo muerto
 
 class Clase {

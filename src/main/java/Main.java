@@ -8,7 +8,6 @@ import lexical.analyzer.MiniJavaLexicalAnalyzer;
 import semantic.CircularInheritanceException;
 import semantic.MainMethodException;
 import semantic.SemanticException;
-import semantic.UnreachableCodeException;
 import semantic.symbol.SymbolTable;
 import syntactic.MiniJavaSyntacticAnalyzer;
 import syntactic.SyntacticAnalyzer;
@@ -28,7 +27,6 @@ public class Main {
     private static final SemanticErrorPrinter semanticPrinter = new SemanticErrorPrinter();
     private static final CircularInheritanceErrorPrinter circularPrinter = new CircularInheritanceErrorPrinter();
     private static final MainMethodErrorPrinter mainPrinter = new MainMethodErrorPrinter();
-    private static final UnreachableCodeErrorPrinter unreachablePrinter = new UnreachableCodeErrorPrinter();
 
     public static void main(String[] args) {
         if (args.length < 1) throw new IllegalArgumentException("Se debee proveer el archivo a analizar");
@@ -50,8 +48,6 @@ public class Main {
             circularPrinter.printError(e);
         } catch (MainMethodException e) {
             mainPrinter.printError(e);
-        } catch (UnreachableCodeException e) {
-            unreachablePrinter.printError(e);
         }
 
         if (isOk){

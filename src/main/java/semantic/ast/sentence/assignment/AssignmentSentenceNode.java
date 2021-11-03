@@ -49,7 +49,7 @@ public class AssignmentSentenceNode implements AssignmentNode {
 
     @Override
     public Token toToken() {
-        return leftSide.toToken();
+        return assignmentType;
     }
 
 }

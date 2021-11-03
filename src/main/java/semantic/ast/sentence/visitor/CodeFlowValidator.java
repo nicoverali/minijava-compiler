@@ -1,6 +1,6 @@
 package semantic.ast.sentence.visitor;
 
-import semantic.UnreachableCodeException;
+import semantic.SemanticException;
 import semantic.ast.sentence.*;
 import semantic.ast.sentence.assignment.AssignmentSentenceNode;
 
@@ -24,33 +24,33 @@ public class CodeFlowValidator implements SentenceVisitor{
 
     @Override
     public void visit(EmptySentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
     }
 
     @Override
     public void visit(AssignmentSentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
     }
 
     @Override
     public void visit(DeclarationSentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
     }
 
     @Override
     public void visit(CallSentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
     }
 
     @Override
     public void visit(BlockSentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
         sentence.getBlock().getSentences().forEach(s -> s.accept(this));
     }
 
     @Override
     public void visit(IfSentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
 
         if (sentence.getElseSentence().isEmpty()){
             new CodeFlowValidator().checkUnreachableCode(List.of(sentence.getIfSentence()));
@@ -65,12 +65,12 @@ public class CodeFlowValidator implements SentenceVisitor{
 
     @Override
     public void visit(ForSentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
     }
 
     @Override
     public void visit(ReturnSentenceNode sentence) {
-        if (visitedReturn) throw new UnreachableCodeException("Codigo muerto", sentence);
+        if (visitedReturn) throw new SemanticException("Codigo muerto", sentence.toToken());
         visitedReturn = true;
     }
 }
