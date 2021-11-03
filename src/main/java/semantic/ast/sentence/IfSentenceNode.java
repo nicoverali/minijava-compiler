@@ -38,10 +38,14 @@ public class IfSentenceNode implements SentenceNode {
 
     @Override
     public void validate(Scope scope) {
+        Scope ifSentenceScope = scope.createSubScope();
         ifCondition.validate(scope);
-        ifSentence.validate(scope);
+        ifSentence.validate(ifSentenceScope);
 
-        if (elseSentence != null) elseSentence.validate(scope);
+        if (elseSentence != null) {
+            Scope elseSentenceScope = scope.createSubScope();
+            elseSentence.validate(elseSentenceScope);
+        }
 
         Type ifConditionType = ifCondition.getType();
         if (!ifConditionType.equals(PrimitiveType.BOOLEAN())){
