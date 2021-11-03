@@ -1,4 +1,4 @@
-///[Error:null|7]
+///[Error:=|7]
 // Null no puede conformar a entero
 
 class Clase  {

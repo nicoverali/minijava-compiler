@@ -2,14 +2,15 @@ package semantic.ast.expression;
 
 import lexical.Token;
 import semantic.ast.scope.Scope;
+import semantic.symbol.attribute.type.NullType;
 import semantic.symbol.attribute.type.Type;
 
 public class NullNode implements OperandNode{
 
-    private final Token nullToken;
+    private final NullType nullType;
 
-    public NullNode(Token nullToken) {
-        this.nullToken = nullToken;
+    public NullNode(NullType nullType) {
+        this.nullType = nullType;
     }
 
     @Override
@@ -19,12 +20,12 @@ public class NullNode implements OperandNode{
 
     @Override
     public Type getType() {
-        return null;// TODO;
+        return nullType;
     }
 
     @Override
     public Token toToken() {
-        return nullToken;
+        return nullType.getToken();
     }
 
 }

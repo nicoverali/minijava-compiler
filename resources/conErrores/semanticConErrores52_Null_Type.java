@@ -1,4 +1,4 @@
-///[Error:null|11]
+///[Error:return|11]
 // Null no puede conformar a String
 
 class Clase  {

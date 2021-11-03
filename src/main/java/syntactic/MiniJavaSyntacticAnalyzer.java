@@ -39,10 +39,7 @@ import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
-import semantic.symbol.attribute.type.PrimitiveType;
-import semantic.symbol.attribute.type.ReferenceType;
-import semantic.symbol.attribute.type.Type;
-import semantic.symbol.attribute.type.VoidType;
+import semantic.symbol.attribute.type.*;
 import semantic.symbol.user.UserClassSymbol;
 import semantic.symbol.user.UserMethodSymbol;
 import semantic.symbol.user.UserParameterSymbol;
@@ -55,6 +52,7 @@ import java.util.Optional;
 import static lexical.TokenType.*;
 import static semantic.symbol.attribute.IsStaticAttribute.createDynamic;
 import static semantic.symbol.attribute.IsStaticAttribute.createStatic;
+import static semantic.symbol.attribute.type.NullType.NULL;
 import static semantic.symbol.attribute.type.ReferenceType.of;
 
 public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
@@ -847,7 +845,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 		} else if (equalsAny(STRING)) {
 			return new LiteralNode(PrimitiveType.STRING(match(STRING)));
 		} else if (equalsAny(K_NULL)) {
-			return new NullNode(match(K_NULL));
+			return new NullNode(NULL(match(K_NULL)));
 		} else if (equalsAny(K_TRUE)) {
 			return new LiteralNode(PrimitiveType.BOOLEAN(match(K_TRUE)));
 		} else if (equalsAny(INT)) {
