@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A predefined method is a member of a {@link PredefinedClass}.
@@ -99,5 +100,11 @@ public class PredefinedMethod implements MethodSymbol {
     @Override
     public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
         // Do nothing
+    }
+
+    @Override
+    public String toString() {
+        String parametersStr = parameters.stream().map(ParameterSymbol::toString).collect(Collectors.joining(", "));
+        return String.format("Predefined -> %s %s %s(%s)", isStatic, returnType, name, parametersStr);
     }
 }

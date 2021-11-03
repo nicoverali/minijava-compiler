@@ -65,6 +65,8 @@ public class IsStaticAttribute implements SymbolAttribute<Boolean>{
 
     @Override
     public String toString() {
-        return String.valueOf(isStatic);
+        return isStatic
+                ? "static"
+                : "dynamic";
     }
 }

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static semantic.symbol.attribute.type.VoidType.VOID;
 
@@ -136,5 +137,11 @@ public class UserMethodSymbol implements MethodSymbol {
         returnType.validate(SymbolTable.getInstance());
         parameters.values().forEach(param -> param.checkDeclaration(container));
         this.container = container;
+    }
+
+    @Override
+    public String toString() {
+        String parametersStr = parameters.values().stream().map(ParameterSymbol::toString).collect(Collectors.joining(", "));
+        return String.format("%s %s %s(%s)", isStatic, returnType, name, parametersStr);
     }
 }
