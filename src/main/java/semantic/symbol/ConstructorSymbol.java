@@ -7,6 +7,7 @@ import semantic.ast.sentence.visitor.CodeFlowValidator;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -109,6 +110,8 @@ public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol 
 
     @Override
     public int hashCode() {
-        return Objects.hash(classReference, parameters);
+        List<Object> hashes = new ArrayList<>(List.of(classReference));
+        hashes.addAll(parameters);
+        return Objects.hash(hashes.toArray());
     }
 }

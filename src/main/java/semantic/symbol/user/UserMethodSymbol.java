@@ -129,7 +129,9 @@ public class UserMethodSymbol implements MethodSymbol {
 
     @Override
     public int hashCode() {
-        return Objects.hash(isStatic, returnType, name, parameters.values());
+        List<Object> hashes = new ArrayList<>(List.of(isStatic, returnType, name));
+        hashes.addAll(parameters.values());
+        return Objects.hash(hashes.toArray());
     }
 
     @Override
