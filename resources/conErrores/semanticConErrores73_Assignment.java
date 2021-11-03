@@ -14,6 +14,8 @@ class Clase{
 
 class OtraClase {
 
-    static int metodoOtraClase(){}
+    static int metodoOtraClase(){
+        return 1;
+    }
 
 }

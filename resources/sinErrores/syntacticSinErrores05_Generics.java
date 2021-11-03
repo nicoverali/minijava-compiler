@@ -13,6 +13,7 @@ class Clase<T> {
         for (Clase<OtraClase> clase = new Clase<>(); num < 4; b = (Clase<T>) a){
 
         }
+        return new Clase();
     }
 
 }

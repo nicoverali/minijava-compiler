@@ -25,6 +25,10 @@ public class ForSentenceNode implements SentenceNode {
         this.loopSentence = loopSentence;
     }
 
+    public SentenceNode getLoopSentence() {
+        return loopSentence;
+    }
+
     @Override
     public void validate(Scope scope) {
         Scope forScope = scope.createSubScope();

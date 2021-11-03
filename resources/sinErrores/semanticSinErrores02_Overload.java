@@ -32,7 +32,7 @@ class ClassPadre2 extends Object{
 
 class SystemParticular extends System {
 
-    static int read(String a){} // Sobrecarga metodo predefinido
-    dynamic String read(int b){} // Sobrecarga metodo predefinido
+    static int read(String a){return 4;} // Sobrecarga metodo predefinido
+    dynamic String read(int b){return "Hola";} // Sobrecarga metodo predefinido
 
 }

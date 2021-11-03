@@ -12,15 +12,19 @@ class Clase {
         int a5 = metodo().a.b.a();
         // int a6 = ( 4 + 5 * 6 ).a(); NO LONGER VALID
         int a7 = ( new List().b ).b.a();
+
+        return a1;
     }
 
     static int casting(){
         Clase a = (Clase<T>) (new List<>()).a;
         Sistema a2 = (Sistema) Sistema.out;
+        return 1;
     }
 
     static int expresionParentizadaEstatica(){
         int a = (Sistema.clase.metodo()).a.b();
+        return a;
     }
 
     static int expresionEstatica(){
@@ -31,6 +35,7 @@ class Clase {
         int a3 = (Sistema.out.read() + Clase.b());
         boolean a4 = (true && Clase.bool());
         if(Context.getBool() == true != Context.bool){}
+        return a;
     }
 
     static int varLocalesYAsignacion(){
@@ -38,6 +43,7 @@ class Clase {
         int b = 5;
         Clase.metodo().num = 4;
         metodo().b = new Clase();
+        return b;
     }
 
     Clase(){
@@ -61,7 +67,7 @@ class Clase {
         return new Clase();
     }
 
-    dynamic int a(){}
+    dynamic int a(){return 5;}
 
     static int b(){
         return 4;
@@ -85,7 +91,7 @@ class OtraClase {
 
     public static Clase b;
 
-    dynamic int b(){}
+    dynamic int b(){return 2;}
 
 }
 

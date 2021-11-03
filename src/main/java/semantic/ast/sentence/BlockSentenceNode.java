@@ -7,12 +7,14 @@ import semantic.ast.sentence.visitor.SentenceVisitor;
 
 public class BlockSentenceNode implements SentenceNode {
 
-    private final Token openBracketToken;
     private final BlockNode block;
 
-    public BlockSentenceNode(Token openBracketToken, BlockNode block) {
-        this.openBracketToken = openBracketToken;
+    public BlockSentenceNode(BlockNode block) {
         this.block = block;
+    }
+
+    public BlockNode getBlock() {
+        return block;
     }
 
     @Override
@@ -28,6 +30,6 @@ public class BlockSentenceNode implements SentenceNode {
 
     @Override
     public Token toToken() {
-        return openBracketToken;
+        return block.getOpenBracket();
     }
 }

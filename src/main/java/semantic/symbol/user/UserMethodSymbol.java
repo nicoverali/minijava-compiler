@@ -4,6 +4,7 @@ import semantic.SemanticException;
 import semantic.ast.block.BlockNode;
 import semantic.ast.scope.DynamicContextScope;
 import semantic.ast.scope.StaticContextScope;
+import semantic.ast.sentence.visitor.CodeFlowValidator;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.ParameterSymbol;
@@ -11,7 +12,6 @@ import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
-import semantic.symbol.attribute.type.VoidType;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -89,6 +89,12 @@ public class UserMethodSymbol implements MethodSymbol {
             block.validate(new StaticContextScope(scopeReturnType, container, new ArrayList<>(parameters.values())));
         } else {
             block.validate(new DynamicContextScope(scopeReturnType, container, new ArrayList<>(parameters.values())));
+        }
+
+        if (returnType.equals(VOID())){
+            new CodeFlowValidator().checkUnreachableCode(block.getSentences());
+        } else if (!new CodeFlowValidator().doesReturnAlways(block.getSentences())){
+            throw new SemanticException("Falta expresion return", block.getCloseBracket());
         }
     }
 

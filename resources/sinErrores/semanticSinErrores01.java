@@ -15,10 +15,10 @@ class Class extends ClassPadre1{
 
     static void method(int a){} // Sobre-escribe metodo correctamente
 
-    dynamic Object getObject(){} // Clases
-    static System getSystem(){}  // predefinidas
+    dynamic Object getObject(){return new Object();} // Clases
+    static System getSystem(){return new System();}  // predefinidas
 
-    dynamic ClassPadre2 test(String a, int b, ClassPadre1 padre, Class clazz, Class clazz2){} // Muchos args
+    dynamic ClassPadre2 test(String a, int b, ClassPadre1 padre, Class clazz, Class clazz2){return new ClassPadre2();} // Muchos args
 
 }
 
@@ -50,6 +50,6 @@ class ClassPadre2 extends Object{
 
 class SystemParticular extends System {
 
-    static int read(){} // Sobreescribe metodo predefinido
+    static int read(){return 4;} // Sobreescribe metodo predefinido
 
 }

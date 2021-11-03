@@ -7,6 +7,7 @@ class Clase extends Padre {
 
     static String metodo(int a){
         Clase clase = (Clase) Sistema.out;
+        return "Hola";
     }
 
 }

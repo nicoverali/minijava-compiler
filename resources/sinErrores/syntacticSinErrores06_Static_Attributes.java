@@ -6,9 +6,9 @@ class Clase {
     Clase d;
 
     // Metodos estaticos deberian funcionar igual
-    static Clase metodo(){}
+    static Clase metodo(){return new Clase();}
 
     static void main(){}
 
-    dynamic int metodo2(){}
+    dynamic int metodo2(){return 4;}
 }

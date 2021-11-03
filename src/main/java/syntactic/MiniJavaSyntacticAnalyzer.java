@@ -3,6 +3,7 @@ package syntactic;
 import lexical.LexicalSequence;
 import lexical.Token;
 import lexical.TokenType;
+import lexical.automata.AutomataToken;
 import semantic.ast.block.BlockNode;
 import semantic.ast.block.LocalVariable;
 import semantic.ast.expression.NullNode;
@@ -406,10 +407,10 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 * Builds a {@link BlockNode} and returns it
 	 */
 	private BlockNode bloque() {
-		match(P_BRCKT_OPEN);
+		Token openBracket = match(P_BRCKT_OPEN);
 		List<SentenceNode> sentences = listaSentencias();
-		match(P_BRCKT_CLOSE);
-		return new BlockNode(sentences);
+		Token closeBracket = match(P_BRCKT_CLOSE);
+		return new BlockNode(openBracket, sentences, closeBracket);
 	}
 
 	/**
@@ -434,8 +435,8 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private SentenceNode sentencia() {
 		if (equalsAny(P_SEMICOLON)) {
-			match(P_SEMICOLON);
-			return new EmptySentenceNode();
+			Token semicolon = match(P_SEMICOLON);
+			return new EmptySentenceNode(semicolon);
 		} else if (equalsAny(ID_CLS)) {
 			ReferenceType classRef = of(match(ID_CLS));
 			SentenceNode sentence = restoAccesoEstaticoOVarLocalClase(classRef);
@@ -535,7 +536,7 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	private SentenceNode restoFor(Token forToken, LocalVariable var) {
 		if (equalsAny(P_COLON)) {
 			restoForEach();
-			return new EmptySentenceNode();
+			return new EmptySentenceNode(new AutomataToken(null, P_SEMICOLON, null, null));
 		} else if (equalsAny(ASSIGN, P_SEMICOLON)) {
 			return restoForClasico(forToken, var);
 		} else {

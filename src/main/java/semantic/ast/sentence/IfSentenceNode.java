@@ -8,6 +8,8 @@ import semantic.ast.sentence.visitor.SentenceVisitor;
 import semantic.symbol.attribute.type.PrimitiveType;
 import semantic.symbol.attribute.type.Type;
 
+import java.util.Optional;
+
 public class IfSentenceNode implements SentenceNode {
 
     protected final Token ifToken;
@@ -24,6 +26,14 @@ public class IfSentenceNode implements SentenceNode {
         this.ifCondition = ifCondition;
         this.ifSentence = ifSentence;
         this.elseSentence = elseSentence;
+    }
+
+    public SentenceNode getIfSentence() {
+        return ifSentence;
+    }
+
+    public Optional<SentenceNode> getElseSentence() {
+        return Optional.ofNullable(elseSentence);
     }
 
     @Override

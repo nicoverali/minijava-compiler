@@ -3,9 +3,9 @@ package semantic.symbol;
 import semantic.SemanticException;
 import semantic.ast.block.BlockNode;
 import semantic.ast.scope.DynamicContextScope;
+import semantic.ast.sentence.visitor.CodeFlowValidator;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
-import semantic.symbol.attribute.type.VoidType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -80,6 +80,7 @@ public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol 
      */
     public void validateBlock() {
         block.validate(new DynamicContextScope(container, parameters));
+        new CodeFlowValidator().checkUnreachableCode(block.getSentences());
     }
 
     private boolean nameMatchesClassName(ClassSymbol container) {
