@@ -41,7 +41,7 @@ public class VarAccessNode extends BaseAccessNode {
         // Search this variable in the current scope
         Optional<Variable> var = scope.findVariable(name);
         if (var.isEmpty()){
-            throw new SemanticException("Se hace referencia a una variable no declarada", name);
+            throw new SemanticException("Se hace referencia a una variable no declarada o fuera de alcance", name);
         }
         this.variable = var.get();
     }
