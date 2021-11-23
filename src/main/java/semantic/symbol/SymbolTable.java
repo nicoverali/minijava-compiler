@@ -40,6 +40,8 @@ public class SymbolTable {
 
     private final ReferenceType defaultClass = new ReferenceType(OBJECT_CLASSNAME);
 
+    private MethodSymbol mainMethod;
+
     private void createPredefinedClasses() {
         PredefinedClass object = new PredefinedClass(OBJECT_CLASSNAME);
         object.add(PredefinedMethod.createStatic(VOID(), "debugPrint", new PredefinedParameter(INT(), "i")));
@@ -109,6 +111,17 @@ public class SymbolTable {
     }
 
     /**
+     * Returns the main method in this table. This method must be called after the table has been
+     * consolidated, an exception will be thrown otherwise
+     *
+     * @return the main method of this table
+     */
+    public MethodSymbol getMainMethod(){
+        if (mainMethod == null) throw new IllegalStateException("Table must be consolidated before calling this method");
+        return mainMethod;
+    }
+
+    /**
      * @return the default {@link UserClassSymbol} of all classes as a {@link ReferenceType}
      */
     public ReferenceType getDefaultClass(){
@@ -125,7 +138,7 @@ public class SymbolTable {
         classes.values().forEach(ClassSymbol::checkDeclaration);
         SymbolTreeValidator.checkCircularInheritance(classes);
         classes.values().forEach(ClassSymbol::consolidate);
-        SymbolTreeValidator.checkMainMethod(classes);
+        mainMethod = SymbolTreeValidator.checkMainMethod(classes);
 
         classes.values().forEach(ClassSymbol::checkSentences);
     }

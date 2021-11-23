@@ -3,7 +3,6 @@ package semantic.symbol;
 import lexical.Token;
 import semantic.CircularInheritanceException;
 import semantic.MainMethodException;
-import semantic.SemanticException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +32,7 @@ public class SymbolTreeValidator {
                 .ifPresent(parentSymbol -> checkCircularInheritance(parentSymbol, visited));
     }
 
-    public static void checkMainMethod(Map<String, ? extends ClassSymbol> classes){
+    public static MethodSymbol checkMainMethod(Map<String, ? extends ClassSymbol> classes){
         Stream<MethodSymbol> allMethods = classes.values().stream()
                 .map(ClassSymbol::getMethods)
                 .flatMap(Collection::stream);
@@ -49,6 +48,7 @@ public class SymbolTreeValidator {
         } else if (mainMethods.size() == 0){
             throw new MainMethodException("Debe haber una clase con un metodo estatico main sin parametros");
         }
+        return mainMethods.get(0);
     }
 
 }
