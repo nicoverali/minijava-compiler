@@ -60,6 +60,7 @@ public class UserClassSymbol implements ClassSymbol {
         if (duplicateConstructor){
                 throw new SemanticException("Constructor duplicado", constructor.getClassReference());
         }
+        constructor.setContainer(this);
         constructors.add(constructor);
     }
 
@@ -75,7 +76,7 @@ public class UserClassSymbol implements ClassSymbol {
         if (duplicateMethod) {
             throw new SemanticException("Metodo duplicado", method);
         }
-
+        method.setContainer(this);
         methods.put(method.getName(), method);
     }
 
@@ -88,6 +89,7 @@ public class UserClassSymbol implements ClassSymbol {
     public void add(AttributeSymbol attribute) throws SemanticException{
         if (attributes.containsKey(attribute.getName()))
             throw new SemanticException("Una clase no puede tener dos atributos con el mismo nombre", attribute);
+        attribute.setContainer(this);
         attributes.put(attribute.getName(), attribute);
     }
 
@@ -153,9 +155,9 @@ public class UserClassSymbol implements ClassSymbol {
 
     @Override
     public void checkDeclaration() throws SemanticException, IllegalStateException {
-        constructors.forEach(cons -> cons.checkDeclaration(this));
-        attributes.values().forEach(attr -> attr.checkDeclaration(this));
-        methods.values().forEach(method -> method.checkDeclaration(this));
+        constructors.forEach(ConstructorSymbol::checkDeclaration);
+        attributes.values().forEach(AttributeSymbol::checkDeclaration);
+        methods.values().forEach(InnerClassSymbol::checkDeclaration);
         checkParent();
     }
 

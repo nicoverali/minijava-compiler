@@ -35,6 +35,7 @@ public class PredefinedClass implements ClassSymbol {
      * @param method a {@link PredefinedMethod} which will be added to this predefined class
      */
     public void add(PredefinedMethod method){
+        method.setContainer(this);
         methods.put(method.getName(), method);
     }
 

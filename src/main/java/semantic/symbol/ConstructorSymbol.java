@@ -7,12 +7,13 @@ import semantic.ast.sentence.visitor.CodeFlowValidator;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol {
+public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol, ASMCallable {
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
@@ -69,11 +70,21 @@ public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol 
     }
 
     @Override
-    public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
-        this.container = container;
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
         parameters.forEach(param -> param.checkDeclaration(container));
         if (!nameMatchesClassName(container))
             throw new SemanticException("El nombre del constructor no es el de la clase que lo contiene", getClassReference());
+    }
+
+    @Override
+    public void setContainer(ClassSymbol container) {
+        this.container = container;
+    }
+
+    @Nullable
+    @Override
+    public ClassSymbol getContainer() {
+        return container;
     }
 
     /**

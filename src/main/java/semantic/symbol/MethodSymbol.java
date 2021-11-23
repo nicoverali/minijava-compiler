@@ -3,7 +3,9 @@ package semantic.symbol;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.type.Type;
 
-public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol {
+import java.util.stream.Collectors;
+
+public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol, ASMCallable {
     /**
      * @return the {@link IsStaticAttribute} of this method which determines if the method is static or not
      */

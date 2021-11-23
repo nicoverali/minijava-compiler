@@ -8,6 +8,7 @@ import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,8 @@ public class PredefinedMethod implements MethodSymbol {
     private final Type returnType;
     private final NameAttribute name;
     private final List<PredefinedParameter> parameters;
+
+    private ClassSymbol container;
 
     public static PredefinedMethod createStatic(Type type, String name, PredefinedParameter... parameters){
         return new PredefinedMethod(IsStaticAttribute.emptyStatic(), type, name, parameters);
@@ -98,8 +101,19 @@ public class PredefinedMethod implements MethodSymbol {
     }
 
     @Override
-    public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
         // Do nothing
+    }
+
+    @Override
+    public void setContainer(ClassSymbol container) {
+        this.container = container;
+    }
+
+    @Nullable
+    @Override
+    public ClassSymbol getContainer() {
+        return container;
     }
 
     @Override

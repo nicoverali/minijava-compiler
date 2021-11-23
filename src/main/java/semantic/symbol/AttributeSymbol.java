@@ -7,12 +7,16 @@ import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
+import javax.annotation.Nullable;
+
 public class AttributeSymbol implements InnerClassSymbol, Variable {
 
     private IsPublicAttribute isPublic = IsPublicAttribute.defaultAttribute();
     private IsStaticAttribute isStatic = IsStaticAttribute.defaultAttribute();
     private final Type type;
     private final NameAttribute name;
+
+    private ClassSymbol container;
 
     public AttributeSymbol(Type type, NameAttribute name) {
         this.type = type;
@@ -64,7 +68,18 @@ public class AttributeSymbol implements InnerClassSymbol, Variable {
     }
 
     @Override
-    public void checkDeclaration(ClassSymbol container) throws SemanticException, IllegalStateException {
+    public void checkDeclaration() throws SemanticException, IllegalStateException {
         type.validate(SymbolTable.getInstance());
+    }
+
+    @Override
+    public void setContainer(ClassSymbol container) {
+        this.container = container;
+    }
+
+    @Nullable
+    @Override
+    public ClassSymbol getContainer() {
+        return container;
     }
 }
