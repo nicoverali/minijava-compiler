@@ -38,4 +38,11 @@ public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol, ASM
         return !getName().equals(method.getName())
                 || !getParameters().equals(method.getParameters());
     }
+
+    @Override
+    default String getASMLabel(){
+        String params = getParametersTypes().stream().map(Type::toString).collect(Collectors.joining("$"));
+        String container = getContainer() != null ? getContainer().getName() : "NONE";
+        return String.format("%s$%s@%s", getName(), params, container);
+    }
 }
