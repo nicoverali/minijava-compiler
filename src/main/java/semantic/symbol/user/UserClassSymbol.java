@@ -182,4 +182,8 @@ public class UserClassSymbol implements ClassSymbol {
         inheritedMethods = InheritHelper.inheritMethods(this);
     }
 
+    @Override
+    public String toString() {
+        return name.toString();
+    }
 }

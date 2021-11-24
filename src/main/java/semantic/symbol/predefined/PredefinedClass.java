@@ -132,4 +132,9 @@ public class PredefinedClass implements ClassSymbol {
     public void checkSentences() throws SemanticException, IllegalStateException {
         // Predefined classes don't have sentences
     }
+
+    @Override
+    public String toString() {
+        return "(Predefined)"+name;
+    }
 }
