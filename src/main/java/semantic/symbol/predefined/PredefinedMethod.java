@@ -91,7 +91,7 @@ public class PredefinedMethod implements MethodSymbol {
         MethodSymbol that = (MethodSymbol) o;
         return Objects.equals(isStatic(), that.isStatic())
                 && Objects.equals(getReturnType(), that.getReturnType())
-                && Objects.equals(getName(), getName())
+                && Objects.equals(getName(), that.getName())
                 && Objects.equals(getParameters(), that.getParameters());
     }
 
