@@ -138,8 +138,8 @@ public class UserClassSymbol implements ClassSymbol {
     public Map<String, AttributeSymbol> getAllAttributes() throws SemanticException {
         if (inheritedAttributes == null) this.inheritMembers();
 
-        Map<String, AttributeSymbol> resultMap = new HashMap<>(inheritedAttributes);
-        resultMap.putAll(attributes);
+        Map<String, AttributeSymbol> resultMap = new HashMap<>(attributes);
+        resultMap.putAll(inheritedAttributes);
         return Collections.unmodifiableMap(resultMap);
     }
 
@@ -147,8 +147,8 @@ public class UserClassSymbol implements ClassSymbol {
     public Multimap<String, MethodSymbol> getAllMethods() throws SemanticException {
         if (inheritedMethods == null)  this.inheritMembers();
 
-        HashSetMultimap<String, MethodSymbol> resultMap = new HashSetMultimap<>(inheritedMethods);
-        resultMap.putAll(methods);
+        HashSetMultimap<String, MethodSymbol> resultMap = new HashSetMultimap<>(methods);
+        resultMap.putAll(inheritedMethods);
         return resultMap;
     }
 

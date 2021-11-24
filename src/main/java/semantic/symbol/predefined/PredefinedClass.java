@@ -101,12 +101,11 @@ public class PredefinedClass implements ClassSymbol {
 
     @Override
     public Multimap<String, MethodSymbol> getAllMethods() throws SemanticException {
-        if (inheritMethods == null) inheritMethods();
+        if (inheritMethods == null)  inheritMethods();
 
-        for (MethodSymbol method : methods.values()) {
-            inheritMethods.put(method.getName(), method);
-        }
-        return inheritMethods;
+        HashSetMultimap<String, MethodSymbol> resultMap = new HashSetMultimap<>(methods);
+        resultMap.putAll(inheritMethods);
+        return resultMap;
     }
 
     private void inheritMethods() {
