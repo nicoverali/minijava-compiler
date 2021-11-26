@@ -121,12 +121,19 @@ public class UserClassSymbol implements ClassSymbol {
 
     @Override
     public Collection<AttributeSymbol> getInheritAttributes() {
-        return inheritedAttributes.values();
+        if (inheritedAttributes == null) inheritMembers();
+        return List.copyOf(inheritedAttributes.values());
     }
 
     @Override
     public Collection<MethodSymbol> getMethods() {
         return methods.values();
+    }
+
+    @Override
+    public Collection<MethodSymbol> getInheritMethods() {
+        if (inheritedMethods == null) inheritMembers();
+        return List.copyOf(inheritedMethods.values());
     }
 
     @Override

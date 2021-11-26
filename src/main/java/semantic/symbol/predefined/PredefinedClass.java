@@ -79,6 +79,12 @@ public class PredefinedClass implements ClassSymbol {
     }
 
     @Override
+    public Collection<MethodSymbol> getInheritMethods() {
+        if (inheritMethods == null) inheritMethods();
+        return List.copyOf(inheritMethods.values());
+    }
+
+    @Override
     public Optional<ReferenceType> getParentClass() {
         return Optional.ofNullable(parent);
     }

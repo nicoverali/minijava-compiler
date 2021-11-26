@@ -19,14 +19,29 @@ public interface ClassSymbol extends Symbol {
     Collection<AttributeSymbol> getAttributes();
 
     /**
+     * Returns a {@link Collection} of the {@link AttributeSymbol} inherited by this class.
+     * This method will only work if the class has already been consolidated.
+     *
+     * @see #consolidate()
      * @return a collection of all the {@link AttributeSymbol} that are inherited by this class
+     * @throws IllegalStateException if the class has not been consolidated yet
      */
-    Collection<AttributeSymbol> getInheritAttributes();
+    Collection<AttributeSymbol> getInheritAttributes() throws IllegalStateException;
 
     /**
      * @return a collection of all the {@link MethodSymbol} of this class
      */
     Collection<MethodSymbol> getMethods();
+
+    /**
+     * Returns a {@link Collection} of the {@link MethodSymbol} inherited by this class.
+     * This method will only work if the class has already been consolidated.
+     *
+     * @see #consolidate()
+     * @return a collection of all the {@link MethodSymbol} that are inherited by this class
+     * @throws IllegalStateException if the class has not been consolidated yet
+     */
+    Collection<MethodSymbol> getInheritMethods() throws IllegalStateException;
 
     /**
      * @return an {@link Optional} wrapping a {@link ReferenceType} pointing to the class from which this class extends
