@@ -18,6 +18,14 @@ public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol, ASM
     boolean isStatic();
 
     /**
+     * @return true if the value of the {@link IsStaticAttribute} of this method is false, false otherwise
+     * @see #getStaticAttribute()
+     */
+    default boolean isDynamic(){
+        return !isStatic();
+    }
+
+    /**
      * @return the {@link Type} returned by this method
      */
     Type getReturnType();

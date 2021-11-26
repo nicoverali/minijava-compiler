@@ -39,15 +39,47 @@ public class AttributeSymbol implements InnerClassSymbol, Variable {
     /**
      * @return the {@link IsPublicAttribute} of this attribute, which determines if the attribute is public or not
      */
-    public IsPublicAttribute isPublic() {
+    public IsPublicAttribute getPublicAttribute() {
         return isPublic;
     }
 
     /**
      * @return the {@link IsStaticAttribute} of this attribute, which determines if the attribute is static or not
      */
-    public IsStaticAttribute isStatic() {
+    public IsStaticAttribute getStaticAttribute() {
         return isStatic;
+    }
+
+    /**
+     * @return true if the value of the {@link IsPublicAttribute} of this attribute is true, false otherwise
+     * @see #getPublicAttribute()
+     */
+    public boolean isPublic(){
+        return isPublic.getValue();
+    }
+
+    /**
+     * @return true if the value of the {@link IsPublicAttribute} of this attribute is false, false otherwise
+     * @see #getPublicAttribute()
+     */
+    public boolean isPrivate(){
+        return !isPublic.getValue();
+    }
+
+    /**
+     * @return true if the value of the {@link IsStaticAttribute} of this attribute is true, false otherwise
+     * @see #getStaticAttribute()
+     */
+    public boolean isStatic(){
+        return isStatic.getValue();
+    }
+
+    /**
+     * @return true if the value of the {@link IsPublicAttribute} of this attribute is false, false otherwise
+     * @see #getStaticAttribute()
+     */
+    public boolean isDynamic(){
+        return !isStatic.getValue();
     }
 
     /**
