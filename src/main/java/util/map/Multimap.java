@@ -83,6 +83,11 @@ public interface Multimap<K, V>{
     Collection<Entry<K,Collection<V>>> entries();
 
     /**
+     * @return the number of values stored in this multimap
+     */
+    int size();
+
+    /**
      * Removes all of the mappings from this map (optional operation). The map will be empty after this call returns
      */
     void clear();
