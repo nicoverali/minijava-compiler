@@ -5,7 +5,7 @@ import semantic.symbol.attribute.type.Type;
 
 import java.util.stream.Collectors;
 
-public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol, ASMCallable {
+public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol {
     /**
      * @return the {@link IsStaticAttribute} of this method which determines if the method is static or not
      */
@@ -45,12 +45,5 @@ public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol, ASM
     default boolean isValidOverload(MethodSymbol method){
         return !getName().equals(method.getName())
                 || !getParameters().equals(method.getParameters());
-    }
-
-    @Override
-    default String getASMLabel(){
-        String params = getParametersTypes().stream().map(Type::toString).collect(Collectors.joining("$"));
-        String container = getContainer() != null ? getContainer().getName() : "NONE";
-        return String.format("%s$%s@%s", getName(), params, container);
     }
 }
