@@ -9,9 +9,7 @@ import semantic.symbol.predefined.PredefinedMethod;
 import semantic.symbol.predefined.PredefinedParameter;
 import semantic.symbol.user.UserClassSymbol;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static semantic.symbol.attribute.type.PrimitiveType.*;
 import static semantic.symbol.attribute.type.VoidType.VOID;
@@ -82,6 +80,16 @@ public class SymbolTable {
     public void reset(){
         classes.clear();
         currentClass = null;
+    }
+
+    /**
+     * @return a {@link Collection} with all the classes of this table, including both user classes
+     * and predefined classes
+     */
+    public Collection<ClassSymbol> getAllClasses(){
+        Collection<ClassSymbol> allClasses = new ArrayList<>(classes.values());
+        allClasses.addAll(predefineClasses.values());
+        return allClasses;
     }
 
     /**
