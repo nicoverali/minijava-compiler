@@ -137,7 +137,12 @@ public class UserClassSymbol implements ClassSymbol {
     }
 
     @Override
-    public Optional<ReferenceType> getParentClass() {
+    public boolean hasParent() {
+        return parent != null;
+    }
+
+    @Override
+    public Optional<ReferenceType> getParentRef() {
         return Optional.ofNullable(parent);
     }
 

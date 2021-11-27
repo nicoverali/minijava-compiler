@@ -27,8 +27,7 @@ public class SymbolTreeValidator {
         }
         visited.add(classSymbol);
         // If we have a parent, validate circular inheritance with it
-        classSymbol.getParentClass()
-                .flatMap(SymbolTable.getInstance()::getClass)
+        classSymbol.getParentSymbol()
                 .ifPresent(parentSymbol -> checkCircularInheritance(parentSymbol, visited));
     }
 

@@ -4,7 +4,6 @@ import semantic.SemanticException;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
-import semantic.symbol.SymbolTable;
 import util.map.HashMultimap;
 import util.map.Multimap;
 
@@ -13,13 +12,10 @@ import java.util.Map;
 
 public class InheritHelper {
 
-    private static final SymbolTable ST = SymbolTable.getInstance();
-
     public static Multimap<String, MethodSymbol> inheritMethods(ClassSymbol symbol){
         Multimap<String, MethodSymbol> methods = new HashMultimap<>();
 
-        symbol.getParentClass()
-            .flatMap(ST::getClass)
+        symbol.getParentSymbol()
             .ifPresent(parentSymbol -> {
                 for (MethodSymbol inherit : parentSymbol.getAllMethods().values()) {
                     if (isValidOverload(inherit, methods)) {
@@ -40,8 +36,7 @@ public class InheritHelper {
     public static Map<String, AttributeSymbol> inheritAttributes(ClassSymbol symbol){
         Map<String, AttributeSymbol> attributes = new HashMap<>();
 
-        symbol.getParentClass()
-            .flatMap(ST::getClass)
+        symbol.getParentSymbol()
             .ifPresent(parentSymbol -> {
                 for (AttributeSymbol inherit : parentSymbol.getAllAttributes().values()) {
                     attributes.put(inherit.getName(), inherit);

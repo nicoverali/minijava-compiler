@@ -44,9 +44,22 @@ public interface ClassSymbol extends Symbol {
     Collection<MethodSymbol> getInheritMethods() throws IllegalStateException;
 
     /**
+     * @return true if this class has a parent class, false otherwise
+     */
+    boolean hasParent();
+
+    /**
      * @return an {@link Optional} wrapping a {@link ReferenceType} pointing to the class from which this class extends
      */
-    Optional<ReferenceType> getParentClass();
+    Optional<ReferenceType> getParentRef();
+
+    /**
+     * @return an {@link Optional} wrapping the {@link ClassSymbol} of this class parent
+     */
+    default Optional<ClassSymbol> getParentSymbol(){
+        SymbolTable ST = SymbolTable.getInstance();
+        return getParentRef().flatMap(ST::getClass);
+    }
 
     /**
      * Returns all the {@link ConstructorSymbol} of this class. If the user did not set any constructor

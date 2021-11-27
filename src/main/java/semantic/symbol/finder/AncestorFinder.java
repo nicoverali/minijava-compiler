@@ -31,7 +31,7 @@ public class AncestorFinder {
         if (classSym.isEmpty()) throw new IllegalArgumentException("Undeclared referenced class");
 
         boolean isAncestor = false;
-        Optional<ReferenceType> currentAncestor = classSym.get().getParentClass();
+        Optional<ReferenceType> currentAncestor = classSym.get().getParentRef();
         while (currentAncestor.isPresent()){
             if (currentAncestor.get().equals(ancestorRef)){
                 isAncestor = true;
@@ -40,7 +40,7 @@ public class AncestorFinder {
 
             Optional<ClassSymbol> currentAncestorSym = ST.getClass(currentAncestor.get());
             if (currentAncestorSym.isEmpty()) throw new IllegalStateException("Undeclared parent");
-            currentAncestor = currentAncestorSym.get().getParentClass();
+            currentAncestor = currentAncestorSym.get().getParentRef();
         }
 
         return isAncestor;
