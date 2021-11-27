@@ -40,7 +40,7 @@ public class AttributeFinder {
         return Optional.ofNullable(attributes.get(name.getValue()))
                 .or(() ->
                         Optional.ofNullable(inheritAttributes.get(name.getValue()))
-                                .filter(attr -> attr.isPublic().getValue().equals(true))
+                                .filter(AttributeSymbol::isPublic)
                 );
     }
 
@@ -56,8 +56,8 @@ public class AttributeFinder {
      */
     public Optional<AttributeSymbol> find(IsPublicAttribute isPublic, IsStaticAttribute isStatic, NameAttribute name){
         return Optional.ofNullable(allAtributes.get(name.getValue()))
-                .filter(attr -> attr.isPublic().equals(isPublic))
-                .filter(attr -> attr.isStatic().equals(isStatic));
+                .filter(attr -> attr.getPublicAttribute().equals(isPublic))
+                .filter(attr -> attr.getStaticAttribute().equals(isStatic));
     }
 
     /**
@@ -73,9 +73,9 @@ public class AttributeFinder {
         return Optional.ofNullable(attributes.get(name.getValue()))
                 .or(() ->
                         Optional.ofNullable(inheritAttributes.get(name.getValue()))
-                                .filter(attr -> attr.isPublic().getValue().equals(true))
+                                .filter(AttributeSymbol::isPublic)
                 )
-                .filter(attr -> attr.isStatic().equals(isStatic));
+                .filter(attr -> attr.getStaticAttribute().equals(isStatic));
     }
 
     /**
@@ -89,6 +89,6 @@ public class AttributeFinder {
      */
     public Optional<AttributeSymbol> find(IsPublicAttribute isPublic, NameAttribute name){
         return Optional.ofNullable(allAtributes.get(name.getValue()))
-                .filter(attr -> attr.isPublic().equals(isPublic));
+                .filter(attr -> attr.getPublicAttribute().equals(isPublic));
     }
 }
