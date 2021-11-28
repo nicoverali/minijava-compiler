@@ -1,12 +1,50 @@
-class Persona {
+class A {
 
-	dynamic void method(){
-		++;
-		if({
-			a = b;
-		}
+    public int a1, a2;
+    private int a3;
 
+	static void main(){
+	    debugPrint(7);
 	}
 
+    dynamic void m1(){}
+    dynamic void m2(){}
+    dynamic void m3(){}
+
+}
+
+class B extends A {
+
+    public int a2;
+    public int b1, b2;
+    private int b3, b4;
+
+    dynamic void m4(){}
+    dynamic void m5(){}
+    dynamic void m1(){}
+}
+
+class C extends B {
+
+    public int a1;
+
+    dynamic void m2(){}
+    dynamic void m5(){}
+
+}
+
+class D extends C {
+
+    dynamic void m6(){}
+
+}
+
+class E extends D {
+
+    private int b1;
+
+
+    static void shouldNotAppear(){}
+    dynamic void m3(){}
 
 }

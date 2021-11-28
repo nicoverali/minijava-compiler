@@ -1,4 +1,6 @@
 import error.*;
+import asm.generator.ASMGenerator;
+import asm.ASMWriter;
 import io.code.ScannerSourceCodeReader;
 import io.code.SourceCodeReader;
 import lexical.LexicalException;
@@ -30,7 +32,24 @@ public class Main {
 
     public static void main(String[] args) {
         if (args.length < 1) throw new IllegalArgumentException("Se debee proveer el archivo a analizar");
-        LexicalAnalyzer lexical = createLexicalAnalyzer(args[0]);
+        if (args.length < 2) throw new IllegalArgumentException("Se debe indicar el archivo de salida");
+
+        boolean isOk = analyze(args[0]);
+        if (isOk) generate(args[1]);
+    }
+
+    private static void generate(String outputPath) {
+        try {
+            ASMGenerator generator = new ASMGenerator();
+            ASMWriter writer = new ASMWriter(outputPath);
+            generator.generate(writer);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("El archivo de salida no es valido");
+        }
+    }
+
+    private static boolean analyze(String sourceCodePath) {
+        LexicalAnalyzer lexical = createLexicalAnalyzer(sourceCodePath);
         SyntacticAnalyzer syntactic = createSyntacticAnalyzer(lexical);
 
         boolean isOk = false;
@@ -50,10 +69,7 @@ public class Main {
             mainPrinter.printError(e);
         }
 
-        if (isOk){
-            System.out.println("Compilacion exitosa.\n");
-            System.out.println("[SinErrores]");
-        }
+        return isOk;
     }
 
     private static LexicalAnalyzer createLexicalAnalyzer(String filePath){
