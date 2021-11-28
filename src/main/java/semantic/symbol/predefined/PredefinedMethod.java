@@ -1,6 +1,7 @@
 package semantic.symbol.predefined;
 
 import semantic.SemanticException;
+import semantic.ast.block.BlockNode;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.ParameterSymbol;
@@ -82,6 +83,11 @@ public class PredefinedMethod implements MethodSymbol {
     @Override
     public boolean hasParameters() {
         return !parameters.isEmpty();
+    }
+
+    @Override
+    public BlockNode getBlock() {
+        return BlockNode.empty();
     }
 
     @Override

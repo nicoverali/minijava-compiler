@@ -3,9 +3,7 @@ package semantic.symbol;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.type.Type;
 
-import java.util.stream.Collectors;
-
-public interface MethodSymbol extends InnerClassSymbol, ParameterizedSymbol {
+public interface MethodSymbol extends InnerClassSymbol, CallableSymbol {
     /**
      * @return the {@link IsStaticAttribute} of this method which determines if the method is static or not
      */

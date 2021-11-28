@@ -118,6 +118,11 @@ public class UserMethodSymbol implements MethodSymbol {
     }
 
     @Override
+    public BlockNode getBlock() {
+        return block;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MethodSymbol)) return false;

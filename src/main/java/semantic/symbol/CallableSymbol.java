@@ -1,11 +1,12 @@
 package semantic.symbol;
 
+import semantic.ast.block.BlockNode;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface ParameterizedSymbol extends Symbol {
+public interface CallableSymbol extends Symbol {
 
     /**
      * @return a list of all the {@link ParameterSymbol} of this method
@@ -25,5 +26,10 @@ public interface ParameterizedSymbol extends Symbol {
                 .map(ParameterSymbol::getType)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * @return the {@link BlockNode} of this callable symbol
+     */
+    BlockNode getBlock();
 
 }

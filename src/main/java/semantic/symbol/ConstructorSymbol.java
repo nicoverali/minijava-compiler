@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol {
+public class ConstructorSymbol implements InnerClassSymbol, CallableSymbol {
 
     private final ReferenceType classReference;
     private final List<ParameterSymbol> parameters;
@@ -46,6 +45,11 @@ public class ConstructorSymbol implements InnerClassSymbol, ParameterizedSymbol 
     @Override
     public boolean hasParameters() {
         return !parameters.isEmpty();
+    }
+
+    @Override
+    public BlockNode getBlock() {
+        return block;
     }
 
     private void checkForDuplicates(List<ParameterSymbol> parameters) throws SemanticException {
