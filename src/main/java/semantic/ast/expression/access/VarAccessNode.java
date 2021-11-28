@@ -10,11 +10,12 @@ import semantic.symbol.attribute.type.Type;
 
 import java.util.Optional;
 
-public class VarAccessNode extends BaseAccessNode {
+public class VarAccessNode extends BaseAccessNode implements VariableAccess {
 
     private final NameAttribute name;
 
     private Variable variable;
+    private Side side = Side.RIGHT;
 
     public VarAccessNode(NameAttribute name) {
         this.name = name;
@@ -44,5 +45,10 @@ public class VarAccessNode extends BaseAccessNode {
             throw new SemanticException("Se hace referencia a una variable no declarada o fuera de alcance", name);
         }
         this.variable = var.get();
+    }
+
+    @Override
+    public void setSide(Side side) {
+        this.side = side;
     }
 }

@@ -2,13 +2,13 @@ package semantic.ast.sentence.assignment;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.ast.expression.access.StaticVarAccessNode;
-import semantic.ast.expression.access.chain.ChainedAttrNode;
-import semantic.ast.scope.Scope;
-import semantic.ast.expression.access.AccessNode;
-import semantic.ast.expression.access.VarAccessNode;
 import semantic.ast.expression.ExpressionNode;
+import semantic.ast.expression.access.AccessNode;
+import semantic.ast.expression.access.VariableAccess;
+import semantic.ast.scope.Scope;
 import semantic.ast.sentence.visitor.SentenceVisitor;
+
+import static semantic.ast.expression.access.VariableAccess.Side.LEFT;
 
 public class AssignmentSentenceNode implements AssignmentNode {
 
@@ -37,9 +37,10 @@ public class AssignmentSentenceNode implements AssignmentNode {
         leftSide.validate(scope);
 
         AccessNode lastAccess = leftSide.getChainEnd();
-        if (!(lastAccess instanceof VarAccessNode || lastAccess instanceof ChainedAttrNode || lastAccess instanceof StaticVarAccessNode)){
+        if (!(lastAccess instanceof VariableAccess)){
             throw new SemanticException("El acceso debe ser una variable o atributo de instancia", assignmentType);
         }
+        ((VariableAccess) lastAccess).setSide(LEFT);
     }
 
     @Override

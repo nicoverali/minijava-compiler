@@ -2,25 +2,25 @@ package semantic.ast.expression.access.chain;
 
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.Variable;
 import semantic.ast.expression.access.AccessNode;
+import semantic.ast.expression.access.VariableAccess;
 import semantic.ast.scope.Scope;
-import semantic.symbol.finder.AttributeFinder;
 import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
+import semantic.symbol.finder.AttributeFinder;
 
 import java.util.Optional;
 
 import static semantic.symbol.attribute.IsPublicAttribute.emptyPublic;
-import static semantic.symbol.attribute.IsStaticAttribute.emptyDynamic;
 
-public class ChainedAttrNode extends BaseChainNode{
+public class ChainedAttrNode extends BaseChainNode implements VariableAccess {
 
     private final NameAttribute name;
 
     private AttributeSymbol attrSymbol;
+    private Side side = Side.RIGHT;
 
     public ChainedAttrNode(AccessNode leftAccess, Token dotToken, NameAttribute name) {
         super(leftAccess, dotToken);
@@ -54,4 +54,8 @@ public class ChainedAttrNode extends BaseChainNode{
         return name.getToken();
     }
 
+    @Override
+    public void setSide(Side side) {
+        this.side = side;
+    }
 }

@@ -17,7 +17,7 @@ import java.util.Optional;
 import static semantic.symbol.attribute.IsPublicAttribute.emptyPublic;
 import static semantic.symbol.attribute.IsStaticAttribute.emptyStatic;
 
-public class StaticVarAccessNode extends BaseAccessNode {
+public class StaticVarAccessNode extends BaseAccessNode implements VariableAccess {
 
     private final SymbolTable ST = SymbolTable.getInstance();
 
@@ -25,6 +25,7 @@ public class StaticVarAccessNode extends BaseAccessNode {
     private final NameAttribute attrName;
 
     private AttributeSymbol attrSym;
+    private Side side = Side.RIGHT;
 
     public StaticVarAccessNode(ReferenceType containerRef, NameAttribute attrName) {
         this.containerRef = containerRef;
@@ -65,4 +66,8 @@ public class StaticVarAccessNode extends BaseAccessNode {
         return attrName.getToken();
     }
 
+    @Override
+    public void setSide(Side side) {
+        this.side = side;
+    }
 }
