@@ -10,6 +10,8 @@ import semantic.symbol.MethodSymbol;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static asm.ASMLabeler.labelVT;
+
 public class ASMClassGenerator {
 
     public void generate(ClassSymbol clazz, ASMOffsetsGenerator offsetGenerator, ASMWriter writer){
@@ -30,9 +32,9 @@ public class ASMClassGenerator {
 
         writer.writeln(".DATA");
         if (methods.isEmpty()) {
-            writer.writeln("VT_%s: NOP", clazz.getName());
+            writer.writeln("%s: NOP", labelVT(clazz));
         } else {
-            writer.writeln("VT_%s: DW %s", clazz.getName(), methods);
+            writer.writeln("%s: DW %s", labelVT(clazz), methods);
         }
     }
 

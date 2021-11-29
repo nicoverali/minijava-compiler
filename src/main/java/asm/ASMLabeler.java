@@ -1,6 +1,7 @@
 package asm;
 
 import semantic.symbol.AttributeSymbol;
+import semantic.symbol.ClassSymbol;
 import semantic.symbol.ConstructorSymbol;
 import semantic.symbol.MethodSymbol;
 import semantic.symbol.attribute.type.Type;
@@ -24,6 +25,10 @@ public class ASMLabeler {
         String params = constructor.getParametersTypes().stream().map(Type::toString).collect(Collectors.joining("$"));
         String clazz = constructor.getContainer() != null ? constructor.getContainer().getName() : "NONE";
         return String.format("constructor$%s@%s", params, clazz);
+    }
+
+    public static String labelVT(ClassSymbol classSymbol) {
+        return "VT_"+classSymbol.getName();
     }
 
 }
