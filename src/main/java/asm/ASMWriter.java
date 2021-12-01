@@ -3,8 +3,6 @@ package asm;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Arrays;
-import java.util.List;
 
 public class ASMWriter {
 
@@ -38,6 +36,23 @@ public class ASMWriter {
 
     public void writeln(String format, Object... args){
         writeln(String.format(format, args));
+    }
+
+    public void writelnLabeled(String label, String text) throws UncheckedIOException{
+        try {
+            String indentationStr = "\t".repeat(indentation);
+            writer.write(label + ":" + indentationStr + text + "\n");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public void writelnLabeled(String label) throws UncheckedIOException {
+        writelnLabeled(label, "");
+    }
+
+    public void writelnLabeled(String label, String format, Object... args){
+        writelnLabeled(label, String.format(format, args));
     }
 
     public void flush(){
