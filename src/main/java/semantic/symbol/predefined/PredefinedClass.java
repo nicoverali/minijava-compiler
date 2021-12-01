@@ -96,13 +96,14 @@ public class PredefinedClass implements ClassSymbol {
 
     @Override
     public Collection<ConstructorSymbol> getConstructors() {
-        return List.of(
-                new ConstructorSymbol(
-                        new ReferenceType(name.getValue()),
-                        List.of(),
-                        BlockNode.empty()
-                )
+        ConstructorSymbol emptyConstructor = new ConstructorSymbol(
+                new ReferenceType(name.getValue()),
+                List.of(),
+                BlockNode.empty()
         );
+
+        emptyConstructor.setContainer(this);
+        return List.of(emptyConstructor);
     }
 
     @Override

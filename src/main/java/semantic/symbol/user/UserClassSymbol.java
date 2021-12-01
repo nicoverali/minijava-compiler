@@ -111,7 +111,10 @@ public class UserClassSymbol implements ClassSymbol {
     @Override
     public List<ConstructorSymbol> getConstructors() {
         if (!constructors.isEmpty()) return new ArrayList<>(constructors);
-        return List.of(new ConstructorSymbol(new ReferenceType(getName()), List.of(), BlockNode.empty()));
+
+        ConstructorSymbol emptyConstructor = new ConstructorSymbol(new ReferenceType(getName()), List.of(), BlockNode.empty());
+        emptyConstructor.setContainer(this);
+        return List.of(emptyConstructor);
     }
 
     @Override
