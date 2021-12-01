@@ -89,14 +89,19 @@ public class ASMOffsetsGenerator {
     }
 
     private void generateAttributesOffsets(ClassSymbol clazz, int attrOffset) {
-        for (AttributeSymbol attr : clazz.getAttributes()) {
+        List<AttributeSymbol> attributes = clazz.getAttributes().stream()
+                .filter(AttributeSymbol::isDynamic)
+                .collect(Collectors.toList());
+
+        for (AttributeSymbol attr : attributes) {
             attrOffsets.put(label(attr), attrOffset++);
         }
     }
 
     private void generateMethodsOffsets(ClassSymbol clazz, int methodOffset) {
+        List<MethodSymbol> methods = clazz.getMethods().stream().filter(MethodSymbol::isDynamic).collect(Collectors.toList());
         List<MethodSymbol> inheritedMethods = clazz.getInheritMethods().stream().filter(MethodSymbol::isDynamic).collect(Collectors.toList());
-        for (MethodSymbol method : clazz.getMethods()) {
+        for (MethodSymbol method : methods) {
             if (inheritedMethods.contains(method)){
                 MethodSymbol overwrite = inheritedMethods.get(inheritedMethods.indexOf(method));
                 int overwriteOffset = methodsOffsets.get(label(overwrite));
