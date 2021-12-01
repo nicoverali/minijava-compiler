@@ -1,7 +1,9 @@
 package semantic.ast.sentence.assignment;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.expression.access.VariableAccess;
@@ -53,4 +55,9 @@ public class AssignmentSentenceNode implements AssignmentNode {
         return assignmentType;
     }
 
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        rightSide.generate(context, writer);
+        leftSide.generate(context, writer);
+    }
 }

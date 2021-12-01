@@ -1,5 +1,7 @@
 package semantic.ast.expression.access;
 
+import asm.ASMWriter;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.access.chain.ChainNode;
 import semantic.ast.scope.Scope;
 import semantic.symbol.attribute.type.Type;
@@ -66,4 +68,14 @@ public abstract class BaseAccessNode implements AccessNode {
                 : thisType;
     }
 
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        generateAccess(context, writer);
+
+        if (hasChainedAccess()) {
+            chain.generate(context, writer);
+        }
+    }
+
+    abstract protected void generateAccess(ASMContext context, ASMWriter writer);
 }

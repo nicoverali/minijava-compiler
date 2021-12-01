@@ -1,13 +1,18 @@
 package semantic.symbol;
 
+import asm.ASMLabeler;
+import asm.ASMWriter;
 import semantic.SemanticException;
 import semantic.Variable;
+import semantic.ast.asm.ASMContext;
 import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
 import javax.annotation.Nullable;
+
+import static asm.ASMLabeler.label;
 
 public class AttributeSymbol implements InnerClassSymbol, Variable {
 
@@ -92,6 +97,28 @@ public class AttributeSymbol implements InnerClassSymbol, Variable {
     @Override
     public NameAttribute getNameAttribute() {
         return name;
+    }
+
+    @Override
+    public void generateASMLoad(ASMContext context, ASMWriter writer) {
+        if (isStatic()) {
+            writer.writeln("PUSH %s\t;\tCargar direccion de atributo estatico", label(this));
+            writer.writeln("LOADREF 0\t;\tCargamos valor de atributo estatico");
+        } else {
+            writer.writeln("LOADREF %s\t;\tCargamos valor de atributo", context.getOffsetOf(this));
+        }
+    }
+
+    @Override
+    public void generateASMStore(ASMContext context, ASMWriter writer) {
+        if (isStatic()) {
+            writer.writeln("PUSH %s\t;\tCargar direccion de atributo estatico", label(this));
+            writer.writeln("SWAP\t;\tIntercambiamos valor y direccion para guardar");
+            writer.writeln("STOREREF 0\t;\tGuardamos el valor de la pila en el atributo estatico");
+        } else {
+            writer.writeln("SWAP\t;\tIntercambiamos valor y direccion para guardar");
+            writer.writeln("STOREREF %s\t;\tGuardamos el valor de la pila en el atributo", context.getOffsetOf(this));
+        }
     }
 
     @Override

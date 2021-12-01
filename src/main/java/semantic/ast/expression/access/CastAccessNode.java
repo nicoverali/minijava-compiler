@@ -1,7 +1,9 @@
 package semantic.ast.expression.access;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.scope.Scope;
 import semantic.symbol.SymbolTable;
 import semantic.symbol.attribute.type.ReferenceType;
@@ -42,5 +44,10 @@ public class CastAccessNode extends BaseAccessNode {
     @Override
     public Token toToken() {
         return access.getChainEnd().toToken();
+    }
+
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        access.generate(context, writer);
     }
 }

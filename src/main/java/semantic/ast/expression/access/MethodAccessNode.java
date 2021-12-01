@@ -1,7 +1,10 @@
 package semantic.ast.expression.access;
 
+import asm.ASMLabeler;
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.chain.ChainNode;
 import semantic.ast.expression.ExpressionNode;
@@ -12,6 +15,9 @@ import semantic.symbol.attribute.type.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static asm.ASMLabeler.label;
+import static semantic.symbol.attribute.type.VoidType.VOID;
 
 public class MethodAccessNode extends BaseAccessNode {
 
@@ -62,4 +68,21 @@ public class MethodAccessNode extends BaseAccessNode {
         methodSymbol = method.get();
     }
 
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        if (!methodSymbol.getReturnType().equals(VOID())) {
+            writer.writeln("RMEM 1\t;\tReservar espacio para valor de retorno");
+        }
+
+        paramsExps.forEach(param -> param.generate(context, writer));
+
+        if (methodSymbol.isStatic()) {
+            writer.writeln("PUSH %s", label(methodSymbol));
+        } else {
+            writer.writeln("LOAD 3\t;\tCargar this");
+            writer.writeln("LOADREF 0\t;\tCargar VT");
+            writer.writeln("LOADREF %s\t;\tCargar metodo", context.getOffsetOf(methodSymbol));
+        }
+        writer.writeln("CALL\t;\tLlamada a metodo");
+    }
 }

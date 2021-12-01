@@ -1,7 +1,10 @@
 package semantic.ast.sentence;
 
+import asm.ASMLabeler;
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
@@ -9,6 +12,8 @@ import semantic.symbol.attribute.type.PrimitiveType;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.Optional;
+
+import static asm.ASMLabeler.label;
 
 public class IfSentenceNode implements SentenceNode {
 
@@ -63,4 +68,36 @@ public class IfSentenceNode implements SentenceNode {
         return ifToken;
     }
 
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        if (elseSentence == null){
+            generateSingleIf(context, writer);
+        } else {
+            generateIfElse(context, writer);
+        }
+    }
+
+    private void generateSingleIf(ASMContext context, ASMWriter writer) {
+        ifCondition.generate(context, writer);
+
+        String endIfLabel = label("end_if");
+        writer.writeln("BF %s\t;\tSaltar al final del if", endIfLabel);
+
+        ifSentence.generate(context, writer);
+
+        writer.writelnLabeled(endIfLabel);
+    }
+
+    private void generateIfElse(ASMContext context, ASMWriter writer) {
+        ifCondition.generate(context, writer);
+
+        String elseLabel = label("else");
+        writer.writeln("BF %s\t;\tSaltar a else", elseLabel);
+
+        ifSentence.generate(context, writer);
+
+        writer.writelnLabeled(elseLabel);
+        elseSentence.generate(context, writer);
+        writer.writelnLabeled(label("end_if"));
+    }
 }

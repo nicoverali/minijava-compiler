@@ -1,11 +1,11 @@
 package semantic.ast.expression;
 
 import lexical.Token;
+import semantic.ast.asm.ASMNode;
 import semantic.ast.ASTNode;
-import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
-public interface ExpressionNode extends ASTNode {
+public interface ExpressionNode extends ASTNode, ASMNode {
 
     /**
      * Returns the {@link Type} of this expression. Note this expression may be composed of several other expressions, thus

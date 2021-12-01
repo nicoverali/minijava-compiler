@@ -1,14 +1,18 @@
 package semantic.ast.expression.access;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
 import semantic.Variable;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.chain.ChainNode;
+import semantic.symbol.AttributeSymbol;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class VarAccessNode extends BaseAccessNode implements VariableAccess {
 
@@ -50,5 +54,19 @@ public class VarAccessNode extends BaseAccessNode implements VariableAccess {
     @Override
     public void setSide(Side side) {
         this.side = side;
+    }
+
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        // Dynamic attributes need the reference to the class to access
+        if (variable instanceof AttributeSymbol && ((AttributeSymbol) variable).isDynamic()) {
+            writer.writeln("LOAD 3\t;\tCargar this");
+        }
+
+        if (side.equals(Side.LEFT)){
+            variable.generateASMStore(context, writer);
+        } else {
+            variable.generateASMLoad(context, writer);
+        }
     }
 }

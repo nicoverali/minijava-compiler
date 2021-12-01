@@ -1,11 +1,16 @@
 package semantic.ast.expression.unary;
 
+import asm.ASMWriter;
 import lexical.Token;
+import lexical.TokenType;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.scope.Scope;
 import semantic.symbol.attribute.type.PrimitiveType;
 import semantic.symbol.attribute.type.Type;
+
+import java.util.IllegalFormatCodePointException;
 
 import static semantic.symbol.attribute.type.PrimitiveType.INT;
 
@@ -36,5 +41,13 @@ public class IntUnaryExpression implements ExpressionNode {
     @Override
     public Token toToken() {
         return operator;
+    }
+
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        expression.generate(context, writer);
+        if (operator.getType().equals(TokenType.OP_MINUS)){
+            writer.writeln("NEG");
+        }
     }
 }

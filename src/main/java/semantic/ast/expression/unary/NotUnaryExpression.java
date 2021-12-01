@@ -1,7 +1,9 @@
 package semantic.ast.expression.unary;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.scope.Scope;
 import semantic.symbol.attribute.type.Type;
@@ -34,5 +36,11 @@ public class NotUnaryExpression implements ExpressionNode {
     @Override
     public Token toToken() {
         return operator;
+    }
+
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        expression.generate(context, writer);
+        writer.writeln("NOT");
     }
 }

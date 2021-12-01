@@ -1,7 +1,9 @@
 package semantic.ast.expression.access;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.chain.ChainNode;
 import semantic.symbol.finder.AttributeFinder;
@@ -69,5 +71,14 @@ public class StaticVarAccessNode extends BaseAccessNode implements VariableAcces
     @Override
     public void setSide(Side side) {
         this.side = side;
+    }
+
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        if (side.equals(Side.LEFT)){
+            attrSym.generateASMStore(context, writer);
+        } else {
+            attrSym.generateASMLoad(context, writer);
+        }
     }
 }

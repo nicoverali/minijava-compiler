@@ -1,7 +1,9 @@
 package semantic.ast.sentence;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.block.LocalVariable;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.ExpressionNode;
@@ -46,4 +48,16 @@ public class DeclarationSentenceNode implements SentenceNode {
         return assignment;
     }
 
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        writer.writeln("RMEM 1\t;\tReservamos espacio para la variable local");
+        context.addVariable(variable);
+
+        if (expression != null) {
+            expression.generate(context, writer);
+            variable.generateASMStore(context, writer);
+        }
+
+
+    }
 }

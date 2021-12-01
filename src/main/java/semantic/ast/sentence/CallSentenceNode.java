@@ -1,7 +1,9 @@
 package semantic.ast.sentence;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.access.ConstructorAccessNode;
 import semantic.ast.expression.access.MethodAccessNode;
 import semantic.ast.expression.access.StaticMethodAccessNode;
@@ -9,6 +11,9 @@ import semantic.ast.expression.access.chain.ChainedMethodNode;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
+import semantic.symbol.attribute.type.VoidType;
+
+import static semantic.symbol.attribute.type.VoidType.VOID;
 
 public class CallSentenceNode implements SentenceNode {
 
@@ -39,5 +44,15 @@ public class CallSentenceNode implements SentenceNode {
     @Override
     public Token toToken() {
         return semicolonToken;
+    }
+
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        access.generate(context, writer);
+        AccessNode lastAccess = access.getChainEnd();
+
+        if (!lastAccess.getAccessType().equals(VOID())) {
+            writer.writeln("POP\t;\tDescartamos el valor de retorno de la llamada");
+        }
     }
 }

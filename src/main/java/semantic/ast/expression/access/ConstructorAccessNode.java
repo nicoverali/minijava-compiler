@@ -1,21 +1,25 @@
 package semantic.ast.expression.access;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
-import semantic.ast.scope.Scope;
-import semantic.ast.expression.access.chain.ChainNode;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.ExpressionNode;
+import semantic.ast.expression.access.chain.ChainNode;
+import semantic.ast.scope.Scope;
 import semantic.symbol.ClassSymbol;
-import semantic.symbol.finder.ConstructorFinder;
 import semantic.symbol.ConstructorSymbol;
 import semantic.symbol.SymbolTable;
-import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
+import semantic.symbol.finder.ConstructorFinder;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static asm.ASMLabeler.label;
+import static asm.ASMLabeler.labelVT;
 
 public class ConstructorAccessNode extends BaseAccessNode{
 
@@ -23,6 +27,9 @@ public class ConstructorAccessNode extends BaseAccessNode{
 
     private final ReferenceType classRef;
     private final List<ExpressionNode> paramsExpressions;
+
+    private ConstructorSymbol constructor;
+    private ClassSymbol clazz;
 
     public ConstructorAccessNode(ReferenceType classRef, List<ExpressionNode> paramsExpressions) {
         this.classRef = classRef;
@@ -57,6 +64,8 @@ public class ConstructorAccessNode extends BaseAccessNode{
         Optional<ConstructorSymbol> constructor = new ConstructorFinder(clazz.get()).find(params);
         if (constructor.isEmpty()) throw new SemanticException("No se pudo encontrar un constructor con estos parametros", classRef);
 
+        this.constructor = constructor.get();
+        this.clazz = clazz.get();
     }
 
     @Override
@@ -64,4 +73,23 @@ public class ConstructorAccessNode extends BaseAccessNode{
         return classRef.getToken();
     }
 
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        writer.writeln("RMEM 1\t;\tReservamos espacio para CIR");
+        writer.writeln("PUSH %s\t;\tTamano del CIR a crear", clazz.getAllAttributes().size());
+        writer.writeln("PUSH %s", context.getMallocLabel());
+        writer.writeln("CALL\t;\tCall malloc");
+        writer.writeln("DUP");
+        writer.writeln("PUSH %s\t;\tCargar direccion de VT", labelVT(clazz));
+        writer.writeln("STOREREF 0\t;\tGuardar direccion de VT en CIR");
+
+        writer.writeln("DUP");
+        for (ExpressionNode param : paramsExpressions) {
+            param.generate(context, writer);
+            writer.writeln("SWAP\t;\tSubimos el this para el constructor");
+        }
+
+        writer.writeln("PUSH %s\t;\tCargamos direccion de constructor", label(constructor));
+        writer.writeln("CALL\t;\tLlamamos al constructor");
+    }
 }

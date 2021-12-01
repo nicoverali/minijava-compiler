@@ -1,13 +1,18 @@
 package semantic.ast.sentence;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.scope.Scope;
 import semantic.ast.sentence.visitor.SentenceVisitor;
 import semantic.symbol.attribute.type.Type;
+import semantic.symbol.attribute.type.VoidType;
 
 import java.util.Optional;
+
+import static semantic.symbol.attribute.type.VoidType.VOID;
 
 public class ReturnSentenceNode implements SentenceNode{
 
@@ -48,5 +53,28 @@ public class ReturnSentenceNode implements SentenceNode{
     @Override
     public Token toToken() {
         return returnToken;
+    }
+
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        generateReturnExpression(context, writer);
+
+        int retOffset = context.getParameters().size();
+        if (context.isDynamic()) retOffset++; // Add offset for "this"
+
+        writer.writeln("FMEM %s\t;\tLiberamos el espacio de las variables locales", context.numberOfVariables());
+        writer.writeln("STOREFP\t;\tReestablecer FP a RA anterior");
+        writer.writeln("RET %s\t;\tSubir la stack n posiciones para volver al RA anterior", retOffset);
+    }
+
+    private void generateReturnExpression(ASMContext context, ASMWriter writer) {
+        if (returnExpression == null) return;
+
+        int numberOfParameters = context.getParameters().size();
+        int returnOffset = 3 + numberOfParameters;
+        if (context.isDynamic()) returnOffset++;
+
+        returnExpression.generate(context, writer);
+        writer.writeln("STORE %s", returnOffset);
     }
 }

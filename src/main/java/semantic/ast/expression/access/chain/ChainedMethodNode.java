@@ -1,7 +1,9 @@
 package semantic.ast.expression.access.chain;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.ExpressionNode;
@@ -17,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static semantic.symbol.attribute.IsStaticAttribute.emptyDynamic;
+import static semantic.symbol.attribute.type.VoidType.VOID;
 
 public class ChainedMethodNode extends BaseChainNode {
 
@@ -70,4 +73,21 @@ public class ChainedMethodNode extends BaseChainNode {
         return name.getToken();
     }
 
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        if (!methodSymbol.getReturnType().equals(VOID())) {
+            writer.writeln("RMEM 1\t;\tReservar espacio para valor de retorno");
+            writer.writeln("SWAP\t;\tSubimos this del nuevo RA");
+        }
+
+        for (ExpressionNode param : paramsExps) {
+            param.generate(context, writer);
+            writer.writeln("SWAP\t;\tSubimos this del nuevo RA");
+        }
+
+        writer.writeln("DUP\t;\tDuplicamos this para buscar en la VT");
+        writer.writeln("LOADREF 0\t;\tLoad VT");
+        writer.writeln("LOADREF %s\t;\tLoad direccion del metodo", context.getOffsetOf(methodSymbol));
+        writer.writeln("CALL\t;\tLlamada a metodo encadenado");
+    }
 }

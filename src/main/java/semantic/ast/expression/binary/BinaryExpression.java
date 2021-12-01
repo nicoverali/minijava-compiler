@@ -9,37 +9,38 @@ import semantic.ast.expression.ExpressionNode;
 import semantic.ast.scope.Scope;
 import semantic.symbol.attribute.type.Type;
 
-import static semantic.symbol.attribute.type.PrimitiveType.BOOLEAN;
+import java.util.Set;
 
-public class EqualityBinaryExpression implements ExpressionNode{
+public abstract class BinaryExpression implements ExpressionNode {
 
     private final ExpressionNode leftExpression;
     private final ExpressionNode rightExpression;
     private final Token operator;
 
-    public EqualityBinaryExpression(ExpressionNode leftExpression, ExpressionNode rightExpression, Token operator) {
+    public BinaryExpression(ExpressionNode leftExpression, ExpressionNode rightExpression, Token operator) {
         this.leftExpression = leftExpression;
         this.rightExpression = rightExpression;
         this.operator = operator;
     }
-
 
     @Override
     public void validate(Scope scope) {
         leftExpression.validate(scope);
         rightExpression.validate(scope);
 
-        Type leftType = leftExpression.getType();
-        Type rightType = rightExpression.getType();
-
-        if (!(leftType.conforms(rightType) || rightType.conforms(leftType))){
-            throw new SemanticException("Operandos incompatibles", operator);
+        Set<Type> validTypes = getValidTypes();
+        if (!validTypes.contains(leftExpression.getType())){
+            throw new SemanticException("Operando izquierdo incorrecto", operator);
+        }
+        if (!validTypes.contains(rightExpression.getType())){
+            throw new SemanticException("Operando derecho incorrecto", operator);
         }
     }
 
-    @Override
-    public Type getType() {
-        return BOOLEAN(operator);
+    abstract protected Set<Type> getValidTypes();
+
+    public Token getOperator(){
+        return operator;
     }
 
     @Override
@@ -54,11 +55,6 @@ public class EqualityBinaryExpression implements ExpressionNode{
         writer.writeln(getOperatorASM(operator.getType()));
     }
 
-    private String getOperatorASM(TokenType operatorType) {
-        switch (operatorType) {
-            case OP_EQ: return "EQ";
-            case OP_NOTEQ: return "NE";
-            default: return "NOP\t;\tInvalid operator";
-        }
-    }
+    abstract protected String getOperatorASM(TokenType operatorType);
+
 }

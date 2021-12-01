@@ -9,7 +9,7 @@ import semantic.ast.block.LocalVariable;
 import semantic.ast.expression.NullNode;
 import semantic.ast.expression.access.CastAccessNode;
 import semantic.ast.expression.ExpressionNode;
-import semantic.ast.expression.LiteralNode;
+import semantic.ast.expression.literal.*;
 import semantic.ast.expression.OperandNode;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.expression.access.ConstructorAccessNode;
@@ -841,17 +841,17 @@ public class MiniJavaSyntacticAnalyzer implements SyntacticAnalyzer {
 	 */
 	private OperandNode literal() {
 		if (equalsAny(CHAR)) {
-			return new LiteralNode(PrimitiveType.CHAR(match(CHAR)));
+			return new CharLiteralNode(PrimitiveType.CHAR(match(CHAR)));
 		} else if (equalsAny(STRING)) {
-			return new LiteralNode(PrimitiveType.STRING(match(STRING)));
+			return new StringLiteralNode(PrimitiveType.STRING(match(STRING)));
 		} else if (equalsAny(K_NULL)) {
 			return new NullNode(NULL(match(K_NULL)));
 		} else if (equalsAny(K_TRUE)) {
-			return new LiteralNode(PrimitiveType.BOOLEAN(match(K_TRUE)));
+			return new BooleanLiteralNode(PrimitiveType.BOOLEAN(match(K_TRUE)));
 		} else if (equalsAny(INT)) {
-			return new LiteralNode(PrimitiveType.INT(match(INT)));
+			return new IntLiteralNode(PrimitiveType.INT(match(INT)));
 		} else if (equalsAny(K_FALSE)) {
-			return new LiteralNode(PrimitiveType.BOOLEAN(match(K_FALSE)));
+			return new BooleanLiteralNode(PrimitiveType.BOOLEAN(match(K_FALSE)));
 		} else {
 			throw createSyntacticException("Se esperaba (literal) pero se encontro %tokenType%");
 		}

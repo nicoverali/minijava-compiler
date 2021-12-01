@@ -1,6 +1,8 @@
 package semantic.ast.expression.access;
 
+import asm.ASMWriter;
 import lexical.Token;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.expression.access.chain.ChainNode;
 import semantic.ast.scope.Scope;
@@ -32,5 +34,10 @@ public class ParenthesizedExpressionNode extends BaseAccessNode{
     @Override
     protected void validateAccess(Scope scope) {
         expression.validate(scope);
+    }
+
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        expression.generate(context, writer);
     }
 }

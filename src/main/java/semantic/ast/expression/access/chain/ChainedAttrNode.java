@@ -1,7 +1,9 @@
 package semantic.ast.expression.access.chain;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.access.AccessNode;
 import semantic.ast.expression.access.VariableAccess;
 import semantic.ast.scope.Scope;
@@ -57,5 +59,14 @@ public class ChainedAttrNode extends BaseChainNode implements VariableAccess {
     @Override
     public void setSide(Side side) {
         this.side = side;
+    }
+
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        if (side.equals(Side.RIGHT)) {
+            attrSymbol.generateASMLoad(context, writer);
+        } else {
+            attrSymbol.generateASMStore(context, writer);
+        }
     }
 }

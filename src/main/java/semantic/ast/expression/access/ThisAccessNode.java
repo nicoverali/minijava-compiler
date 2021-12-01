@@ -1,7 +1,9 @@
 package semantic.ast.expression.access;
 
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.scope.Scope;
 import semantic.ast.expression.access.chain.ChainNode;
 import semantic.symbol.attribute.NameAttribute;
@@ -40,4 +42,8 @@ public class ThisAccessNode extends BaseAccessNode {
         return thisToken;
     }
 
+    @Override
+    public void generateAccess(ASMContext context, ASMWriter writer) {
+        writer.writeln("LOAD 3\t;\tLoad this");
+    }
 }

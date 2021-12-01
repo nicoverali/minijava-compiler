@@ -1,12 +1,16 @@
 package semantic.ast.sentence;
 
+import asm.ASMLabeler;
+import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
+import semantic.ast.asm.ASMContext;
 import semantic.ast.expression.ExpressionNode;
 import semantic.ast.scope.Scope;
 import semantic.ast.sentence.assignment.AssignmentNode;
 import semantic.ast.sentence.visitor.SentenceVisitor;
 
+import static asm.ASMLabeler.label;
 import static semantic.symbol.attribute.type.PrimitiveType.BOOLEAN;
 
 public class ForSentenceNode implements SentenceNode {
@@ -48,5 +52,25 @@ public class ForSentenceNode implements SentenceNode {
     @Override
     public Token toToken() {
         return forToken;
+    }
+
+    @Override
+    public void generate(ASMContext context, ASMWriter writer) {
+        ASMContext forContext = context.createSubContext();
+        localVarDeclaration.generate(forContext, writer);
+
+        String loopLabel = label("for_loop");
+        String endForLabel = label("end_for");
+
+        writer.writelnLabeled(loopLabel);
+        expressionNode.generate(forContext, writer);
+        writer.writeln("BF %s\t;\tSi es falso ir al final del for", endForLabel);
+        loopSentence.generate(forContext, writer);
+        assignment.generate(forContext, writer);
+        writer.writeln("JUMP %s\t;\tSaltar de nuevo al loop", loopLabel);
+
+        writer.writelnLabeled(endForLabel);
+
+        writer.writeln("FMEM 1\t;\tLiberamos la variable del for");
     }
 }
