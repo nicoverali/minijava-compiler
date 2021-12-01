@@ -4,10 +4,12 @@ import asm.ASMLabeler;
 import asm.ASMWriter;
 import asm.offset.ASMOffsetsGenerator;
 import asm.offset.MethodOffsetComparator;
+import semantic.symbol.AttributeSymbol;
 import semantic.symbol.ClassSymbol;
+import semantic.symbol.ConstructorSymbol;
 import semantic.symbol.MethodSymbol;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static asm.ASMLabeler.labelVT;
@@ -32,19 +34,30 @@ public class ASMClassGenerator {
 
         writer.writeln(".DATA");
         if (methods.isEmpty()) {
-            writer.writeln("%s: NOP", labelVT(clazz));
+            writer.writelnLabeled(labelVT(clazz), "NOP");
         } else {
-            writer.writeln("%s: DW %s", labelVT(clazz), methods);
+            writer.writelnLabeled(labelVT(clazz), "DW %s", methods);
+        }
+
+        List<String> staticAttr = clazz.getAttributes().stream()
+                .filter(AttributeSymbol::isStatic)
+                .map(ASMLabeler::label)
+                .collect(Collectors.toList());
+
+        for (String label : staticAttr) {
+            writer.writelnLabeled(label, "DW 0");
         }
     }
 
     private void generateClassCode(ClassSymbol clazz, ASMOffsetsGenerator offsetGenerator, ASMWriter writer) {
-        Collection<MethodSymbol> methods = clazz.getMethods();
-        ASMMethodGenerator methodGenerator = new ASMMethodGenerator();
+        ASMCallableGenerator callableGen = new ASMCallableGenerator();
 
         writer.writeln(".CODE");
-        for (MethodSymbol method : methods) {
-            methodGenerator.generate(method, offsetGenerator, writer);
+        for (MethodSymbol method : clazz.getMethods()) {
+            callableGen.generate(method, offsetGenerator, writer);
+        }
+        for (ConstructorSymbol constructor : clazz.getConstructors()) {
+            callableGen.generate(constructor, offsetGenerator, writer);
         }
     }
 
