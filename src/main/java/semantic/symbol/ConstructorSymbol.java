@@ -4,14 +4,18 @@ import semantic.SemanticException;
 import semantic.ast.block.BlockNode;
 import semantic.ast.scope.DynamicContextScope;
 import semantic.ast.sentence.visitor.CodeFlowValidator;
+import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
+import semantic.symbol.attribute.type.Type;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+
+import static semantic.symbol.attribute.type.VoidType.VOID;
 
 public class ConstructorSymbol implements InnerClassSymbol, CallableSymbol {
 
@@ -35,6 +39,11 @@ public class ConstructorSymbol implements InnerClassSymbol, CallableSymbol {
         return classReference;
     }
 
+    @Override
+    public IsStaticAttribute getStaticAttribute() {
+        return IsStaticAttribute.emptyDynamic();
+    }
+
     /**
      * @return a list of all the {@link ParameterSymbol} of this constructor
      */
@@ -45,6 +54,11 @@ public class ConstructorSymbol implements InnerClassSymbol, CallableSymbol {
     @Override
     public boolean hasParameters() {
         return !parameters.isEmpty();
+    }
+
+    @Override
+    public Type getReturnType() {
+        return VOID();
     }
 
     @Override
@@ -66,7 +80,7 @@ public class ConstructorSymbol implements InnerClassSymbol, CallableSymbol {
 
     @Override
     public String getName() {
-        return "";
+        return "constructor";
     }
 
     @Override

@@ -1,12 +1,18 @@
 package semantic.symbol;
 
 import semantic.ast.block.BlockNode;
+import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.type.Type;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface CallableSymbol extends Symbol {
+public interface CallableSymbol extends InnerClassSymbol {
+
+    /**
+     * @return the {@link IsStaticAttribute} of this callable symbol which determines if it's static or not
+     */
+    IsStaticAttribute getStaticAttribute();
 
     /**
      * @return a list of all the {@link ParameterSymbol} of this method
@@ -26,6 +32,11 @@ public interface CallableSymbol extends Symbol {
                 .map(ParameterSymbol::getType)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * @return the {@link Type} returned by this callable symbol
+     */
+    Type getReturnType();
 
     /**
      * @return the {@link BlockNode} of this callable symbol
