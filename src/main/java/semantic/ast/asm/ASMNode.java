@@ -1,4 +1,4 @@
-package semantic.ast;
+package semantic.ast.asm;
 
 import asm.ASMWriter;
 
@@ -9,6 +9,6 @@ public interface ASMNode {
      *
      * @param writer a {@link ASMWriter} which will output the code to a file
      */
-    void generate(ASMWriter writer);
+    void generate(ASMContext context, ASMWriter writer);
 
 }
