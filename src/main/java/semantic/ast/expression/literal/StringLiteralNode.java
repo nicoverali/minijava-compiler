@@ -16,7 +16,7 @@ public class StringLiteralNode extends LiteralNode{
     public void generate(ASMContext context, ASMWriter writer) {
         char[] string = this.getType().getToken().getLexeme().toCharArray();
         writer.writeln("RMEM 1\t;\tReservamos espacio para el valor de retorno");
-        writer.writeln("PUSH %s\t;\tCargamos el tamano de la String mas finalizador", string.length);
+        writer.writeln("PUSH %s\t;\tCargamos el tamano de la String mas finalizador", string.length + 1);
         writer.writeln("PUSH %s\t;\tCargamos la direccion de malloc", context.getMallocLabel());
         writer.writeln("CALL");
 
