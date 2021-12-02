@@ -12,6 +12,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static semantic.symbol.attribute.type.VoidType.VOID;
+
 public class SymbolTreeValidator {
 
     private static final String MAIN_METHOD_NAME = "main";
@@ -39,13 +41,14 @@ public class SymbolTreeValidator {
         List<MethodSymbol> mainMethods = allMethods
                 .filter(method -> method.getName().equals(MAIN_METHOD_NAME))
                 .filter(MethodSymbol::isStatic)
+                .filter(m -> m.getReturnType().equals(VOID()))
                 .filter(Predicate.not(MethodSymbol::hasParameters))
                 .collect(Collectors.toList());
 
         if (mainMethods.size() > 1){
-            throw new MainMethodException("Solo puede haber un unico metodo estatico main sin parametros", mainMethods.get(1));
+            throw new MainMethodException("Solo puede haber un unico metodo estatico main sin parametros de tipo void", mainMethods.get(1));
         } else if (mainMethods.size() == 0){
-            throw new MainMethodException("Debe haber una clase con un metodo estatico main sin parametros");
+            throw new MainMethodException("Debe haber una clase con un metodo estatico main sin parametros de tipo void");
         }
         return mainMethods.get(0);
     }

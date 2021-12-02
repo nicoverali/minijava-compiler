@@ -1,19 +1,19 @@
 class Clase {
 
 
-    static int main(){
+    static void main(){
         if (true) {
             if (true){
                 if (true){
-                    return 3;
+                    return;
                 } else {
-                    return 3;
+                    return;
                 }
             } else {
-                return 3;
+                return;
             }
         }else {
-            return 3;
+            return;
         }
     }
 
