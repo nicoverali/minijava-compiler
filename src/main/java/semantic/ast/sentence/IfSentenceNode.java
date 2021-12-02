@@ -98,6 +98,6 @@ public class IfSentenceNode implements SentenceNode {
 
         writer.writelnLabeled(elseLabel);
         elseSentence.generate(context, writer);
-        writer.writelnLabeled(label("end_if"));
+        writer.writelnLabeled(label("end_if"), "NOP \t;\tInstruccion para salvar casos excepcionales");
     }
 }
