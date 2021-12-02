@@ -76,7 +76,8 @@ public class ConstructorAccessNode extends BaseAccessNode{
     @Override
     public void generateAccess(ASMContext context, ASMWriter writer) {
         writer.writeln("RMEM 1\t;\tReservamos espacio para CIR");
-        writer.writeln("PUSH %s\t;\tTamano del CIR a crear", clazz.getAllAttributes().size());
+        // Dejamos atributos +1 por la VT
+        writer.writeln("PUSH %s\t;\tTamano del CIR a crear", clazz.getAllAttributes().size() + 1);
         writer.writeln("PUSH %s", context.getMallocLabel());
         writer.writeln("CALL\t;\tCall malloc");
         writer.writeln("DUP");
