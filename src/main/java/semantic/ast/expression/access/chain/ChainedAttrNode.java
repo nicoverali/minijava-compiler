@@ -63,10 +63,18 @@ public class ChainedAttrNode extends BaseChainNode implements VariableAccess {
 
     @Override
     public void generateAccess(ASMContext context, ASMWriter writer) {
+        removePrevReferenceIfStatic(writer);
+
         if (side.equals(Side.RIGHT)) {
             attrSymbol.generateASMLoad(context, writer);
         } else {
             attrSymbol.generateASMStore(context, writer);
         }
+    }
+
+    private void removePrevReferenceIfStatic(ASMWriter writer) {
+        if (attrSymbol.isDynamic()) return;
+
+        writer.writeln("FMEM 1\t;\tRemovemos la referencia anterior porque el atributo es estatico");
     }
 }
