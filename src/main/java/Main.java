@@ -69,6 +69,11 @@ public class Main {
             mainPrinter.printError(e);
         }
 
+        if (isOk) {
+            System.out.println("Compilacion exitosa.\n");
+            System.out.println("[SinErrores]");
+        }
+
         return isOk;
     }
 
