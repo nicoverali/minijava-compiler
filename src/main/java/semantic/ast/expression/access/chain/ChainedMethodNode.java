@@ -1,5 +1,6 @@
 package semantic.ast.expression.access.chain;
 
+import asm.ASMLabeler;
 import asm.ASMWriter;
 import lexical.Token;
 import semantic.SemanticException;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static asm.ASMLabeler.label;
 import static semantic.symbol.attribute.IsStaticAttribute.emptyDynamic;
 import static semantic.symbol.attribute.type.VoidType.VOID;
 
@@ -75,6 +77,27 @@ public class ChainedMethodNode extends BaseChainNode {
 
     @Override
     public void generateAccess(ASMContext context, ASMWriter writer) {
+        if (methodSymbol.isStatic()) {
+            generateStaticAccess(context, writer);
+        } else {
+            generateDynamicAccess(context, writer);
+        }
+    }
+
+    private void generateStaticAccess(ASMContext context, ASMWriter writer) {
+        writer.writeln("FMEM 1\t;\tDescartamos la referencia previa porque el metodo es estatico");
+
+        if (!methodSymbol.getReturnType().equals(VOID())) {
+            writer.writeln("RMEM 1\t;\tReservar espacio para valor de retorno");
+        }
+
+        paramsExps.forEach(param -> param.generate(context, writer));
+
+        writer.writeln("PUSH %s\t;\tCargamos direccion de metodo estatico", label(methodSymbol));
+        writer.writeln("CALL\t;\tLlamada a metodo encadenado");
+    }
+
+    private void generateDynamicAccess(ASMContext context, ASMWriter writer) {
         if (!methodSymbol.getReturnType().equals(VOID())) {
             writer.writeln("RMEM 1\t;\tReservar espacio para valor de retorno");
             writer.writeln("SWAP\t;\tSubimos this del nuevo RA");
@@ -90,4 +113,5 @@ public class ChainedMethodNode extends BaseChainNode {
         writer.writeln("LOADREF %s\t;\tLoad direccion del metodo", context.getOffsetOf(methodSymbol));
         writer.writeln("CALL\t;\tLlamada a metodo encadenado");
     }
+
 }
