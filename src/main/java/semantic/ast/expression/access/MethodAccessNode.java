@@ -80,6 +80,7 @@ public class MethodAccessNode extends BaseAccessNode {
             writer.writeln("PUSH %s", label(methodSymbol));
         } else {
             writer.writeln("LOAD 3\t;\tCargar this");
+            writer.writeln("DUP\t;\tDuplicamos this para buscar el metodo");
             writer.writeln("LOADREF 0\t;\tCargar VT");
             writer.writeln("LOADREF %s\t;\tCargar metodo", context.getOffsetOf(methodSymbol));
         }
