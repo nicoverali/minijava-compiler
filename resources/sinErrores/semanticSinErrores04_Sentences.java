@@ -71,8 +71,16 @@ class Clase extends Padre{
                 System.printI(i);
             }
         }
-        for (String forStr = ""; forStr != "AAAAAAA"; loop = loop + 2)
-            System.printS("Loop de strings");
+
+        String finalStr = "AAAAAAA";
+        for (String forStr = ""; forStr != finalStr; loop = loop + 2){
+            System.printS("Valor de loop: ");
+            System.printI(loop);
+            if(loop == 20){
+                forStr = finalStr;
+            }
+            System.printS("Loop de strings\n");
+        }
 
         // Bloques
         {
