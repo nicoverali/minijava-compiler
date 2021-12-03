@@ -5,10 +5,7 @@ import io.code.CodeLine;
 import lexical.Token;
 import lexical.TokenType;
 
-import javax.swing.text.html.Option;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class AutomataToken implements Token {
 

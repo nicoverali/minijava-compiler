@@ -2,8 +2,6 @@ package semantic.symbol;
 
 import semantic.SemanticException;
 
-import javax.annotation.Nullable;
-
 public interface InnerClassSymbol extends Symbol {
 
     /**
@@ -27,7 +25,6 @@ public interface InnerClassSymbol extends Symbol {
     /**
      * @return the {@link ClassSymbol} that contains this symbol or null if it is un-contained
      */
-    @Nullable
     ClassSymbol getContainer();
 
 }

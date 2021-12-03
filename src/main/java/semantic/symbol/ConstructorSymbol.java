@@ -9,7 +9,6 @@ import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.ReferenceType;
 import semantic.symbol.attribute.type.Type;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -100,7 +99,6 @@ public class ConstructorSymbol implements InnerClassSymbol, CallableSymbol {
         this.container = container;
     }
 
-    @Nullable
     @Override
     public ClassSymbol getContainer() {
         return container;

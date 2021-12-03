@@ -9,7 +9,6 @@ import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -116,7 +115,6 @@ public class PredefinedMethod implements MethodSymbol {
         this.container = container;
     }
 
-    @Nullable
     @Override
     public ClassSymbol getContainer() {
         return container;

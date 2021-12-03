@@ -1,6 +1,5 @@
 package semantic.symbol;
 
-import asm.ASMLabeler;
 import asm.ASMWriter;
 import semantic.SemanticException;
 import semantic.Variable;
@@ -9,8 +8,6 @@ import semantic.symbol.attribute.IsPublicAttribute;
 import semantic.symbol.attribute.IsStaticAttribute;
 import semantic.symbol.attribute.NameAttribute;
 import semantic.symbol.attribute.type.Type;
-
-import javax.annotation.Nullable;
 
 import static asm.ASMLabeler.label;
 
@@ -138,7 +135,6 @@ public class AttributeSymbol implements InnerClassSymbol, Variable {
         this.container = container;
     }
 
-    @Nullable
     @Override
     public ClassSymbol getContainer() {
         return container;
