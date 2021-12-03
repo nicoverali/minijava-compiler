@@ -92,12 +92,16 @@ public class IfSentenceNode implements SentenceNode {
         ifCondition.generate(context, writer);
 
         String elseLabel = label("else");
+        String endIfLabel = label("end_if");
+
         writer.writeln("BF %s\t;\tSaltar a else", elseLabel);
 
         ifSentence.generate(context, writer);
 
+        writer.writeln("JUMP %s\t;\tSaltar al final del if", endIfLabel);
+
         writer.writelnLabeled(elseLabel);
         elseSentence.generate(context, writer);
-        writer.writelnLabeled(label("end_if"), "NOP \t;\tInstruccion para salvar casos excepcionales");
+        writer.writelnLabeled(endIfLabel, "NOP \t;\tInstruccion para salvar casos excepcionales");
     }
 }
